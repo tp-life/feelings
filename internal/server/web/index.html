@@ -644,7 +644,7 @@ function connectSSE() {
       const box = document.getElementById('logConsole');
       const line = document.createElement('div');
       line.className = 'log-line';
-      line.innerHTML = `[${new Date(ev.timestamp).toLocaleTimeString()}] <b>${ev.shot_id || ev.project_id}</b> · ${ev.kind} · ${ev.stage} — ${escapeHTML(ev.message)}`;
+      line.innerHTML = `[${new Date(ev.timestamp).toLocaleTimeString()}] <b>${escapeHTML(ev.shot_id || ev.project_id)}</b> · ${escapeHTML(ev.kind)} · ${escapeHTML(ev.stage)} — ${escapeHTML(ev.message)}`;
       box.prepend(line);
 
       if (state.project && ev.project_id === state.project.id && ev.kind === 'autopilot') {
@@ -892,9 +892,9 @@ function renderManageProjectsList() {
           </div>
         </div>
         <div style="display:flex;gap:6px;flex-wrap:wrap;">
-          <button class="small ${isCur?'':'primary'}" onclick="selectProjectFromManager('${escapeAttr(p.id)}')">${isCur?'查看':'打开'}</button>
-          <button class="small" onclick="renameProjectFromManager('${escapeAttr(p.id)}','${escapeAttr(p.title)}')">重命名</button>
-          <button class="small danger" onclick="deleteProjectById('${escapeAttr(p.id)}','${escapeAttr(p.title)}')">删除项目</button>
+          <button class="small ${isCur?'':'primary'}" onclick="selectProjectFromManager(${jsArg(p.id)})">${isCur?'查看':'打开'}</button>
+          <button class="small" onclick="renameProjectFromManager(${jsArg(p.id)},${jsArg(p.title)})">重命名</button>
+          <button class="small danger" onclick="deleteProjectById(${jsArg(p.id)},${jsArg(p.title)})">删除项目</button>
         </div>
       </div>`;
   }).join('');
@@ -1022,10 +1022,10 @@ function renderSummary() {
 
   const issuesHTML = (rep.issues || []).length === 0
     ? '<span class="badge ok">心理学质检通过 · 无说教/AI味风险</span>'
-    : rep.issues.map(i => `<span class="badge ${i.severity==='error'?'err':'warn'}">${i.shot_id||'全局'}: ${i.message}</span>`).join(' ');
+    : rep.issues.map(i => `<span class="badge ${i.severity==='error'?'err':'warn'}">${escapeHTML(i.shot_id||'全局')}: ${escapeHTML(i.message)}</span>`).join(' ');
 
   const assetsHTML = (p.assets || []).length > 0
-    ? `<div style="margin-top:8px;font-size:12px;color:var(--muted);">已锚定资产图：` + p.assets.map((a, idx) => `<span class="badge">{{Asset ${idx+1}}} ${a.name}</span>`).join(' ') + `</div>`
+    ? `<div style="margin-top:8px;font-size:12px;color:var(--muted);">已锚定资产图：` + p.assets.map((a, idx) => `<span class="badge">{{Asset ${idx+1}}} ${escapeHTML(a.name)}</span>`).join(' ') + `</div>`
     : '';
 
   const llmBadge = meta.llm_is_mock
@@ -1301,7 +1301,7 @@ function renderStageStory() {
              ${(st.acts || []).map((a, idx) => `
                <div style="background:#161412;border:1px solid var(--border);border-radius:8px;padding:10px;">
                  <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:6px;">
-                   <span class="badge ${a.phase}">${phaseLabel(a.phase)}</span>
+                   <span class="badge ${escapeAttr(a.phase)}">${escapeHTML(phaseLabel(a.phase))}</span>
                    <input value="${escapeAttr(a.title||'')}" oninput="updateStoryAct(${idx},'title',this.value)" placeholder="本幕标题" style="flex:1;padding:4px 8px;" />
                  </div>
                  <textarea rows="2" oninput="updateStoryAct(${idx},'summary',this.value)">${escapeHTML(a.summary||'')}</textarea>
@@ -1521,7 +1521,7 @@ function renderStageAssetsPlan() {
         const shotChips = shots.map((sh, sIdx) => {
           const bindings = (sh.director_sheet && sh.director_sheet.asset_bindings) || [];
           const isBound = bindings.some(b => b.asset_id === a.id || b.asset_name === a.name);
-          return `<span class="asset-chip ${isBound?'bound':''}" onclick="toggleShotAssetBinding(${sIdx},'${a.id}')">${isBound?'✓ ':'+ '}${escapeHTML(sh.shot_id)}</span>`;
+          return `<span class="asset-chip ${isBound?'bound':''}" onclick="toggleShotAssetBinding(${sIdx},${jsArg(a.id)})">${isBound?'✓ ':'+ '}${escapeHTML(sh.shot_id)}</span>`;
         }).join(' ');
         return `
         <div class="card" style="margin-bottom:0;">
@@ -1611,8 +1611,8 @@ function renderStageAssetsRender() {
           <div>
             <div class="media-box">${preview}</div>
             <div style="display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;">
-              <button class="small primary" onclick="renderAssetImage('${a.id}', true)" ${a.source_mode==='text_only'?'disabled':''}>${a.image_path?'重绘此图':'生成此图'}</button>
-              <button class="small" onclick="triggerAssetUpload('${a.id}')">上传替换</button>
+              <button class="small primary" onclick="renderAssetImage(${jsArg(a.id)}, true)" ${a.source_mode==='text_only'?'disabled':''}>${a.image_path?'重绘此图':'生成此图'}</button>
+              <button class="small" onclick="triggerAssetUpload(${jsArg(a.id)})">上传替换</button>
               <button class="small" onclick="toggleAssetLock(${idx})">${a.locked?'已锁定':'锁定'}</button>
             </div>
           </div>
@@ -1678,7 +1678,7 @@ function renderStageKeyframes() {
       : projAssets.map((a, aIdx) => {
           const isBound = boundSet.has(a.id) || boundSet.has(a.name);
           const tok = a.source_mode === 'text_only' ? '纯文字' : `{{Asset ${aIdx+1}}}`;
-          return `<span class="asset-chip ${isBound?'bound':''}" onclick="toggleShotAssetBinding(${idx},'${a.id}')">${isBound?'✓ ':'+ '}${tok} ${escapeHTML(a.name)}</span>`;
+          return `<span class="asset-chip ${isBound?'bound':''}" onclick="toggleShotAssetBinding(${idx},${jsArg(a.id)})">${isBound?'✓ ':'+ '}${tok} ${escapeHTML(a.name)}</span>`;
         }).join(' ');
 
     const preview = sh.first_frame_path
@@ -1690,8 +1690,8 @@ function renderStageKeyframes() {
       <div>
         <div class="media-box">${preview}</div>
         <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
-          <button class="small primary" onclick="renderSingle('${sh.shot_id}','t2i')">${sh.first_frame_path?'重绘首帧图':'生成首帧图'}</button>
-          <button class="small" onclick="triggerShotFrameUpload('${sh.shot_id}')">上传首帧图</button>
+          <button class="small primary" onclick="renderSingle(${jsArg(sh.shot_id)},'t2i')">${sh.first_frame_path?'重绘首帧图':'生成首帧图'}</button>
+          <button class="small" onclick="triggerShotFrameUpload(${jsArg(sh.shot_id)})">上传首帧图</button>
           <button class="small" onclick="toggleLock(${idx})">${sh.locked?'已锁定':'锁定'}</button>
         </div>
         <div style="margin-top:6px;">
@@ -1702,7 +1702,7 @@ function renderStageKeyframes() {
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
           <div>
             <strong style="color:var(--gold);font-size:15px;">#${idx+1} · ${escapeHTML(sh.shot_id)}</strong>
-            <span class="badge ${sh.phase}">${phaseLabel(sh.phase)}</span>
+            <span class="badge ${escapeAttr(sh.phase)}">${escapeHTML(phaseLabel(sh.phase))}</span>
           </div>
           <div style="display:flex;gap:6px;">
             <button class="small" onclick="copyById('${cpT2IZH}')">复制中文 T2I 词</button>
@@ -1902,7 +1902,7 @@ function renderStageVideo() {
       : projAssets.map((a, aIdx) => {
           const isBound = boundAssetSet.has(a.id) || boundAssetSet.has(a.name);
           const tok = a.source_mode === 'text_only' ? '纯文字' : `{{Asset ${aIdx+1}}}`;
-          return `<span class="asset-chip ${isBound?'bound':''}" onclick="toggleShotAssetBinding(${idx}, '${a.id}')">${isBound?'✓ ':'+ '}${tok} ${escapeHTML(a.name)}</span>`;
+          return `<span class="asset-chip ${isBound?'bound':''}" onclick="toggleShotAssetBinding(${idx}, ${jsArg(a.id)})">${isBound?'✓ ':'+ '}${tok} ${escapeHTML(a.name)}</span>`;
         }).join(' ');
 
     const bindingRulesHTML = sh.director_sheet.asset_bindings.map((b, bIdx) => `
@@ -1972,10 +1972,10 @@ function renderStageVideo() {
       <div>
         <div class="media-box">${mediaHTML}</div>
         <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
-          <button class="small primary" onclick="renderSingle('${sh.shot_id}','t2i')">${sh.first_frame_path?'重绘首帧图':'生成首帧图'}</button>
-          <button class="small" onclick="triggerShotFrameUpload('${sh.shot_id}')">上传首帧图</button>
-          <button class="small" onclick="renderSingle('${sh.shot_id}','i2v')">重绘视频</button>
-          <button class="small" onclick="renderSingle('${sh.shot_id}','tts')">重配旁白</button>
+          <button class="small primary" onclick="renderSingle(${jsArg(sh.shot_id)},'t2i')">${sh.first_frame_path?'重绘首帧图':'生成首帧图'}</button>
+          <button class="small" onclick="triggerShotFrameUpload(${jsArg(sh.shot_id)})">上传首帧图</button>
+          <button class="small" onclick="renderSingle(${jsArg(sh.shot_id)},'i2v')">重绘视频</button>
+          <button class="small" onclick="renderSingle(${jsArg(sh.shot_id)},'tts')">重配旁白</button>
           <button class="small" onclick="toggleLock(${idx})">${sh.locked ? '已锁定' : '锁定'}</button>
         </div>
         <div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap;">
@@ -1989,11 +1989,11 @@ function renderStageVideo() {
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
           <div>
             <strong style="font-size:15px;color:var(--gold)">#${idx+1} · ${sh.shot_id}</strong>
-            <span class="badge ${sh.phase}">${phaseLabel(sh.phase)}</span>
+            <span class="badge ${escapeAttr(sh.phase)}">${escapeHTML(phaseLabel(sh.phase))}</span>
             <span class="badge">${sh.director_sheet.timeline_beats.length || 2} 个时间节拍</span>
             ${(sh.symbols||[]).map(s => `<span class="badge">${s}</span>`).join(' ')}
           </div>
-          <span style="font-size:12px;color:var(--muted)">${sh.psych_trigger || ''}</span>
+          <span style="font-size:12px;color:var(--muted)">${escapeHTML(sh.psych_trigger)}</span>
         </div>
 
         <div class="field-row">
@@ -2048,8 +2048,8 @@ function renderStageVideo() {
 
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;flex-wrap:wrap;gap:6px;">
           <div style="display:flex;gap:6px;align-items:center;">
-            <button class="small ${mode==='director'?'primary':''}" onclick="toggleShotMode('${sh.shot_id}','director')">导演时序详版</button>
-            <button class="small ${mode==='concise'?'primary':''}" onclick="toggleShotMode('${sh.shot_id}','concise')">精炼电影版</button>
+            <button class="small ${mode==='director'?'primary':''}" onclick="toggleShotMode(${jsArg(sh.shot_id)},'director')">导演时序详版</button>
+            <button class="small ${mode==='concise'?'primary':''}" onclick="toggleShotMode(${jsArg(sh.shot_id)},'concise')">精炼电影版</button>
           </div>
           <div style="display:flex;gap:6px;flex-wrap:wrap;">
             <button class="small" onclick="copyById('${cpGenZH}')">复制纯净中文生成词</button>
@@ -2597,10 +2597,15 @@ function downloadExportPack() {
 }
 
 function escapeHTML(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 function escapeAttr(s) {
-  return escapeHTML(s).replace(/"/g,'&quot;');
+  return escapeHTML(s);
+}
+// jsArg 生成可安全放进内联事件属性（onclick="fn(${jsArg(x)})"）的 JS 字符串字面量：
+// 先 JSON 编码成合法 JS 字符串，再做 HTML 属性转义（浏览器解析属性时会先还原实体）。
+function jsArg(v) {
+  return escapeAttr(JSON.stringify(String(v ?? '')));
 }
 
 boot();

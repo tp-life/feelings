@@ -52,12 +52,12 @@ type SensoryProfile struct {
 }
 
 type NarrationGuardrail struct {
-	Perspective         string   `yaml:"perspective" json:"perspective"`
-	CharsPerSecondMin   float64  `yaml:"chars_per_second_min" json:"chars_per_second_min"`
-	CharsPerSecondMax   float64  `yaml:"chars_per_second_max" json:"chars_per_second_max"`
-	MinSilenceRatio     float64  `yaml:"min_silence_ratio" json:"min_silence_ratio"`
-	MaxCharsPerShot     int      `yaml:"max_chars_per_shot" json:"max_chars_per_shot"`
-	ForbiddenCliches    []string `yaml:"forbidden_cliches" json:"forbidden_cliches"`
+	Perspective           string   `yaml:"perspective" json:"perspective"`
+	CharsPerSecondMin     float64  `yaml:"chars_per_second_min" json:"chars_per_second_min"`
+	CharsPerSecondMax     float64  `yaml:"chars_per_second_max" json:"chars_per_second_max"`
+	MinSilenceRatio       float64  `yaml:"min_silence_ratio" json:"min_silence_ratio"`
+	MaxCharsPerShot       int      `yaml:"max_chars_per_shot" json:"max_chars_per_shot"`
+	ForbiddenCliches      []string `yaml:"forbidden_cliches" json:"forbidden_cliches"`
 	PreferredSensoryVerbs []string `yaml:"preferred_sensory_verbs" json:"preferred_sensory_verbs"`
 }
 

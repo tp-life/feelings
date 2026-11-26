@@ -199,8 +199,9 @@ func (s *Service) RunAutoPilot(ctx context.Context, projectID string, opts AutoP
 		return failWith(err)
 	}
 	if opts.SkipKeyframes != nil {
-		p.KeyframesSkipped = *opts.SkipKeyframes
-		_ = project.Save(s.RootDir, p)
+		if p, err = s.UpdateWorkflowStage(projectID, "", nil, nil, nil, opts.SkipKeyframes); err != nil {
+			return failWith(err)
+		}
 	}
 
 	startRank := stageOrderRank(opts.FromStage)
@@ -220,7 +221,9 @@ func (s *Service) RunAutoPilot(ctx context.Context, projectID string, opts AutoP
 	}
 	if !p.StoryConfirmed {
 		tr := true
-		p, _ = s.UpdateWorkflowStage(projectID, p.Stage, &tr, nil, nil, nil)
+		if p, err = s.UpdateWorkflowStage(projectID, p.Stage, &tr, nil, nil, nil); err != nil {
+			return failWith(err)
+		}
 	}
 
 	// Step 2: 按剧情拆解故事板分镜
@@ -248,7 +251,9 @@ func (s *Service) RunAutoPilot(ctx context.Context, projectID string, opts AutoP
 		}
 	}
 	tr := true
-	p, _ = s.UpdateWorkflowStage(projectID, project.StageAssetsRender, &tr, &tr, &tr, nil)
+	if p, err = s.UpdateWorkflowStage(projectID, project.StageAssetsRender, &tr, &tr, &tr, nil); err != nil {
+		return failWith(err)
+	}
 
 	// Step 4: 批量生成缺失的资产定妆图
 	if len(p.Assets) > 0 && (startRank == 0 || startRank <= 4) {
@@ -271,7 +276,9 @@ func (s *Service) RunAutoPilot(ctx context.Context, projectID string, opts AutoP
 		if err := ctx.Err(); err != nil {
 			return failWith(err)
 		}
-		_, _ = s.UpdateWorkflowStage(projectID, project.StageKeyframes, nil, nil, nil, nil)
+		if _, err := s.UpdateWorkflowStage(projectID, project.StageKeyframes, nil, nil, nil, nil); err != nil {
+			return failWith(err)
+		}
 		s.updateAutoStatus(projectID, "keyframes", 5, totalSteps, 60, "正在按每镜绑定资产并发生成分镜定妆首帧图 (T2I)...")
 		if err := s.RenderProject(ctx, projectID, RenderOptions{
 			OnlyKind:   store.KindT2I,
@@ -285,7 +292,9 @@ func (s *Service) RunAutoPilot(ctx context.Context, projectID string, opts AutoP
 	if err := ctx.Err(); err != nil {
 		return failWith(err)
 	}
-	_, _ = s.UpdateWorkflowStage(projectID, project.StageVideo, nil, nil, nil, nil)
+	if _, err := s.UpdateWorkflowStage(projectID, project.StageVideo, nil, nil, nil, nil); err != nil {
+		return failWith(err)
+	}
 	s.updateAutoStatus(projectID, "video_render", 6, totalSteps, 78, "正在并发生成全片分镜视频 (I2V)、情感旁白 (TTS) 与环境声景 (SFX)...")
 	if err := s.RenderProject(ctx, projectID, RenderOptions{
 		ForceRetry: opts.ForceRegenerate && startRank <= 6,

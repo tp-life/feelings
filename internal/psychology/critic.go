@@ -8,16 +8,16 @@ import (
 
 // ShotForReview 是心理学质检器所需的最小分镜视图，避免循环依赖。
 type ShotForReview struct {
-	ShotID          string
-	Phase           ActPhase
-	PsychTrigger    string
-	Symbols         []string
-	Narration       string
-	DurationSec     int
-	AmbientTag      string
-	MotionActionZH  string
-	EnvPhysicsZH    string
-	CameraMovement  string
+	ShotID         string
+	Phase          ActPhase
+	PsychTrigger   string
+	Symbols        []string
+	Narration      string
+	DurationSec    int
+	AmbientTag     string
+	MotionActionZH string
+	EnvPhysicsZH   string
+	CameraMovement string
 }
 
 type IssueSeverity string
@@ -35,12 +35,12 @@ type CriticIssue struct {
 }
 
 type CriticReport struct {
-	Passed             bool                `yaml:"passed" json:"passed"`
-	Score              int                 `yaml:"score" json:"score"`
-	PhaseDistribution  map[ActPhase]int    `yaml:"phase_distribution" json:"phase_distribution"`
-	AvgSilenceRatio    float64             `yaml:"avg_silence_ratio" json:"avg_silence_ratio"`
-	SymbolHitCount     int                 `yaml:"symbol_hit_count" json:"symbol_hit_count"`
-	Issues             []CriticIssue       `yaml:"issues" json:"issues"`
+	Passed            bool             `yaml:"passed" json:"passed"`
+	Score             int              `yaml:"score" json:"score"`
+	PhaseDistribution map[ActPhase]int `yaml:"phase_distribution" json:"phase_distribution"`
+	AvgSilenceRatio   float64          `yaml:"avg_silence_ratio" json:"avg_silence_ratio"`
+	SymbolHitCount    int              `yaml:"symbol_hit_count" json:"symbol_hit_count"`
+	Issues            []CriticIssue    `yaml:"issues" json:"issues"`
 }
 
 // RevisionFeedback 将质检问题汇总为发回 LLM 的纠偏提示，用于自动润色分镜稿。

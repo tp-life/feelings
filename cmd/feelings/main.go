@@ -10,6 +10,7 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
+	"time"
 
 	"feelings-studio/internal/project"
 	"feelings-studio/internal/prompting"
@@ -331,7 +332,11 @@ func runServe(ctx context.Context, svc *studio.Service, args []string) {
 
 	srv := server.New(svc)
 	addr := fmt.Sprintf("127.0.0.1:%d", *port)
-	httpSrv := &http.Server{Addr: addr, Handler: srv.Handler()}
+	httpSrv := &http.Server{
+		Addr:              addr,
+		Handler:           server.LocalOnly(srv.Handler()),
+		ReadHeaderTimeout: 10 * time.Second,
+	}
 
 	go func() {
 		<-ctx.Done()

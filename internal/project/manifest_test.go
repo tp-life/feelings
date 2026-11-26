@@ -3,6 +3,7 @@ package project_test
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"feelings-studio/internal/project"
@@ -60,5 +61,35 @@ func TestImportFromDirAndSaveLoad(t *testing.T) {
 	}
 	if loaded.Title != p.Title || len(loaded.Shots) != 3 {
 		t.Fatalf("loaded manifest mismatch: %+v", loaded)
+	}
+}
+
+func TestValidateID(t *testing.T) {
+	good := []string{"summer-1998", "test", "p_1", "夏天1998", "v1.2"}
+	bad := []string{"", ".", "..", "../x", "a/b", `a\b`, ".hidden", "a..b", "a b", "a%2Fb", strings.Repeat("x", 129)}
+	for _, id := range good {
+		if err := project.ValidateID(id); err != nil {
+			t.Errorf("ValidateID(%q) = %v, want nil", id, err)
+		}
+	}
+	for _, id := range bad {
+		if err := project.ValidateID(id); err == nil {
+			t.Errorf("ValidateID(%q) = nil, want error", id)
+		}
+	}
+}
+
+func TestSaveRejectsUnsafeShotAndAssetIDs(t *testing.T) {
+	root := t.TempDir()
+	p := &project.Project{ID: "p1", Shots: []project.ShotSpec{{ShotID: "../../evil"}}}
+	if err := project.Save(root, p); err == nil {
+		t.Fatalf("Save must reject path-like shot ids")
+	}
+	p = &project.Project{ID: "p1", Assets: []project.AssetRef{{ID: "a/../../x"}}}
+	if err := project.Save(root, p); err == nil {
+		t.Fatalf("Save must reject path-like asset ids")
+	}
+	if _, err := project.Load(root, "../p1"); err == nil {
+		t.Fatalf("Load must reject traversal ids")
 	}
 }

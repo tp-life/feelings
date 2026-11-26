@@ -67,11 +67,11 @@ type I2VPromptSpec struct {
 
 // AssetBinding 显式声明某角色/场景/道具绑定的参考资产图及使用边界（防止多图模型串脸、照抄姿势或数量翻倍）。
 type AssetBinding struct {
-	AssetID     string        `yaml:"asset_id,omitempty" json:"asset_id,omitempty"` // 对应 Project.Assets[].ID（如 a1, a2）
-	Role        string        `yaml:"role" json:"role"`                             // character | scene | prop
-	AssetName   string        `yaml:"asset_name" json:"asset_name"`                 // 例如：主角 / 核心场景
-	RefToken    string        `yaml:"ref_token" json:"ref_token"`                   // 例如：{{Asset 1}} 或 "不使用参考图（纯文字锚定）"
-	UsageRule   BilingualText `yaml:"usage_rule" json:"usage_rule"`                 // 只参考外观/服装/材质，不参考角度、构图、站姿
+	AssetID     string        `yaml:"asset_id,omitempty" json:"asset_id,omitempty"`         // 对应 Project.Assets[].ID（如 a1, a2）
+	Role        string        `yaml:"role" json:"role"`                                     // character | scene | prop
+	AssetName   string        `yaml:"asset_name" json:"asset_name"`                         // 例如：主角 / 核心场景
+	RefToken    string        `yaml:"ref_token" json:"ref_token"`                           // 例如：{{Asset 1}} 或 "不使用参考图（纯文字锚定）"
+	UsageRule   BilingualText `yaml:"usage_rule" json:"usage_rule"`                         // 只参考外观/服装/材质，不参考角度、构图、站姿
 	ExcludeHint BilingualText `yaml:"exclude_hint,omitempty" json:"exclude_hint,omitempty"` // 勿换成 {{Asset 2}}
 }
 

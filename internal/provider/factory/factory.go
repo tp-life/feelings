@@ -1,6 +1,7 @@
 package providerfactory
 
 import (
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -29,10 +30,20 @@ type Bundle struct {
 func FromEnv(rootDir string) *Bundle {
 	cfg, err := settings.Load(rootDir)
 	if err != nil {
+		log.Printf("警告: 读取模型供应商配置失败，回退到默认 Mock 供应商: %v", err)
 		cfg = settings.DefaultConfig()
 	}
-	applyEnvOverrides(cfg)
-	return FromConfig(rootDir, cfg)
+	return FromConfigWithEnv(rootDir, cfg)
+}
+
+// FromConfigWithEnv 在给定配置的副本上叠加 FEELINGS_* 环境变量覆盖后构建 Provider（不修改传入的 cfg）。
+func FromConfigWithEnv(rootDir string, cfg *settings.ProvidersConfig) *Bundle {
+	if cfg == nil {
+		cfg = settings.DefaultConfig()
+	}
+	cp := cfg.Clone()
+	applyEnvOverrides(cp)
+	return FromConfig(rootDir, cp)
 }
 
 func FromConfig(rootDir string, cfg *settings.ProvidersConfig) *Bundle {

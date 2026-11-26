@@ -3,6 +3,7 @@ package studio
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -36,6 +37,9 @@ type Service struct {
 
 	autoMu   sync.RWMutex
 	autoRuns map[string]*autoRunEntry
+
+	projLocksMu sync.Mutex
+	projLocks   map[string]*sync.Mutex
 }
 
 func Open(rootDir, configDir string) (*Service, error) {
@@ -65,6 +69,8 @@ func Open(rootDir, configDir string) (*Service, error) {
 	}
 	provCfg, err := settings.Load(absRoot)
 	if err != nil {
+		// 不要静默回退：否则用户以为在用真实模型，实际跑的是 Mock
+		log.Printf("警告: 读取模型供应商配置 %s 失败，本次运行将使用默认 Mock 供应商: %v", settings.ConfigPath(absRoot), err)
 		provCfg = settings.DefaultConfig()
 	}
 
@@ -75,7 +81,7 @@ func Open(rootDir, configDir string) (*Service, error) {
 		Compiler:     comp,
 		Store:        st,
 		Settings:     provCfg,
-		Providers:    providerfactory.FromEnv(absRoot),
+		Providers:    providerfactory.FromConfigWithEnv(absRoot, provCfg),
 		subscribers:  make(map[chan scheduler.ProgressEvent]struct{}),
 		autoRuns:     make(map[string]*autoRunEntry),
 	}, nil
@@ -88,11 +94,11 @@ func (s *Service) GetProviders() *providerfactory.Bundle {
 	return s.Providers
 }
 
-// GetProviderSettings 返回当前供应商配置副本。
+// GetProviderSettings 返回当前供应商配置的深拷贝，调用方修改不会影响服务内部状态。
 func (s *Service) GetProviderSettings() *settings.ProvidersConfig {
 	s.provMu.RLock()
 	defer s.provMu.RUnlock()
-	return s.Settings
+	return s.Settings.Clone()
 }
 
 // UpdateProviderSettings 持久化保存供应商配置并立即热重载所有 Provider（无需重启服务）。
@@ -101,7 +107,7 @@ func (s *Service) UpdateProviderSettings(incoming *settings.ProvidersConfig) (*s
 	if err != nil {
 		return nil, err
 	}
-	bundle := providerfactory.FromConfig(s.RootDir, saved)
+	bundle := providerfactory.FromConfigWithEnv(s.RootDir, saved)
 	s.provMu.Lock()
 	s.Settings = saved
 	s.Providers = bundle
@@ -118,6 +124,11 @@ func (s *Service) Close() error {
 
 // DeleteProject 安全删除指定项目的全部本地文件（projects/<id>/）以及 SQLite 中的任务缓存记录。
 func (s *Service) DeleteProject(ctx context.Context, projectID string) error {
+	if err := project.ValidateID(projectID); err != nil {
+		return err
+	}
+	unlock := s.lockProject(projectID)
+	defer unlock()
 	if err := project.Delete(s.RootDir, projectID); err != nil {
 		return err
 	}
@@ -254,6 +265,11 @@ func (s *Service) InitProject(opts InitOptions) (*project.Project, error) {
 			p.Stage = project.StageVideo
 		}
 	}
+	unlock := s.lockProject(p.ID)
+	defer unlock()
+	if _, err := os.Stat(project.ManifestPath(s.RootDir, p.ID)); err == nil {
+		return nil, fmt.Errorf("project %q already exists", p.ID)
+	}
 	if err := project.Save(s.RootDir, p); err != nil {
 		return nil, err
 	}
@@ -357,7 +373,7 @@ func (s *Service) PlanStory(ctx context.Context, projectID string) (*project.Pro
 			Summary: a.Summary,
 		})
 	}
-	p.Story = &project.StoryScript{
+	story := &project.StoryScript{
 		Logline:             draft.Logline,
 		Synopsis:            draft.Synopsis,
 		Acts:                acts,
@@ -365,12 +381,12 @@ func (s *Service) PlanStory(ctx context.Context, projectID string) (*project.Pro
 		VisualAtmosphere:    draft.VisualAtmosphere,
 		SuggestedShotReason: draft.SuggestedShotReason,
 	}
-	p.Stage = project.StageStory
-	p.StoryConfirmed = false
-	if err := project.Save(s.RootDir, p); err != nil {
-		return nil, err
-	}
-	return p, nil
+	return s.mutateProject(projectID, func(cur *project.Project) error {
+		cur.Story = story
+		cur.Stage = project.StageStory
+		cur.StoryConfirmed = false
+		return nil
+	})
 }
 
 // PlanStoryboardOnly Step 1 → Step 2：确认整体故事剧情后，由剧情自然决定分镜数量并拆解出故事板草案（暂不提前建资产库）。
@@ -483,8 +499,9 @@ func (s *Service) planInternal(ctx context.Context, projectID string, populateAs
 		feedback = lastReport.RevisionFeedback()
 	}
 
-	if populateAssets && len(p.Assets) == 0 && plan != nil && len(plan.Assets) > 0 {
-		newAssets := make([]project.AssetRef, 0, len(plan.Assets))
+	var newAssets []project.AssetRef
+	if populateAssets && len(plan.Assets) > 0 {
+		newAssets = make([]project.AssetRef, 0, len(plan.Assets))
 		for _, a := range plan.Assets {
 			newAssets = append(newAssets, project.AssetRef{
 				ID:          a.ID,
@@ -495,8 +512,6 @@ func (s *Service) planInternal(ctx context.Context, projectID string, populateAs
 				SourceMode:  "generated",
 			})
 		}
-		p.Assets = newAssets
-		p.NormalizeAssets()
 	}
 
 	drafts := plan.Shots
@@ -549,21 +564,25 @@ func (s *Service) planInternal(ctx context.Context, projectID string, populateAs
 		}
 	}
 
-	p.Shots = newShots
-	p.ShotCount = len(newShots)
-	p.CriticReport = &lastReport
-	if !populateAssets {
-		p.StoryConfirmed = true
-		p.Stage = project.StageStoryboard
-		p.StoryboardConfirmed = false
-	} else if p.Stage == "" {
-		p.NormalizeWorkflow()
-	}
-	p.SyncShotAssetBindings()
-	if err := project.Save(s.RootDir, p); err != nil {
-		return nil, err
-	}
-	return p, nil
+	// LLM 调用可能耗时数十秒，这里在锁内基于最新清单回写结果，避免覆盖期间的其他修改
+	return s.mutateProject(projectID, func(cur *project.Project) error {
+		if len(newAssets) > 0 && len(cur.Assets) == 0 {
+			cur.Assets = newAssets
+			cur.NormalizeAssets()
+		}
+		cur.Shots = newShots
+		cur.ShotCount = len(newShots)
+		cur.CriticReport = &lastReport
+		if !populateAssets {
+			cur.StoryConfirmed = true
+			cur.Stage = project.StageStoryboard
+			cur.StoryboardConfirmed = false
+		} else if cur.Stage == "" {
+			cur.NormalizeWorkflow()
+		}
+		cur.SyncShotAssetBindings()
+		return nil
+	})
 }
 
 // ExtractAssetsFromStoryboard Step 1 → Step 2：严格基于人工确认后的故事板反推项目资产清单，
@@ -602,8 +621,6 @@ func (s *Service) ExtractAssetsFromStoryboard(ctx context.Context, projectID str
 	}
 
 	existingDrafts := make([]provider.AssetDraft, 0, len(p.Assets))
-	preservedByID := make(map[string]project.AssetRef, len(p.Assets))
-	preservedByName := make(map[string]project.AssetRef, len(p.Assets))
 	for _, a := range p.Assets {
 		existingDrafts = append(existingDrafts, provider.AssetDraft{
 			ID:          a.ID,
@@ -612,8 +629,6 @@ func (s *Service) ExtractAssetsFromStoryboard(ctx context.Context, projectID str
 			Description: a.Description,
 			Prompt:      a.Prompt,
 		})
-		preservedByID[a.ID] = a
-		preservedByName[strings.TrimSpace(a.Name)] = a
 	}
 
 	provs := s.GetProviders()
@@ -629,6 +644,26 @@ func (s *Service) ExtractAssetsFromStoryboard(ctx context.Context, projectID str
 	})
 	if err != nil {
 		return nil, fmt.Errorf("extract assets from storyboard: %w", err)
+	}
+
+	return s.mutateProject(projectID, func(cur *project.Project) error {
+		applyAssetExtraction(cur, res)
+		cur.StoryboardConfirmed = true
+		cur.Stage = project.StageAssetsPlan
+		cur.SyncShotAssetBindings()
+		_, _ = s.EvaluateProject(cur)
+		return nil
+	})
+}
+
+// applyAssetExtraction 把 LLM 提取的资产与每镜导演详版合并进项目：
+// 保留已有资产的上传/导入图片、锁定状态与来源模式，绝不覆盖用户确认的旁白/剧情。
+func applyAssetExtraction(p *project.Project, res *provider.AssetExtractionResult) {
+	preservedByID := make(map[string]project.AssetRef, len(p.Assets))
+	preservedByName := make(map[string]project.AssetRef, len(p.Assets))
+	for _, a := range p.Assets {
+		preservedByID[a.ID] = a
+		preservedByName[strings.TrimSpace(a.Name)] = a
 	}
 
 	// 合并提取出的资产：保留已有资产的上传/导入图片、锁定状态与来源模式
@@ -697,42 +732,28 @@ func (s *Service) ExtractAssetsFromStoryboard(ctx context.Context, projectID str
 			}
 		}
 	}
-
-	p.StoryboardConfirmed = true
-	p.Stage = project.StageAssetsPlan
-	p.SyncShotAssetBindings()
-	_, _ = s.EvaluateProject(p)
-	if err := project.Save(s.RootDir, p); err != nil {
-		return nil, err
-	}
-	return p, nil
 }
 
 // UpdateWorkflowStage 更新项目的 6 步流水线阶段与确认标记（支持柔性前后切换与按需跳过分镜定妆图）。
 func (s *Service) UpdateWorkflowStage(projectID string, stage project.WorkflowStage, storyConfirmed, storyboardConfirmed, assetsConfirmed, keyframesSkipped *bool) (*project.Project, error) {
-	p, err := project.Load(s.RootDir, projectID)
-	if err != nil {
-		return nil, err
-	}
-	if stage != "" {
-		p.Stage = stage
-	}
-	if storyConfirmed != nil {
-		p.StoryConfirmed = *storyConfirmed
-	}
-	if storyboardConfirmed != nil {
-		p.StoryboardConfirmed = *storyboardConfirmed
-	}
-	if assetsConfirmed != nil {
-		p.AssetsConfirmed = *assetsConfirmed
-	}
-	if keyframesSkipped != nil {
-		p.KeyframesSkipped = *keyframesSkipped
-	}
-	if err := project.Save(s.RootDir, p); err != nil {
-		return nil, err
-	}
-	return p, nil
+	return s.mutateProject(projectID, func(p *project.Project) error {
+		if stage != "" {
+			p.Stage = stage
+		}
+		if storyConfirmed != nil {
+			p.StoryConfirmed = *storyConfirmed
+		}
+		if storyboardConfirmed != nil {
+			p.StoryboardConfirmed = *storyboardConfirmed
+		}
+		if assetsConfirmed != nil {
+			p.AssetsConfirmed = *assetsConfirmed
+		}
+		if keyframesSkipped != nil {
+			p.KeyframesSkipped = *keyframesSkipped
+		}
+		return nil
+	})
 }
 
 func pacingLabelZH(pacing string) string {
@@ -765,6 +786,19 @@ func (s *Service) RenderAssets(ctx context.Context, projectID, assetID string, f
 	assetsDir := filepath.Join(project.ProjectDir(s.RootDir, projectID), "assets")
 	if err := os.MkdirAll(assetsDir, 0o755); err != nil {
 		return nil, err
+	}
+
+	generated := make(map[string]string)
+	applyGenerated := func() (*project.Project, error) {
+		return s.mutateProject(projectID, func(cur *project.Project) error {
+			for i := range cur.Assets {
+				if path, ok := generated[cur.Assets[i].ID]; ok {
+					cur.Assets[i].ImagePath = path
+					cur.Assets[i].SourceMode = "generated"
+				}
+			}
+			return nil
+		})
 	}
 
 	matched := 0
@@ -812,10 +846,15 @@ func (s *Service) RenderAssets(ctx context.Context, projectID, assetID string, f
 				Stage:     "failed",
 				Message:   err.Error(),
 			})
+			// 已成功生成的资产图仍然回填，避免重跑时重复扣费
+			if len(generated) > 0 {
+				if _, saveErr := applyGenerated(); saveErr != nil {
+					return nil, fmt.Errorf("generate asset %s (%s): %w (另外保存已生成资产失败: %v)", a.ID, a.Name, err, saveErr)
+				}
+			}
 			return nil, fmt.Errorf("generate asset %s (%s): %w", a.ID, a.Name, err)
 		}
-		a.ImagePath = genPath
-		a.SourceMode = "generated"
+		generated[a.ID] = genPath
 
 		s.Broadcast(scheduler.ProgressEvent{
 			ProjectID:  projectID,
@@ -829,84 +868,61 @@ func (s *Service) RenderAssets(ctx context.Context, projectID, assetID string, f
 	if assetID != "" && matched == 0 {
 		return nil, fmt.Errorf("asset %q not found in project %s", assetID, projectID)
 	}
-	if err := project.Save(s.RootDir, p); err != nil {
-		return nil, err
-	}
-	return p, nil
+	return applyGenerated()
 }
 
 // SaveUploadedAssetImage 保存通过浏览器上传的资产参考图并回填到项目资产库。
 func (s *Service) SaveUploadedAssetImage(projectID, assetID, ext string, data []byte) (*project.Project, error) {
-	p, err := project.Load(s.RootDir, projectID)
-	if err != nil {
-		return nil, err
-	}
-	p.NormalizeAssets()
 	ext = normalizeImageExt(ext)
 	if ext == "" {
 		return nil, fmt.Errorf("unsupported image format; use jpg/jpeg/png/webp")
 	}
-
-	assetsDir := filepath.Join(project.ProjectDir(s.RootDir, projectID), "assets")
-	if err := os.MkdirAll(assetsDir, 0o755); err != nil {
-		return nil, err
-	}
-	found := false
-	for i := range p.Assets {
-		if p.Assets[i].ID == assetID {
-			outPath := filepath.Join(assetsDir, fmt.Sprintf("%s_upload%s", assetID, ext))
+	return s.mutateProject(projectID, func(p *project.Project) error {
+		p.NormalizeAssets()
+		for i := range p.Assets {
+			if p.Assets[i].ID != assetID {
+				continue
+			}
+			assetsDir := filepath.Join(project.ProjectDir(s.RootDir, projectID), "assets")
+			if err := os.MkdirAll(assetsDir, 0o755); err != nil {
+				return err
+			}
+			outPath := filepath.Join(assetsDir, fmt.Sprintf("%s_upload%s", p.Assets[i].ID, ext))
 			if err := os.WriteFile(outPath, data, 0o644); err != nil {
-				return nil, err
+				return err
 			}
 			p.Assets[i].ImagePath = outPath
 			p.Assets[i].SourceMode = "uploaded"
-			found = true
-			break
+			return nil
 		}
-	}
-	if !found {
-		return nil, fmt.Errorf("asset %q not found in project %s", assetID, projectID)
-	}
-	if err := project.Save(s.RootDir, p); err != nil {
-		return nil, err
-	}
-	return p, nil
+		return fmt.Errorf("asset %q not found in project %s", assetID, projectID)
+	})
 }
 
 // SaveUploadedShotFrame 保存通过浏览器上传的分镜首帧图并回填到对应分镜。
 func (s *Service) SaveUploadedShotFrame(projectID, shotID, ext string, data []byte) (*project.Project, error) {
-	p, err := project.Load(s.RootDir, projectID)
-	if err != nil {
-		return nil, err
-	}
 	ext = normalizeImageExt(ext)
 	if ext == "" {
 		return nil, fmt.Errorf("unsupported image format; use jpg/jpeg/png/webp")
 	}
-
-	framesDir := filepath.Join(project.OutputDir(s.RootDir, projectID), "frames")
-	if err := os.MkdirAll(framesDir, 0o755); err != nil {
-		return nil, err
-	}
-	found := false
-	for i := range p.Shots {
-		if p.Shots[i].ShotID == shotID {
-			outPath := filepath.Join(framesDir, fmt.Sprintf("%s_upload%s", shotID, ext))
+	return s.mutateProject(projectID, func(p *project.Project) error {
+		for i := range p.Shots {
+			if p.Shots[i].ShotID != shotID {
+				continue
+			}
+			framesDir := filepath.Join(project.OutputDir(s.RootDir, projectID), "frames")
+			if err := os.MkdirAll(framesDir, 0o755); err != nil {
+				return err
+			}
+			outPath := filepath.Join(framesDir, fmt.Sprintf("%s_upload%s", p.Shots[i].ShotID, ext))
 			if err := os.WriteFile(outPath, data, 0o644); err != nil {
-				return nil, err
+				return err
 			}
 			p.Shots[i].FirstFramePath = outPath
-			found = true
-			break
+			return nil
 		}
-	}
-	if !found {
-		return nil, fmt.Errorf("shot %q not found in project %s", shotID, projectID)
-	}
-	if err := project.Save(s.RootDir, p); err != nil {
-		return nil, err
-	}
-	return p, nil
+		return fmt.Errorf("shot %q not found in project %s", shotID, projectID)
+	})
 }
 
 func normalizeImageExt(ext string) string {
@@ -941,34 +957,32 @@ func normalizeAudioExt(ext string) string {
 
 // SaveUploadedBGM 保存用户通过浏览器上传的自定义背景音乐文件并绑定到项目混音配置。
 func (s *Service) SaveUploadedBGM(projectID, ext string, data []byte) (*project.Project, error) {
-	p, err := project.Load(s.RootDir, projectID)
-	if err != nil {
-		return nil, err
-	}
 	ext = normalizeAudioExt(ext)
 	if ext == "" {
 		return nil, fmt.Errorf("unsupported audio format; use mp3/wav/m4a/aac/ogg")
 	}
-	assetsDir := filepath.Join(project.ProjectDir(s.RootDir, projectID), "assets")
-	if err := os.MkdirAll(assetsDir, 0o755); err != nil {
-		return nil, err
-	}
-	outPath := filepath.Join(assetsDir, "bgm_custom"+ext)
-	if err := os.WriteFile(outPath, data, 0o644); err != nil {
-		return nil, err
-	}
-	p.Mix.BGMPath = outPath
-	p.Mix.BGMPreset = "custom"
-	if err := project.Save(s.RootDir, p); err != nil {
-		return nil, err
-	}
-	return p, nil
+	return s.mutateProject(projectID, func(p *project.Project) error {
+		assetsDir := filepath.Join(project.ProjectDir(s.RootDir, projectID), "assets")
+		if err := os.MkdirAll(assetsDir, 0o755); err != nil {
+			return err
+		}
+		outPath := filepath.Join(assetsDir, "bgm_custom"+ext)
+		if err := os.WriteFile(outPath, data, 0o644); err != nil {
+			return err
+		}
+		p.Mix.BGMPath = outPath
+		p.Mix.BGMPreset = "custom"
+		return nil
+	})
 }
 
 // EnsureBGMPresetPreview 生成或返回内置怀旧配乐预设的 8 秒试听音频路径。
 func (s *Service) EnsureBGMPresetPreview(ctx context.Context, preset string) (string, error) {
 	if preset == "" || preset == "custom" || preset == "none" {
 		preset = "warm_pad"
+	}
+	if !isBuiltInBGMPreset(preset) {
+		return "", fmt.Errorf("unknown bgm preset %q", preset)
 	}
 	prevDir := filepath.Join(s.RootDir, ".cache", "bgm_previews")
 	if err := os.MkdirAll(prevDir, 0o755); err != nil {
@@ -982,6 +996,15 @@ func (s *Service) EnsureBGMPresetPreview(ctx context.Context, preset string) (st
 		return "", err
 	}
 	return outPath, nil
+}
+
+func isBuiltInBGMPreset(id string) bool {
+	for _, b := range project.BuiltInBGMPresets() {
+		if b.ID == id {
+			return true
+		}
+	}
+	return false
 }
 
 type RenderOptions struct {
@@ -1163,22 +1186,24 @@ func (s *Service) RenderProject(ctx context.Context, projectID string, opts Rend
 		return err
 	}
 
-	// 若有新通过 T2I 生成/重绘的首帧图，自动回填至 project.yaml 便于 Web 界面展示
-	updated := false
-	for i := range p.Shots {
-		if opts.ShotID != "" && p.Shots[i].ShotID != opts.ShotID {
-			continue
-		}
-		if p.Shots[i].FirstFramePath == "" || opts.OnlyKind == store.KindT2I {
-			candidate := filepath.Join(framesDir, p.Shots[i].ShotID+".jpeg")
-			if _, err := os.Stat(candidate); err == nil && p.Shots[i].FirstFramePath != candidate {
-				p.Shots[i].FirstFramePath = candidate
-				updated = true
+	// 若有新通过 T2I 生成/重绘的首帧图，自动回填至 project.yaml 便于 Web 界面展示。
+	// 渲染可能持续数分钟，这里在锁内基于最新清单只回填首帧路径，不覆盖期间用户的其他修改。
+	_, err = s.mutateProject(projectID, func(cur *project.Project) error {
+		for i := range cur.Shots {
+			if opts.ShotID != "" && cur.Shots[i].ShotID != opts.ShotID {
+				continue
+			}
+			if cur.Shots[i].FirstFramePath == "" || opts.OnlyKind == store.KindT2I {
+				candidate := filepath.Join(framesDir, cur.Shots[i].ShotID+".jpeg")
+				if _, err := os.Stat(candidate); err == nil {
+					cur.Shots[i].FirstFramePath = candidate
+				}
 			}
 		}
-	}
-	if updated {
-		_ = project.Save(s.RootDir, p)
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("save generated keyframe paths: %w", err)
 	}
 	return nil
 }

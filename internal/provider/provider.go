@@ -62,7 +62,7 @@ type StoryRequest struct {
 type StoryboardRequest struct {
 	ProjectID         string
 	Title             string
-	Theme             string            // 例如：“离家前父母塞满的后备箱”
+	Theme             string // 例如：“离家前父母塞满的后备箱”
 	Track             psychology.TrackID
 	StylePreset       string
 	TargetPacing      string            // auto | short | standard

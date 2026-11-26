@@ -249,6 +249,21 @@ func MergeAndSave(rootDir string, incoming *ProvidersConfig) (*ProvidersConfig, 
 	return existing, nil
 }
 
+// Clone 返回配置的深拷贝（Profiles map 独立）。
+func (c *ProvidersConfig) Clone() *ProvidersConfig {
+	if c == nil {
+		return nil
+	}
+	out := &ProvidersConfig{
+		Active:   c.Active,
+		Profiles: make(map[string]ProviderProfile, len(c.Profiles)),
+	}
+	for k, v := range c.Profiles {
+		out.Profiles[k] = v
+	}
+	return out
+}
+
 // MaskedCopy 返回适合发送到前端展示的脱敏配置副本（不暴露完整 API Key）。
 func (c *ProvidersConfig) MaskedCopy() *ProvidersConfig {
 	out := &ProvidersConfig{

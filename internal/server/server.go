@@ -3,6 +3,7 @@ package server
 import (
 	"embed"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/fs"
@@ -244,7 +245,10 @@ func (s *Server) handleCreateProject(w http.ResponseWriter, r *http.Request) {
 	}
 	if req.SkipKeyframes {
 		skip := true
-		p, _ = s.svc.UpdateWorkflowStage(p.ID, p.Stage, nil, nil, nil, &skip)
+		if p, err = s.svc.UpdateWorkflowStage(p.ID, p.Stage, nil, nil, nil, &skip); err != nil {
+			writeErr(w, http.StatusInternalServerError, err)
+			return
+		}
 	}
 	if req.OneClick {
 		skip := req.SkipKeyframes
@@ -334,6 +338,10 @@ func (s *Server) handleGetProject(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleUpdateProject(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
+	if err := project.ValidateID(id); err != nil {
+		writeErr(w, http.StatusBadRequest, err)
+		return
+	}
 	var updated project.Project
 	if err := json.NewDecoder(r.Body).Decode(&updated); err != nil {
 		writeErr(w, http.StatusBadRequest, err)
@@ -344,7 +352,7 @@ func (s *Server) handleUpdateProject(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, http.StatusBadRequest, err)
 		return
 	}
-	if err := project.Save(s.svc.RootDir, &updated); err != nil {
+	if err := s.svc.SaveProject(&updated); err != nil {
 		writeErr(w, http.StatusInternalServerError, err)
 		return
 	}
@@ -386,12 +394,8 @@ func (s *Server) handlePlanProject(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handlePlanStory(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	// 若前端调整了主题或篇幅倾向，先落盘再重新生成故事
-	if r.Body != nil {
-		var incoming project.Project
-		if err := json.NewDecoder(r.Body).Decode(&incoming); err == nil && incoming.Theme != "" {
-			incoming.ID = id
-			_ = project.Save(s.svc.RootDir, &incoming)
-		}
+	if !s.saveIncomingProject(w, r, id, func(p *project.Project) bool { return p.Theme != "" }) {
+		return
 	}
 	p, err := s.svc.PlanStory(r.Context(), id)
 	if err != nil {
@@ -409,12 +413,8 @@ func (s *Server) handlePlanStory(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handlePlanStoryboardOnly(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	// Step 1 → Step 2：先保存用户刚刚在界面里修改确认后的整体故事剧情，再按剧情拆解分镜
-	if r.Body != nil {
-		var incoming project.Project
-		if err := json.NewDecoder(r.Body).Decode(&incoming); err == nil && (incoming.Story != nil || incoming.Theme != "") {
-			incoming.ID = id
-			_ = project.Save(s.svc.RootDir, &incoming)
-		}
+	if !s.saveIncomingProject(w, r, id, func(p *project.Project) bool { return p.Story != nil || p.Theme != "" }) {
+		return
 	}
 	p, err := s.svc.PlanStoryboardOnly(r.Context(), id)
 	if err != nil {
@@ -432,13 +432,14 @@ func (s *Server) handlePlanStoryboardOnly(w http.ResponseWriter, r *http.Request
 func (s *Server) handleExtractAssets(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	// 若前端携带了刚修改的故事板项目体，先落盘保存再提取资产
-	if r.Body != nil {
-		var incoming project.Project
-		if err := json.NewDecoder(r.Body).Decode(&incoming); err == nil && len(incoming.Shots) > 0 {
-			incoming.ID = id
-			_, _ = s.svc.EvaluateProject(&incoming)
-			_ = project.Save(s.svc.RootDir, &incoming)
+	if !s.saveIncomingProject(w, r, id, func(p *project.Project) bool {
+		if len(p.Shots) == 0 {
+			return false
 		}
+		_, _ = s.svc.EvaluateProject(p)
+		return true
+	}) {
+		return
 	}
 	p, err := s.svc.ExtractAssetsFromStoryboard(r.Context(), id)
 	if err != nil {
@@ -540,6 +541,32 @@ func (s *Server) handleUploadShotFrame(w http.ResponseWriter, r *http.Request) {
 		"system_prompts":   sysPrompts,
 		"compiled_prompts": compiledShots,
 	})
+}
+
+// saveIncomingProject 处理「先保存前端当前编辑内容，再执行生成」类接口的可选请求体：
+// 请求体为空时直接跳过；JSON 非法返回 400；shouldSave 判定需要保存但落盘失败返回 500。
+// 返回 false 表示已写出错误响应，调用方应立即返回。
+func (s *Server) saveIncomingProject(w http.ResponseWriter, r *http.Request, id string, shouldSave func(*project.Project) bool) bool {
+	if r.Body == nil {
+		return true
+	}
+	var incoming project.Project
+	if err := json.NewDecoder(r.Body).Decode(&incoming); err != nil {
+		if errors.Is(err, io.EOF) {
+			return true
+		}
+		writeErr(w, http.StatusBadRequest, fmt.Errorf("invalid project body: %w", err))
+		return false
+	}
+	if !shouldSave(&incoming) {
+		return true
+	}
+	incoming.ID = id
+	if err := s.svc.SaveProject(&incoming); err != nil {
+		writeErr(w, http.StatusInternalServerError, fmt.Errorf("save project before generation: %w", err))
+		return false
+	}
+	return true
 }
 
 func readUploadedImage(r *http.Request) (string, []byte, error) {
@@ -707,6 +734,10 @@ func (s *Server) handleGetTemplates(w http.ResponseWriter, r *http.Request) {
 	projectID := strings.TrimSpace(r.URL.Query().Get("project_id"))
 	projectDir := ""
 	if projectID != "" {
+		if err := project.ValidateID(projectID); err != nil {
+			writeErr(w, http.StatusBadRequest, err)
+			return
+		}
 		projectDir = project.ProjectDir(s.svc.RootDir, projectID)
 	}
 
@@ -751,7 +782,11 @@ func (s *Server) handleSaveTemplate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if req.Scope == "project" && strings.TrimSpace(req.ProjectID) != "" {
-		projectDir := project.ProjectDir(s.svc.RootDir, strings.TrimSpace(req.ProjectID))
+		projectDir, err := s.existingProjectDir(req.ProjectID)
+		if err != nil {
+			writeErr(w, http.StatusBadRequest, err)
+			return
+		}
 		if err := s.svc.Compiler.SaveProjectTemplate(projectDir, req.Name, req.Content); err != nil {
 			writeErr(w, http.StatusBadRequest, err)
 			return
@@ -781,7 +816,11 @@ func (s *Server) handleResetTemplate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if req.Scope == "project" && strings.TrimSpace(req.ProjectID) != "" {
-		projectDir := project.ProjectDir(s.svc.RootDir, strings.TrimSpace(req.ProjectID))
+		projectDir, err := s.existingProjectDir(req.ProjectID)
+		if err != nil {
+			writeErr(w, http.StatusBadRequest, err)
+			return
+		}
 		content, err := s.svc.Compiler.ResetProjectTemplate(projectDir, req.Name)
 		if err != nil {
 			writeErr(w, http.StatusInternalServerError, err)
@@ -833,18 +872,69 @@ func (s *Server) handleMedia(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "missing path", http.StatusBadRequest)
 		return
 	}
-	absPath, err := filepath.Abs(rawPath)
+	absPath, err := s.resolveMediaPath(rawPath)
 	if err != nil {
-		http.Error(w, "invalid path", http.StatusBadRequest)
-		return
-	}
-	// 安全边界：仅允许访问工作区目录内部的图片/视频/音频文件
-	rel, err := filepath.Rel(s.svc.RootDir, absPath)
-	if err != nil || strings.HasPrefix(rel, "..") {
-		http.Error(w, "forbidden path outside workspace", http.StatusForbidden)
+		http.Error(w, err.Error(), http.StatusForbidden)
 		return
 	}
 	http.ServeFile(w, r, absPath)
+}
+
+// mediaExts 是 /api/media 允许返回的文件类型：只放行图片/音视频，
+// 绝不返回 project.yaml、.feelings/providers.yaml（含 API Key）、state.db 等。
+var mediaExts = map[string]bool{
+	".jpg": true, ".jpeg": true, ".png": true, ".webp": true, ".gif": true,
+	".mp4": true, ".mov": true, ".webm": true,
+	".wav": true, ".mp3": true, ".m4a": true, ".aac": true, ".ogg": true,
+}
+
+// resolveMediaPath 把请求路径解析为真实路径（跟随符号链接），要求它位于工作区内、
+// 扩展名为媒体类型，且不在隐藏目录（.feelings / .cache / .git 等）里——.cache/bgm_previews 除外。
+func (s *Server) resolveMediaPath(rawPath string) (string, error) {
+	p := rawPath
+	if !filepath.IsAbs(p) {
+		p = filepath.Join(s.svc.RootDir, p)
+	}
+	if !mediaExts[strings.ToLower(filepath.Ext(p))] {
+		return "", errors.New("forbidden: not a media file")
+	}
+	real, err := filepath.EvalSymlinks(p)
+	if err != nil {
+		return "", errors.New("media not found")
+	}
+	if !mediaExts[strings.ToLower(filepath.Ext(real))] {
+		return "", errors.New("forbidden: not a media file")
+	}
+	rootReal, err := filepath.EvalSymlinks(s.svc.RootDir)
+	if err != nil {
+		return "", errors.New("workspace unavailable")
+	}
+	rel, err := filepath.Rel(rootReal, real)
+	if err != nil || rel == "." || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
+		return "", errors.New("forbidden path outside workspace")
+	}
+	parts := strings.Split(filepath.ToSlash(rel), "/")
+	if strings.HasPrefix(filepath.ToSlash(rel), ".cache/bgm_previews/") {
+		return real, nil
+	}
+	for _, part := range parts[:len(parts)-1] {
+		if strings.HasPrefix(part, ".") {
+			return "", errors.New("forbidden: hidden directory")
+		}
+	}
+	return real, nil
+}
+
+// existingProjectDir 校验项目 ID 并确认项目存在，返回其目录。
+func (s *Server) existingProjectDir(projectID string) (string, error) {
+	id := strings.TrimSpace(projectID)
+	if err := project.ValidateID(id); err != nil {
+		return "", err
+	}
+	if _, err := os.Stat(project.ManifestPath(s.svc.RootDir, id)); err != nil {
+		return "", fmt.Errorf("project %q not found", id)
+	}
+	return project.ProjectDir(s.svc.RootDir, id), nil
 }
 
 func isAllowedTemplate(name string) bool {

@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
 
 	"gopkg.in/yaml.v3"
 
@@ -48,11 +49,11 @@ type StoryScript struct {
 // AssetRef 描述一个角色、场景或关键道具的一致性锚点（如 {{Asset 1}} 主角 / 核心场景）。
 type AssetRef struct {
 	ID          string                  `yaml:"id" json:"id"`
-	Role        string                  `yaml:"role" json:"role"`                               // character | scene | prop
+	Role        string                  `yaml:"role" json:"role"` // character | scene | prop
 	Name        string                  `yaml:"name" json:"name"`
 	ImagePath   string                  `yaml:"image_path,omitempty" json:"image_path,omitempty"`
 	Description string                  `yaml:"description" json:"description"`
-	Prompt      prompting.BilingualText `yaml:"prompt,omitempty" json:"prompt,omitempty"`       // 资产定妆图 T2I 提示词
+	Prompt      prompting.BilingualText `yaml:"prompt,omitempty" json:"prompt,omitempty"`           // 资产定妆图 T2I 提示词
 	SourceMode  string                  `yaml:"source_mode,omitempty" json:"source_mode,omitempty"` // generated | uploaded | imported | text_only
 	Locked      bool                    `yaml:"locked,omitempty" json:"locked,omitempty"`
 }
@@ -119,7 +120,7 @@ type Project struct {
 	NarratorVoice       string                   `yaml:"narrator_voice,omitempty" json:"narrator_voice,omitempty"` // warm-male | healing-female | childhood-boy | calm-senior
 	NarratorSpeed       float64                  `yaml:"narrator_speed,omitempty" json:"narrator_speed,omitempty"` // 默认 0.92
 	TargetPacing        string                   `yaml:"target_pacing,omitempty" json:"target_pacing,omitempty"`   // auto | short | standard
-	ShotCount           int                      `yaml:"shot_count,omitempty" json:"shot_count,omitempty"`       // 实际拆镜后的分镜数（不再要求建项前硬填）
+	ShotCount           int                      `yaml:"shot_count,omitempty" json:"shot_count,omitempty"`         // 实际拆镜后的分镜数（不再要求建项前硬填）
 	Stage               WorkflowStage            `yaml:"stage,omitempty" json:"stage,omitempty"`
 	Story               *StoryScript             `yaml:"story,omitempty" json:"story,omitempty"`
 	StoryConfirmed      bool                     `yaml:"story_confirmed,omitempty" json:"story_confirmed,omitempty"`
@@ -388,8 +389,11 @@ func OutputDir(rootDir, projectID string) string {
 }
 
 func Save(rootDir string, p *Project) error {
-	if p.ID == "" {
-		return fmt.Errorf("project id is required")
+	if err := ValidateID(p.ID); err != nil {
+		return err
+	}
+	if err := p.validateFileIDs(); err != nil {
+		return err
 	}
 	now := time.Now().UTC()
 	if p.CreatedAt.IsZero() {
@@ -432,6 +436,9 @@ func Save(rootDir string, p *Project) error {
 }
 
 func Load(rootDir, projectID string) (*Project, error) {
+	if err := ValidateID(projectID); err != nil {
+		return nil, err
+	}
 	path := ManifestPath(rootDir, projectID)
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -460,6 +467,13 @@ func Load(rootDir, projectID string) (*Project, error) {
 	}
 	p.NormalizeWorkflow()
 	p.NormalizeAssets()
+	if p.ID != projectID {
+		// 以目录名为准，避免 manifest 里被篡改的 id 把后续读写引到别的项目目录
+		p.ID = projectID
+	}
+	if err := p.validateFileIDs(); err != nil {
+		return nil, err
+	}
 	return &p, nil
 }
 
@@ -511,14 +525,49 @@ func (p *Project) NormalizeWorkflow() {
 	p.Stage = StageStoryboard
 }
 
-// ValidateID 校验项目 ID 合法性，防止路径穿越误删工作区外目录。
+// ValidateID 校验项目 ID 合法性：只允许字母（含中文）、数字、- _ .，且不能以 . 开头，
+// 防止经 URL 编码（%2F、%2E%2E）等方式穿越到 projects 目录之外读写或删除文件。
 func ValidateID(projectID string) error {
-	id := strings.TrimSpace(projectID)
-	if id == "" || id == "." || id == ".." {
-		return fmt.Errorf("invalid project id %q", projectID)
+	if err := validateFileComponent(projectID); err != nil {
+		return fmt.Errorf("invalid project id %q: %w", projectID, err)
 	}
-	if strings.ContainsAny(id, `/\`) || strings.Contains(id, "..") {
-		return fmt.Errorf("invalid project id %q: path separators are not allowed", projectID)
+	return nil
+}
+
+// validateFileComponent 校验会被直接拼进文件名/目录名的标识（项目 ID、镜头 ID、资产 ID）。
+func validateFileComponent(id string) error {
+	if id == "" {
+		return fmt.Errorf("must not be empty")
+	}
+	if len(id) > 128 {
+		return fmt.Errorf("too long (max 128 bytes)")
+	}
+	if id[0] == '.' || strings.Contains(id, "..") {
+		return fmt.Errorf("must not start with '.' or contain '..'")
+	}
+	for _, r := range id {
+		if unicode.IsLetter(r) || unicode.IsDigit(r) || r == '-' || r == '_' || r == '.' {
+			continue
+		}
+		return fmt.Errorf("only letters, digits, '-', '_' and '.' are allowed")
+	}
+	return nil
+}
+
+// validateFileIDs 确保镜头与资产 ID 可以安全地用作输出文件名（这些 ID 可能来自 LLM 输出或前端提交）。
+func (p *Project) validateFileIDs() error {
+	for _, sh := range p.Shots {
+		if err := validateFileComponent(sh.ShotID); err != nil {
+			return fmt.Errorf("invalid shot id %q: %w", sh.ShotID, err)
+		}
+	}
+	for _, a := range p.Assets {
+		if a.ID == "" {
+			continue // NormalizeAssets 会补齐
+		}
+		if err := validateFileComponent(a.ID); err != nil {
+			return fmt.Errorf("invalid asset id %q: %w", a.ID, err)
+		}
 	}
 	return nil
 }
