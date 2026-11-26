@@ -1,0 +1,1572 @@
+id: summer-1998
+title: 1998年夏天的巷口小卖部
+theme: 1998年夏天巷口小卖部与五毛钱冰棍
+track: childhood_90s
+style_preset: film_90s
+prompt_lang: zh
+aspect_ratio: "9:16"
+target_pacing: auto
+shot_count: 10
+stage: video
+assets_confirmed: true
+assets:
+    - id: a1
+      role: character
+      name: 小卖店老板
+      image_path: /Users/tp/work/aivideo/feelings/资产 小卖店老板.jpeg
+      description: 40多岁小卖部老板，短黑发，浅灰色棉T恤，慈祥温和的笑容，眼角有细纹
+      source_mode: imported
+    - id: a2
+      role: scene
+      name: 小卖部内部
+      image_path: /Users/tp/work/aivideo/feelings/资产-小卖部内部.jpeg
+      description: 90年代老旧胡同小卖部内部，陈旧木柜台、成排玻璃糖罐、算盘、铁皮零钱盒、老式白色卧式冰柜、满架复古零食与玻璃汽水瓶
+      source_mode: imported
+    - id: a3
+      role: character
+      name: 男孩
+      image_path: /Users/tp/work/aivideo/feelings/资产 男孩.jpeg
+      description: 8岁中国小男孩，寸头，微旧纯白短袖T恤，深蓝色运动短裤，黑色布鞋，神情纯真腼腆
+      source_mode: imported
+    - id: a4
+      role: character
+      name: 蓝色衣服小伙伴
+      image_path: /Users/tp/work/aivideo/feelings/资产-蓝色衣服小伙伴.jpeg
+      description: 8岁发小男孩，寸头，浅蓝色棉T恤，黑色短裤，深色帆布鞋，活泼阳光
+      source_mode: imported
+mix:
+    voice_volume: 1
+    ambient_volume: 0.34
+    bgm_volume: 0.22
+    grain_strength: 5
+    crossfade_sec: 0.4
+shots:
+    - shot_id: g1
+      order: 1
+      phase: sensory_hook
+      story_summary: 1990年代老旧胡同口小卖部外景，无主角近景，远处街坊缓步走过；老木门半敞，门内隐约露出白色旧冰柜与满墙零食货架
+      psych_trigger: 普鲁斯特感官唤起：午后斜阳、敞开的木门与门口汽水瓶瞬间建立1990年代时空坐标
+      symbols:
+        - 斑驳水泥墙与木门
+        - 绿玻璃汽水瓶
+        - 老式白色卧式冰柜
+      first_frame_path: /Users/tp/work/aivideo/feelings/g1.jpeg
+      narration: 夏天的蝉鸣，从小卖部木门开始。
+      emotion: calm
+      voice_id: warm-male
+      voice_speed: 0.92
+      ambient_tag: summer_cicada
+      duration_sec: 5
+      locked: false
+      t2i_spec:
+        subject_anchor:
+            zh: 1990年代老旧胡同口小卖部外景，无主角近景，远处街坊缓步走过
+            en: 1990s Chinese alley corner store exterior, quiet neighborhood residents walking in the far distance
+        action_relation:
+            zh: 老木门半敞，门内隐约露出白色旧冰柜与满墙零食货架
+            en: weathered wooden doors propped open revealing a white chest freezer and stocked snack shelves inside
+        era_environment:
+            zh: 斑驳水泥墙面、门口红色木箱装满绿玻璃汽水瓶、手写价格牌、水泥电线杆与老自行车
+            en: weathered concrete walls, wooden crate of green glass soda bottles, handwritten price board, concrete utility poles and vintage bicycles
+        shot_framing:
+            zh: 9:16竖屏环境远景，巷道纵深构图，底部留出字幕呼吸空间
+            en: 9:16 vertical establishing wide shot with deep alley perspective and clean lower breathing space
+        lighting_mood:
+            zh: 午后两点明亮暖黄斜阳，树影与屋檐投下清晰长影
+            en: bright warm 2pm afternoon sunlight casting crisp diagonal shadows across the concrete lane
+        negative:
+            zh: ""
+            en: ""
+      i2v_spec:
+        subject_micro_action:
+            zh: 远处巷尾街坊背影极其缓慢地前行，画面整体宁静克制
+            en: distant neighbor walks slowly down the quiet alley while the foreground stays serene
+        environment_physics:
+            zh: 午后热风轻拂晾晒的衣物与树梢，空气中细微阳光浮尘缓缓飘动
+            en: warm afternoon breeze gently sways hanging laundry and treetops, subtle dust motes drift in sunlight
+        camera_movement: slow_push_in
+        camera_detail:
+            zh: 摄影机沿着巷口极缓向前推进，仿佛放学后走向小卖部
+            en: ultra-slow steady camera push-in toward the open wooden shop door
+        lighting_pacing:
+            zh: 明亮暖调午后光影平稳流动，24fps胶片慢拍
+            en: steady warm afternoon sunlight, unhurried 24fps film cadence
+        transition_mode: single_frame
+        negative:
+            zh: ""
+            en: ""
+      director_sheet:
+        shot_title:
+            zh: 午后巷口小卖部 · 感官序幕
+            en: Afternoon Alley Corner Store Opening
+        asset_bindings:
+            - asset_id: a2
+              role: scene
+              asset_name: 小卖部内部
+              ref_token: '{{Asset 2}}'
+              usage_rule:
+                zh: 只参考门内旧冰柜与木货架的年代材质与色彩关系；不参考室内正面构图
+                en: Reference vintage freezer and shelf textures only; do not copy interior front framing
+              exclude_hint:
+                zh: 本镜为外景空镜，勿出现 {{Asset 3}} 男孩或 {{Asset 1}} 老板近景
+                en: Exterior establishing shot; do not place boy or shopkeeper in foreground
+        cast_summary:
+            zh: 无主角近景，仅远处巷尾有街坊慢行背影。
+            en: No foreground cast; only distant neighbors strolling quietly.
+        background_setting:
+            zh: 1990年代北方老青砖胡同口小卖部，午后两点明朗暖黄斜阳，地面投下清晰屋檐长影，门口敞开木门旁摆着绿玻璃汽水箱与手写价格牌。
+            en: 1990s brick alley corner store under warm 2pm sunlight casting crisp diagonal shadows, green glass soda crate beside open wooden doors.
+        continuity_summary:
+            zh: 当前分镜为第1镜开场：通过午后热风、蝉鸣与敞开的木门建立1998年夏天的时空坐标，不急于切入人物，留出观众情绪沉静入口。
+            en: Shot 1 establishes the 1998 summer atmosphere before introducing characters.
+        first_frame_link:
+            zh: 画面第一帧由黑场轻柔淡入至午后阳光斜照的胡同小卖部全貌，保持高光通透不刺眼。
+            en: Fades in softly from black onto the sunlit alley corner store.
+        last_frame_link:
+            zh: 尾帧推进至更靠近敞开木门与门内微暗空间，为第2镜切入柜台玻璃糖罐微距做好明暗过渡。
+            en: Ends slightly closer to the open wooden doorway, preparing the light transition into Shot 2.
+        timeline_beats:
+            - start_sec: 0
+              end_sec: 2.2
+              title:
+                zh: 午后热浪与巷口静谧建立
+                en: Afternoon Heat & Alley Stillness
+              visual:
+                zh: 阳光斜洒在斑驳水泥墙面与红箱绿汽水瓶上，远处晾晒的白衬衫被微风轻轻吹动，空气中细微阳光浮尘缓缓飘动。
+                en: Warm diagonal sunlight rests on concrete walls and green soda bottles while distant hanging shirts sway softly.
+              dialogue:
+                zh: 无
+                en: None
+              forbid:
+                zh: 禁止出现现代汽车、智能手机、快递袋、LED招牌；禁止任何文字或字幕；禁止人物突然闯入近景
+                en: No modern cars, smartphones, LED signs, text, or foreground figures
+              constraint:
+                zh: 木门保持敞开静止，门口汽水瓶数量与位置不变，光向稳定来自左上方
+                en: Wooden door stays open and still, bottle crate unchanged, consistent upper-left sunlight
+              staging:
+                zh: 小卖部位于画面右侧三分之二，左侧保留纵深巷道引导视线
+                en: Corner store occupies right two-thirds, deep alley leads eye on the left
+              camera:
+                zh: 极缓慢平稳前推，几乎无晃动
+                en: Ultra-slow steady forward push-in
+              sfx:
+                zh: 由远及近的夏日蝉鸣，伴随轻微热风吹过树梢声
+                en: Summer cicadas swelling gently with warm alley breeze
+              psych_mapping: 普鲁斯特感官线索先行（光影+蝉鸣），瞬间激活自传体童年记忆
+            - start_sec: 2.2
+              end_sec: 5
+              title:
+                zh: 走向敞开木门的呼吸留白
+                en: Approaching Doorway Breathing Pause
+              visual:
+                zh: 镜头缓缓逼近木门与露出一角的白色老冰柜，远处巷尾行人背影慢步淡出视线，画面底部保持干净水泥地留白。
+                en: Camera drifts closer to the open wooden door and white chest freezer while clean sunlit pavement anchors the lower frame.
+              dialogue:
+                zh: 无
+                en: None
+              forbid:
+                zh: 禁止曝光闪烁、镜头突然加速、墙面纹理扭曲融化
+                en: No exposure flicker, sudden speed jump, or wall warping
+              constraint:
+                zh: 最后0.5秒运镜柔和缓停，下方留出约18%干净空间供后期字幕淡入
+                en: Ease-out settle in final 0.5s with clean lower 18% subtitle safe area
+              camera:
+                zh: 匀速极缓推进，最后0.5秒缓停
+                en: Slow push-in easing gently to rest
+              sfx:
+                zh: 蝉鸣平稳铺底，隐约透出老冰柜极轻低频嗡鸣
+                en: Steady cicadas with faint distant freezer hum
+              psych_mapping: 降低视觉信息密度，配合克制旁白触发温和代入感
+        output_constraints:
+            - zh: 全程保持1990年代北方胡同建筑与物件考据，严禁现代招牌与服装穿帮
+              en: Strict 1990s Chinese neighborhood authenticity with zero modern props
+            - zh: 画面中严禁生成任何可读文字、数字或水印，所有文字一律后期压字
+              en: No rendered text, digits, or watermarks; subtitles added strictly in post
+            - zh: 光线方向全程统一为午后暖黄斜阳，无闪频与色彩跳变
+              en: Consistent afternoon warm directional sunlight with zero flicker
+        post_production:
+            subtitle_strategy: 本镜旁白仅14字，全部由 FFmpeg 后期压制极简暖白字幕，不在生成画面中出现任何文字。
+            subtitle_rhythm:
+                - 0.5s-4.4s 淡入旁白：「夏天的蝉鸣，从小卖部木门开始。」
+            transition_design:
+                from_prev: 片头黑场 0.45s 柔缓淡入
+                to_next: 0.40s 柔和叠化切入第2镜玻璃糖罐特写（保持暖色高光延续）
+    - shot_id: g2
+      order: 2
+      phase: sensory_hook
+      story_summary: 陈旧磨损的木质柜台上一排透明大玻璃糖罐；罐中堆满色彩斑斓的条纹水果硬糖与老式包装糖果
+      psych_trigger: 集体记忆微距锚点：玻璃罐里的彩色水果硬糖触发80/90后共同味觉回忆
+      symbols:
+        - 玻璃糖罐
+        - 水果硬糖
+      first_frame_path: /Users/tp/work/aivideo/feelings/g2.jpeg
+      narration: 玻璃糖罐，装着整条巷子的颜色。
+      emotion: nostalgic
+      voice_id: warm-male
+      voice_speed: 0.92
+      ambient_tag: summer_cicada
+      duration_sec: 5
+      locked: false
+      t2i_spec:
+        subject_anchor:
+            zh: 陈旧磨损的木质柜台上一排透明大玻璃糖罐
+            en: row of large clear glass candy jars resting on a scarred vintage wooden counter
+        action_relation:
+            zh: 罐中堆满色彩斑斓的条纹水果硬糖与老式包装糖果
+            en: jars filled to the brim with colorful striped hard fruit candies in nostalgic twisted wrappers
+        era_environment:
+            zh: 背景虚化的木质货架摆满90年代膨化零食与铁罐饼干
+            en: softly blurred wooden shelves stocked with 1990s Chinese snacks and tin biscuit cans
+        shot_framing:
+            zh: 9:16竖屏微距特写，浅景深聚焦中央敞口玻璃糖罐
+            en: 9:16 vertical close-up macro shot with shallow depth of field centered on the main glass candy jar
+        lighting_mood:
+            zh: 侧逆窗光穿透透明玻璃壁，糖纸泛起柔和暖光反光
+            en: soft side window light refracting through glass walls onto colorful candy wrappers
+        negative:
+            zh: ""
+            en: ""
+      i2v_spec:
+        subject_micro_action:
+            zh: 静物特写保持凝视感，糖纸高光随视角产生极细微闪烁
+            en: contemplative still-life close-up with delicate specular shimmer across the candy wrappers
+        environment_physics:
+            zh: 窗外斜射阳光里的微尘缓缓漂浮，背景虚化光斑柔和微动
+            en: tiny dust particles float slowly across the window beam as soft bokeh glows gently
+        camera_movement: gentle_pan_right
+        camera_detail:
+            zh: 摄影机极缓沿木柜台向右平移扫过玻璃糖罐
+            en: ultra-slow horizontal camera glide past the row of glass candy jars
+        lighting_pacing:
+            zh: 柔和温暖室内自然光，克制舒缓不急促
+            en: soft warm indoor natural light with tranquil unhurried pacing
+        transition_mode: single_frame
+        negative:
+            zh: ""
+            en: ""
+      director_sheet:
+        shot_title:
+            zh: g2 · sensory_hook
+            en: g2 · sensory_hook
+        asset_bindings:
+            - asset_id: a2
+              role: scene
+              asset_name: 小卖部内部
+              ref_token: '{{Asset 2}}'
+              usage_rule:
+                zh: 只参考空间材质、建筑结构与光影氛围；不参考空镜正面构图
+                en: Reference spatial textures, architecture, and lighting mood only; do not copy framing
+        cast_summary:
+            zh: 陈旧磨损的木质柜台上一排透明大玻璃糖罐
+            en: row of large clear glass candy jars resting on a scarred vintage wooden counter
+        background_setting:
+            zh: 背景虚化的木质货架摆满90年代膨化零食与铁罐饼干；侧逆窗光穿透透明玻璃壁，糖纸泛起柔和暖光反光
+            en: softly blurred wooden shelves stocked with 1990s Chinese snacks and tin biscuit cans. soft side window light refracting through glass walls onto colorful candy wrappers
+        continuity_summary:
+            zh: 第2镜（sensory_hook）：集体记忆微距锚点：玻璃罐里的彩色水果硬糖触发80/90后共同味觉回忆
+            en: 'Shot 2 (sensory_hook): 集体记忆微距锚点：玻璃罐里的彩色水果硬糖触发80/90后共同味觉回忆'
+        first_frame_link:
+            zh: 首帧保持与上一镜一致的胶片暖调与自然光向。
+            en: First frame matches previous shot's film palette and natural light direction.
+        last_frame_link:
+            zh: 尾帧动作平稳缓停，下方保留约18%干净留白区供后期极简字幕浮现。
+            en: Last frame settles smoothly with clean lower 18% breathing space for post subtitles.
+        timeline_beats:
+            - start_sec: 0
+              end_sec: 3.1
+              title:
+                zh: 主体微动与氛围展开
+                en: Micro-Action & Atmosphere
+              visual:
+                zh: 静物特写保持凝视感，糖纸高光随视角产生极细微闪烁；窗外斜射阳光里的微尘缓缓漂浮，背景虚化光斑柔和微动
+                en: contemplative still-life close-up with delicate specular shimmer across the candy wrappers. tiny dust particles float slowly across the window beam as soft bokeh glows gently
+              dialogue:
+                zh: 无
+                en: None
+              forbid:
+                zh: 禁止人物直视镜头或张嘴说话；禁止出现现代穿帮物、文字或畸形手指
+                en: No looking at camera, talking mouths, modern props, text, or warped hands
+              constraint:
+                zh: 主体外貌、服装与场景道具数量全程锁定不变，动作自然克制
+                en: Lock subject appearance, outfit, and prop count; restrained physical motion
+              camera:
+                zh: 摄影机极缓沿木柜台向右平移扫过玻璃糖罐
+                en: ultra-slow horizontal camera glide past the row of glass candy jars
+              sfx:
+                zh: 柔和环境声景（summer_cicada）
+                en: Soft ambient soundscape (summer_cicada)
+              psych_mapping: 集体记忆微距锚点：玻璃罐里的彩色水果硬糖触发80/90后共同味觉回忆
+            - start_sec: 3.1
+              end_sec: 5
+              title:
+                zh: 情绪停顿与留白余韵
+                en: Breathing Pause & Lingering Stillness
+              visual:
+                zh: 窗外斜射阳光里的微尘缓缓漂浮，背景虚化光斑柔和微动，主体动作缓缓收住，画面沉静留白。
+                en: tiny dust particles float slowly across the window beam as soft bokeh glows gently, subject motion eases gently into quiet stillness.
+              dialogue:
+                zh: 无
+                en: None
+              forbid:
+                zh: 禁止镜头漂移、高光闪烁或画面文字
+                en: No camera drift, exposure flicker, or rendered text
+              constraint:
+                zh: 结尾最后0.5秒柔和缓停，保持构图稳定
+                en: Ease-out settle in final 0.5s with steady framing
+              camera:
+                zh: 极缓收势定格
+                en: Gentle ease-out hold
+              sfx:
+                zh: 环境底噪延续渐轻
+                en: Ambient tone tapering softly
+              psych_mapping: 预留 ≥25% 无旁白呼吸空间，增强自我投射与沉浸感
+        output_constraints:
+            - zh: 全程不出现任何可读文字、数字、Logo或水印，字幕统一后期压制
+              en: Zero readable text, digits, logos, or watermarks; subtitles added in post
+            - zh: 保持人物外貌、服装与环境光向全程一致，避免五官与背景变形
+              en: Maintain consistent character identity, outfit, and lighting without morphing
+        post_production:
+            subtitle_strategy: 所有旁白文字一律后期 FFmpeg 压制，不写入视频生成指令。
+            subtitle_rhythm:
+                - 0.45s-4.5s 暖白极简字幕：「玻璃糖罐，装着整条巷子的颜色。」
+            transition_design:
+                from_prev: 0.40s 柔和叠化承接上一镜
+                to_next: 0.40s 柔和叠化衔接下一镜
+    - shot_id: g3
+      order: 3
+      phase: concrete_ritual
+      story_summary: 8岁中国小男孩，寸头，微旧纯白短袖T恤，深蓝色短裤，黑色布鞋；男孩踮起微抬的脚尖趴在白色老冰柜边，专注低头挑选冰棍
+      psych_trigger: 代际仪式感：趴在老式卧式冰柜前纠结选哪根冰棍，引发高度评论区认亲
+      symbols:
+        - 老式白色卧式冰柜
+        - 算盘与铁皮零钱盒
+      first_frame_path: /Users/tp/work/aivideo/feelings/g3.jpeg
+      narration: 掀开冰柜，白雾扑在发烫的脸上。
+      emotion: warm
+      voice_id: warm-male
+      voice_speed: 0.92
+      ambient_tag: old_freezer_hum
+      duration_sec: 5
+      locked: false
+      t2i_spec:
+        subject_anchor:
+            zh: 8岁中国小男孩，寸头，微旧纯白短袖T恤，深蓝色短裤，黑色布鞋
+            en: 8-year-old Chinese boy with buzz cut, slightly worn plain white t-shirt, dark blue shorts, black cloth shoes
+        action_relation:
+            zh: 男孩踮起微抬的脚尖趴在白色老冰柜边，专注低头挑选冰棍
+            en: boy leaning slightly over the open white chest freezer gazing intently at popsicles inside
+        era_environment:
+            zh: 小卖部内部，老式掀盖白色冰柜、木柜台上的算盘、铁皮零钱盒与玻璃糖罐
+            en: corner store interior with flip-top white chest freezer, wooden abacus, metal cash box, and glass jars
+        shot_framing:
+            zh: 9:16竖屏侧面全身中景，门口自然光勾勒男孩轮廓
+            en: 9:16 vertical side full-medium shot with doorway daylight rim-lighting the boy
+        lighting_mood:
+            zh: 门外暖日光与室内阴凉形成舒爽夏日对比
+            en: bright doorway daylight contrasting gently with the cool shaded shop interior
+        negative:
+            zh: ""
+            en: ""
+      i2v_spec:
+        subject_micro_action:
+            zh: 男孩手搭在冰柜边缘轻轻挪动视线，微微低头认真打量冰棍
+            en: boy rests his hands on the freezer rim, subtly shifting his gaze as he chooses a popsicle
+        environment_physics:
+            zh: 冰柜敞口处升起一缕极淡的白色冷雾缓缓散开，门口微风轻动
+            en: faint wisps of cool white freezer mist drift upward and dissipate softly
+        camera_movement: slow_push_in
+        camera_detail:
+            zh: 摄影机极缓向男孩与冰柜推进，突出专注挑选的童年瞬间
+            en: very slow gentle push-in toward the boy and the open freezer
+        lighting_pacing:
+            zh: 胶片自然阴凉与暖光平衡，动作柔和稳定
+            en: balanced cool shade and warm doorway light, smooth stable cadence
+        transition_mode: single_frame
+        negative:
+            zh: ""
+            en: ""
+      director_sheet:
+        shot_title:
+            zh: g3 · concrete_ritual
+            en: g3 · concrete_ritual
+        asset_bindings:
+            - asset_id: a2
+              role: scene
+              asset_name: 小卖部内部
+              ref_token: '{{Asset 2}}'
+              usage_rule:
+                zh: 只参考空间材质、建筑结构与光影氛围；不参考空镜正面构图
+                en: Reference spatial textures, architecture, and lighting mood only; do not copy framing
+        cast_summary:
+            zh: 8岁中国小男孩，寸头，微旧纯白短袖T恤，深蓝色短裤，黑色布鞋
+            en: 8-year-old Chinese boy with buzz cut, slightly worn plain white t-shirt, dark blue shorts, black cloth shoes
+        background_setting:
+            zh: 小卖部内部，老式掀盖白色冰柜、木柜台上的算盘、铁皮零钱盒与玻璃糖罐；门外暖日光与室内阴凉形成舒爽夏日对比
+            en: corner store interior with flip-top white chest freezer, wooden abacus, metal cash box, and glass jars. bright doorway daylight contrasting gently with the cool shaded shop interior
+        continuity_summary:
+            zh: 第3镜（concrete_ritual）：代际仪式感：趴在老式卧式冰柜前纠结选哪根冰棍，引发高度评论区认亲
+            en: 'Shot 3 (concrete_ritual): 代际仪式感：趴在老式卧式冰柜前纠结选哪根冰棍，引发高度评论区认亲'
+        first_frame_link:
+            zh: 首帧保持与上一镜一致的胶片暖调与自然光向。
+            en: First frame matches previous shot's film palette and natural light direction.
+        last_frame_link:
+            zh: 尾帧动作平稳缓停，下方保留约18%干净留白区供后期极简字幕浮现。
+            en: Last frame settles smoothly with clean lower 18% breathing space for post subtitles.
+        timeline_beats:
+            - start_sec: 0
+              end_sec: 3.1
+              title:
+                zh: 主体微动与氛围展开
+                en: Micro-Action & Atmosphere
+              visual:
+                zh: 男孩手搭在冰柜边缘轻轻挪动视线，微微低头认真打量冰棍；冰柜敞口处升起一缕极淡的白色冷雾缓缓散开，门口微风轻动
+                en: boy rests his hands on the freezer rim, subtly shifting his gaze as he chooses a popsicle. faint wisps of cool white freezer mist drift upward and dissipate softly
+              dialogue:
+                zh: 无
+                en: None
+              forbid:
+                zh: 禁止人物直视镜头或张嘴说话；禁止出现现代穿帮物、文字或畸形手指
+                en: No looking at camera, talking mouths, modern props, text, or warped hands
+              constraint:
+                zh: 主体外貌、服装与场景道具数量全程锁定不变，动作自然克制
+                en: Lock subject appearance, outfit, and prop count; restrained physical motion
+              camera:
+                zh: 摄影机极缓向男孩与冰柜推进，突出专注挑选的童年瞬间
+                en: very slow gentle push-in toward the boy and the open freezer
+              sfx:
+                zh: 柔和环境声景（old_freezer_hum）
+                en: Soft ambient soundscape (old_freezer_hum)
+              psych_mapping: 代际仪式感：趴在老式卧式冰柜前纠结选哪根冰棍，引发高度评论区认亲
+            - start_sec: 3.1
+              end_sec: 5
+              title:
+                zh: 情绪停顿与留白余韵
+                en: Breathing Pause & Lingering Stillness
+              visual:
+                zh: 冰柜敞口处升起一缕极淡的白色冷雾缓缓散开，门口微风轻动，主体动作缓缓收住，画面沉静留白。
+                en: faint wisps of cool white freezer mist drift upward and dissipate softly, subject motion eases gently into quiet stillness.
+              dialogue:
+                zh: 无
+                en: None
+              forbid:
+                zh: 禁止镜头漂移、高光闪烁或画面文字
+                en: No camera drift, exposure flicker, or rendered text
+              constraint:
+                zh: 结尾最后0.5秒柔和缓停，保持构图稳定
+                en: Ease-out settle in final 0.5s with steady framing
+              camera:
+                zh: 极缓收势定格
+                en: Gentle ease-out hold
+              sfx:
+                zh: 环境底噪延续渐轻
+                en: Ambient tone tapering softly
+              psych_mapping: 预留 ≥25% 无旁白呼吸空间，增强自我投射与沉浸感
+        output_constraints:
+            - zh: 全程不出现任何可读文字、数字、Logo或水印，字幕统一后期压制
+              en: Zero readable text, digits, logos, or watermarks; subtitles added in post
+            - zh: 保持人物外貌、服装与环境光向全程一致，避免五官与背景变形
+              en: Maintain consistent character identity, outfit, and lighting without morphing
+        post_production:
+            subtitle_strategy: 所有旁白文字一律后期 FFmpeg 压制，不写入视频生成指令。
+            subtitle_rhythm:
+                - 0.45s-4.5s 暖白极简字幕：「掀开冰柜，白雾扑在发烫的脸上。」
+            transition_design:
+                from_prev: 0.40s 柔和叠化承接上一镜
+                to_next: 0.40s 柔和叠化衔接下一镜
+    - shot_id: g4
+      order: 4
+      phase: concrete_ritual
+      story_summary: 小男孩摊开的稚嫩手掌特写，身着微旧纯白T恤；掌心静静躺着三枚带使用痕迹的铝制硬币，男孩微微低头清点
+      psych_trigger: 代际暗号具象化：摊开掌心数三枚一角/五角硬币，无需解释即唤醒稀缺年代的珍惜感
+      symbols:
+        - 五毛硬币
+        - 算盘与铁皮零钱盒
+      first_frame_path: /Users/tp/work/aivideo/feelings/g4.jpeg
+      narration: 掌心三枚硬币，是午后全部家当。
+      emotion: nostalgic
+      voice_id: warm-male
+      voice_speed: 0.92
+      ambient_tag: old_freezer_hum
+      duration_sec: 5
+      locked: false
+      t2i_spec:
+        subject_anchor:
+            zh: 小男孩摊开的稚嫩手掌特写，身着微旧纯白T恤
+            en: close-up of the young boy's open palm wearing a slightly worn plain white t-shirt
+        action_relation:
+            zh: 掌心静静躺着三枚带使用痕迹的铝制硬币，男孩微微低头清点
+            en: three worn aluminum Chinese coins resting in his palm as he looks down counting them
+        era_environment:
+            zh: 虚化背景为旧木柜台、算盘与白色冰柜边角
+            en: softly blurred wooden counter, abacus, and white freezer corner in the background
+        shot_framing:
+            zh: 9:16竖屏俯拍近景特写，焦点锁定掌心硬币纹理
+            en: 9:16 vertical high-angle close-up locked onto the texture of the coins in his palm
+        lighting_mood:
+            zh: 柔和室内漫射光在金属硬币表面泛起温润哑光
+            en: soft diffused indoor daylight catching subtle matte reflections on the metal coins
+        negative:
+            zh: ""
+            en: ""
+      i2v_spec:
+        subject_micro_action:
+            zh: 男孩手指极轻微地微动托起硬币，低垂的眼神专注而珍惜
+            en: the boy's fingers shift subtly cradling the coins with quiet careful focus
+        environment_physics:
+            zh: 金属硬币边缘随手掌微倾闪过一丝柔和自然反光，空气沉静
+            en: soft natural light glints gently across the worn coin edges as his palm tilts slightly
+        camera_movement: static_gaze
+        camera_detail:
+            zh: 近乎静止的克制微呼吸镜头，让观众看清掌心硬币
+            en: nearly static contemplative camera with minimal organic breathing
+        lighting_pacing:
+            zh: 沉静细腻的慢节拍，无任何多余抖动
+            en: quiet intimate slow pacing with high temporal stability
+        transition_mode: single_frame
+        negative:
+            zh: ""
+            en: ""
+      director_sheet:
+        shot_title:
+            zh: g4 · concrete_ritual
+            en: g4 · concrete_ritual
+        asset_bindings:
+            - asset_id: a2
+              role: scene
+              asset_name: 小卖部内部
+              ref_token: '{{Asset 2}}'
+              usage_rule:
+                zh: 只参考空间材质、建筑结构与光影氛围；不参考空镜正面构图
+                en: Reference spatial textures, architecture, and lighting mood only; do not copy framing
+        cast_summary:
+            zh: 小男孩摊开的稚嫩手掌特写，身着微旧纯白T恤
+            en: close-up of the young boy's open palm wearing a slightly worn plain white t-shirt
+        background_setting:
+            zh: 虚化背景为旧木柜台、算盘与白色冰柜边角；柔和室内漫射光在金属硬币表面泛起温润哑光
+            en: softly blurred wooden counter, abacus, and white freezer corner in the background. soft diffused indoor daylight catching subtle matte reflections on the metal coins
+        continuity_summary:
+            zh: 第4镜（concrete_ritual）：代际暗号具象化：摊开掌心数三枚一角/五角硬币，无需解释即唤醒稀缺年代的珍惜感
+            en: 'Shot 4 (concrete_ritual): 代际暗号具象化：摊开掌心数三枚一角/五角硬币，无需解释即唤醒稀缺年代的珍惜感'
+        first_frame_link:
+            zh: 首帧保持与上一镜一致的胶片暖调与自然光向。
+            en: First frame matches previous shot's film palette and natural light direction.
+        last_frame_link:
+            zh: 尾帧动作平稳缓停，下方保留约18%干净留白区供后期极简字幕浮现。
+            en: Last frame settles smoothly with clean lower 18% breathing space for post subtitles.
+        timeline_beats:
+            - start_sec: 0
+              end_sec: 3.1
+              title:
+                zh: 主体微动与氛围展开
+                en: Micro-Action & Atmosphere
+              visual:
+                zh: 男孩手指极轻微地微动托起硬币，低垂的眼神专注而珍惜；金属硬币边缘随手掌微倾闪过一丝柔和自然反光，空气沉静
+                en: the boy's fingers shift subtly cradling the coins with quiet careful focus. soft natural light glints gently across the worn coin edges as his palm tilts slightly
+              dialogue:
+                zh: 无
+                en: None
+              forbid:
+                zh: 禁止人物直视镜头或张嘴说话；禁止出现现代穿帮物、文字或畸形手指
+                en: No looking at camera, talking mouths, modern props, text, or warped hands
+              constraint:
+                zh: 主体外貌、服装与场景道具数量全程锁定不变，动作自然克制
+                en: Lock subject appearance, outfit, and prop count; restrained physical motion
+              camera:
+                zh: 近乎静止的克制微呼吸镜头，让观众看清掌心硬币
+                en: nearly static contemplative camera with minimal organic breathing
+              sfx:
+                zh: 柔和环境声景（old_freezer_hum）
+                en: Soft ambient soundscape (old_freezer_hum)
+              psych_mapping: 代际暗号具象化：摊开掌心数三枚一角/五角硬币，无需解释即唤醒稀缺年代的珍惜感
+            - start_sec: 3.1
+              end_sec: 5
+              title:
+                zh: 情绪停顿与留白余韵
+                en: Breathing Pause & Lingering Stillness
+              visual:
+                zh: 金属硬币边缘随手掌微倾闪过一丝柔和自然反光，空气沉静，主体动作缓缓收住，画面沉静留白。
+                en: soft natural light glints gently across the worn coin edges as his palm tilts slightly, subject motion eases gently into quiet stillness.
+              dialogue:
+                zh: 无
+                en: None
+              forbid:
+                zh: 禁止镜头漂移、高光闪烁或画面文字
+                en: No camera drift, exposure flicker, or rendered text
+              constraint:
+                zh: 结尾最后0.5秒柔和缓停，保持构图稳定
+                en: Ease-out settle in final 0.5s with steady framing
+              camera:
+                zh: 极缓收势定格
+                en: Gentle ease-out hold
+              sfx:
+                zh: 环境底噪延续渐轻
+                en: Ambient tone tapering softly
+              psych_mapping: 预留 ≥25% 无旁白呼吸空间，增强自我投射与沉浸感
+        output_constraints:
+            - zh: 全程不出现任何可读文字、数字、Logo或水印，字幕统一后期压制
+              en: Zero readable text, digits, logos, or watermarks; subtitles added in post
+            - zh: 保持人物外貌、服装与环境光向全程一致，避免五官与背景变形
+              en: Maintain consistent character identity, outfit, and lighting without morphing
+        post_production:
+            subtitle_strategy: 所有旁白文字一律后期 FFmpeg 压制，不写入视频生成指令。
+            subtitle_rhythm:
+                - 0.45s-4.5s 暖白极简字幕：「掌心三枚硬币，是午后全部家当。」
+            transition_design:
+                from_prev: 0.40s 柔和叠化承接上一镜
+                to_next: 0.40s 柔和叠化衔接下一镜
+    - shot_id: g5
+      order: 5
+      phase: relational_warmth
+      story_summary: 8岁中国小男孩，寸头，微旧纯白短袖T恤，深蓝色短裤，黑色布鞋，与40多岁小卖部老板，短黑发，浅灰色棉T恤，慈祥温和的微笑；老板隔着老木柜台微笑微倾，指尖把一颗红色糖纸水果糖递到男孩手中，男孩仰头接过
+      psych_trigger: 关系微光（被无条件善待）：小卖部老板微笑递糖的瞬间，修复成年人的信任与温暖记忆
+      symbols:
+        - 玻璃糖罐
+        - 水果硬糖
+        - 算盘与铁皮零钱盒
+      first_frame_path: /Users/tp/work/aivideo/feelings/g5.jpeg
+      narration: 老板笑着，顺手多递来一颗糖。
+      emotion: warm
+      voice_id: warm-male
+      voice_speed: 0.92
+      ambient_tag: alley_breeze
+      duration_sec: 5
+      locked: false
+      t2i_spec:
+        subject_anchor:
+            zh: 8岁中国小男孩，寸头，微旧纯白短袖T恤，深蓝色短裤，黑色布鞋，与40多岁小卖部老板，短黑发，浅灰色棉T恤，慈祥温和的微笑
+            en: 8-year-old Chinese boy with buzz cut, slightly worn plain white t-shirt, dark blue shorts, black cloth shoes, facing kind 40s corner store owner with short black hair, light grey cotton t-shirt, gentle warm smile
+        action_relation:
+            zh: 老板隔着老木柜台微笑微倾，指尖把一颗红色糖纸水果糖递到男孩手中，男孩仰头接过
+            en: shopkeeper leans gently across the wooden counter handing a red-wrapped fruit candy to the boy who looks up warmly
+        era_environment:
+            zh: 90年代小卖部内部，一排玻璃糖罐、铁皮零钱盒与满架零食
+            en: 1990s corner store interior with glass candy jars, tin cash box, and snack shelves behind
+        shot_framing:
+            zh: 9:16竖屏双人侧面中景，温暖视线交汇处于画面黄金分割点
+            en: 9:16 vertical side medium two-shot placing their warm eye-line and handoff at the focal point
+        lighting_mood:
+            zh: 门口漫射暖光照亮两人侧脸与递糖的双手
+            en: warm doorway daylight illuminating their profiles and the gentle candy handoff
+        negative:
+            zh: ""
+            en: ""
+      i2v_spec:
+        subject_micro_action:
+            zh: 老板眼角笑意微深轻轻松手递出糖果，男孩手指小心接住糖果并微微抬头微笑
+            en: shopkeeper smiles softly releasing the candy into the boy's careful fingers as the boy looks up with a shy smile
+        environment_physics:
+            zh: 门外暖光微尘在柜台上方缓缓漂移，玻璃糖罐折射柔和光晕
+            en: warm dust motes float softly above the wooden counter while glass jars catch gentle daylight
+        camera_movement: slow_push_in
+        camera_detail:
+            zh: 摄影机极缓向两人递糖的双手与微笑神情推进
+            en: gentle slow push-in toward the warm handoff and smiles
+        lighting_pacing:
+            zh: 全片最温暖克制的抒情慢拍，面部自然稳定不变形
+            en: warmest tender restrained pacing with natural stable facial expressions
+        transition_mode: single_frame
+        negative:
+            zh: ""
+            en: ""
+      director_sheet:
+        shot_title:
+            zh: 关系微光 · 老板微笑递糖
+            en: Relational Warmth · Shopkeeper Handing Candy
+        asset_bindings:
+            - asset_id: a3
+              role: character
+              asset_name: 男孩
+              ref_token: '{{Asset 3}}'
+              usage_rule:
+                zh: 只参考寸头面容、微旧纯白T恤与深蓝短裤特征；不参考正面直视镜头的站姿
+                en: Reference boy's face, buzz cut, white tee, and navy shorts only; do not copy front-facing pose
+              exclude_hint:
+                zh: 勿换成 {{Asset 4}} 蓝衣小伙伴
+                en: Do not swap with buddy in light blue shirt
+            - asset_id: a1
+              role: character
+              asset_name: 小卖店老板
+              ref_token: '{{Asset 1}}'
+              usage_rule:
+                zh: 只参考40多岁慈祥面容、短黑发与浅灰棉T恤；保持温和微笑
+                en: Reference 40s kind shopkeeper face, short hair, and grey tee
+            - asset_id: a2
+              role: scene
+              asset_name: 小卖部内部
+              ref_token: '{{Asset 2}}'
+              usage_rule:
+                zh: 只参考陈旧木柜台、玻璃糖罐、铁皮零钱盒与货架材质；不参考空景广角构图
+                en: Reference worn wooden counter, glass candy jars, tin cash box, and shelves
+        cast_summary:
+            zh: 白衣8岁男孩（画面左侧，侧身微仰头）与灰衣小卖部老板（画面右侧，隔柜台微倾微笑）。画面仅此2人。
+            en: 8-year-old boy on left and shopkeeper on right across wooden counter. Strictly 2 people.
+        background_setting:
+            zh: 90年代小卖部内部木柜台前，左侧敞开木门透入柔和午后自然光，柜台上排列玻璃糖罐与旧铁皮零钱盒，背景货架自然虚化。
+            en: 1990s corner store counter with soft doorway daylight from left, glass candy jars and tin box on wood.
+        continuity_summary:
+            zh: 当前分镜为全片情感高点第5镜，承接第4镜男孩掌心数硬币：展现“被长辈无条件善待”的童年微光瞬间，克制温暖而不煽情。
+            en: Shot 5 is the emotional peak following Shot 4's coin counting, capturing quiet unconditional kindness.
+        first_frame_link:
+            zh: 首帧承接第4镜柜台室内柔和漫射光色温，两人已站在木柜台两侧，老板指尖正捏着一颗红色糖纸水果糖。
+            en: Matches Shot 4's warm diffused indoor tone; shopkeeper holds a red-wrapped candy across the counter.
+        last_frame_link:
+            zh: 尾帧男孩已接住糖果并露出克制腼腆的微笑，光线稳定，为第6镜转至阳光明媚的巷口分冰棍做好情绪上扬衔接。
+            en: Ends as boy receives the candy with a shy smile, bridging warmly into Shot 6 outside.
+        timeline_beats:
+            - start_sec: 0
+              end_sec: 2
+              title:
+                zh: 微笑微倾与递糖动作
+                en: Gentle Lean & Candy Handoff
+              visual:
+                zh: 老板眼角笑意柔和加深，右手极其缓慢平稳地将红色糖纸水果糖递向男孩掌心；男孩专注仰望老板，右手轻缓伸出接糖。
+                en: Shopkeeper smiles warmly extending a red-wrapped candy slowly as the boy looks up and reaches carefully.
+              dialogue:
+                zh: 无（禁止两人张嘴说话）
+                en: None (no talking mouth motion)
+              forbid:
+                zh: 禁止手指粘连变形、糖果凭空变大或变色、人物转头看镜头、夸张咧嘴大笑
+                en: No warped fingers, morphing candy, looking at camera, or exaggerated grin
+              constraint:
+                zh: 柜台上的玻璃糖罐与铁皮盒位置完全静止，两人站位不移动，只做上身与手部微动
+                en: Jars and tin box stay completely still; only gentle hand and subtle upper-body motion
+              staging:
+                zh: 男孩在左面朝右，老板在右面朝左，递糖双手处于画面中央黄金焦点
+                en: Boy on left facing right, shopkeeper on right facing left, hands meet at center focal point
+              camera:
+                zh: 极缓慢微推近两人递糖的双手与侧脸神情
+                en: Ultra-slow gentle push-in toward their hands and profiles
+              sfx:
+                zh: 极轻的糖纸细微沙沙声，背景巷口微风轻响
+                en: Delicate candy wrapper crinkle over quiet alley room tone
+              psych_mapping: 社会联结与信任锚点：童年被善待的微小瞬间，直接触发温暖治愈感
+            - start_sec: 2
+              end_sec: 3.8
+              title:
+                zh: 接糖瞬间与眼神微亮
+                en: Receiving Candy & Warm Glance
+              visual:
+                zh: 男孩指尖小心握住水果糖，嘴角缓缓扬起一丝克制腼腆的笑意；老板手指轻轻松开并微微点头，门外暖光微尘在柜台上方轻浮。
+                en: Boy closes his fingers gently around the candy with a shy smile as shopkeeper releases softly; sunlit dust motes drift above.
+              dialogue:
+                zh: 无
+                en: None
+              forbid:
+                zh: 禁止面部五官闪烁漂移、禁止出现第三个人物、禁止现代标签出现
+                en: No facial drift, third person entering, or modern labels
+              constraint:
+                zh: 始终只有1颗水果糖，不增加数量；人物表情自然克制
+                en: Strictly one candy; restrained authentic expressions
+              camera:
+                zh: 极缓推镜继续微进后接近静止
+                en: Slow push-in tapering toward stillness
+              sfx:
+                zh: 环境底噪温柔托底，保留轻微安静呼吸感
+                en: Warm quiet interior ambience
+              psych_mapping: 情绪共情高点，低防御心理敞开
+            - start_sec: 3.8
+              end_sec: 5
+              title:
+                zh: 温暖定格留白
+                en: Tender Settling Pause
+              visual:
+                zh: 画面缓停在两人温和对视的余韵中，门外暖光稳定洒在木柜台与玻璃罐壁上，下方保留干净木柜台留白。
+                en: Scene settles warmly on their quiet mutual smile as soft daylight holds steady across the counter.
+              dialogue:
+                zh: 无
+                en: None
+              forbid:
+                zh: 禁止镜头突然回拉、禁止任何画面文字
+                en: No sudden pullback or rendered text
+              constraint:
+                zh: 结尾平稳柔和，供后期暖白字幕收尾
+                en: Calm settle ready for subtitle fade-out
+              camera:
+                zh: 缓停固定
+                en: Ease-out to static hold
+              sfx:
+                zh: 门外隐约一声夏风拂过
+                en: Soft summer breeze outside
+              psych_mapping: 留白呼吸区，让观众投射自己记忆里的温柔长辈
+        output_constraints:
+            - zh: 人物锁定为男孩与老板共2人，外貌服装严格与 {{Asset 3}}、{{Asset 1}} 一致
+              en: Strictly 2 characters matching Asset 3 and Asset 1
+            - zh: 全程严禁张嘴说话或直视镜头，保持纪实偷拍般自然克制
+              en: No lip movement or looking at camera; candid documentary restraint
+            - zh: 画面中禁止任何可读汉字、数字、商标或字幕
+              en: Zero readable text, logos, or subtitles in generated video
+        post_production:
+            subtitle_strategy: 情绪高点切忌过度煽情，只用13字陈述具体善意动作，由后期压字。
+            subtitle_rhythm:
+                - 0.45s-4.4s 淡入旁白：「老板笑着，顺手多递来一颗糖。」
+            transition_design:
+                from_prev: 承接第4镜掌心硬币特写，0.40s 柔和叠化切出双人中景
+                to_next: 0.40s 暖光叠化切至第6镜阳光胡同分冰棍
+    - shot_id: g6
+      order: 6
+      phase: relational_warmth
+      story_summary: 8岁中国小男孩，寸头，微旧纯白短袖T恤，深蓝色短裤，黑色布鞋，与8岁发小男孩，寸头，浅蓝色棉T恤，黑色短裤，深色布鞋；白T恤男孩笑着把剥开包装的老冰棍递给蓝T恤发小，发小开心俯身咬下一口
+      psych_trigger: 社会联结与同伴共享：与发小在巷口分咬同一根冰棍，触发“发小”社交转发冲动
+      symbols:
+        - 老冰棍
+        - 斑驳水泥墙与木门
+      first_frame_path: /Users/tp/work/aivideo/feelings/g6.jpeg
+      last_frame_path: /Users/tp/work/aivideo/feelings/g7.jpeg
+      narration: 冰棍分着咬，甜味好像多了一倍。
+      emotion: warm
+      voice_id: warm-male
+      voice_speed: 0.92
+      ambient_tag: summer_cicada
+      duration_sec: 5
+      locked: false
+      t2i_spec:
+        subject_anchor:
+            zh: 8岁中国小男孩，寸头，微旧纯白短袖T恤，深蓝色短裤，黑色布鞋，与8岁发小男孩，寸头，浅蓝色棉T恤，黑色短裤，深色布鞋
+            en: 8-year-old Chinese boy with buzz cut, slightly worn plain white t-shirt, dark blue shorts, black cloth shoes, standing opposite 8-year-old childhood buddy with buzz cut, light blue cotton t-shirt, black shorts, dark canvas shoes
+        action_relation:
+            zh: 白T恤男孩笑着把剥开包装的老冰棍递给蓝T恤发小，发小开心俯身咬下一口
+            en: boy in white t-shirt smiles offering his peeled milk popsicle while his buddy in light blue happily takes a bite
+        era_environment:
+            zh: 阳光斑驳的老青砖胡同，晾晒的衣服、旧自行车与远处绿树
+            en: sun-dappled old grey-brick alley with hanging laundry, parked bicycles, and lush summer trees
+        shot_framing:
+            zh: 9:16竖屏双人全身侧面中景，自然抓拍感
+            en: 9:16 vertical full-body candid side two-shot in the sunlit lane
+        lighting_mood:
+            zh: 明朗柔和的午后阳光洒在青砖墙与两个孩子肩头
+            en: bright soft afternoon sunlight falling across brick walls and both boys' shoulders
+        negative:
+            zh: ""
+            en: ""
+      i2v_spec:
+        subject_micro_action:
+            zh: 蓝衣小伙伴轻轻咬下冰棍微微眯眼，白衣男孩笑着轻晃一下手腕，动作自然克制
+            en: buddy in blue gently takes a bite of the popsicle with happy squinted eyes while the boy in white smiles warmly
+        environment_physics:
+            zh: 巷子里的微风轻拂两人衣角与远处的晾衣绳，树影在地面轻微摇曳
+            en: alley breeze lightly ripples their shirt hems and distant laundry as tree shadows sway softly
+        camera_movement: handheld_breath
+        camera_detail:
+            zh: 极轻柔纪实手持呼吸感，仿佛蹲在巷口记录童年日常
+            en: subtle organic documentary handheld breathing stability
+        lighting_pacing:
+            zh: 轻快而不急躁的夏日胶片暖拍，人物面部稳定清晰
+            en: warm relaxed summer film pacing keeping both faces natural and stable
+        transition_mode: first_last_frame
+        transition_hint:
+            zh: 分享冰棍后两人自然转身，衔接下一镜并肩走向巷尾的背影
+            en: after sharing the popsicle, smoothly bridge toward the two boys walking side by side down the alley
+        negative:
+            zh: ""
+            en: ""
+      director_sheet:
+        shot_title:
+            zh: g6 · relational_warmth
+            en: g6 · relational_warmth
+        asset_bindings:
+            - asset_id: a1
+              role: character
+              asset_name: 小卖店老板
+              ref_token: '{{Asset 1}}'
+              usage_rule:
+                zh: 只参考外貌特征、服装款式与年代材质；不参考站姿、构图角度与数量
+                en: Reference appearance, outfit, and era texture only; do not copy pose, angle, or count
+            - asset_id: a2
+              role: scene
+              asset_name: 小卖部内部
+              ref_token: '{{Asset 2}}'
+              usage_rule:
+                zh: 只参考空间材质、建筑结构与光影氛围；不参考空镜正面构图
+                en: Reference spatial textures, architecture, and lighting mood only; do not copy framing
+            - asset_id: a3
+              role: character
+              asset_name: 男孩
+              ref_token: '{{Asset 3}}'
+              usage_rule:
+                zh: 只参考外貌特征、服装款式与年代材质；不参考站姿、构图角度与数量
+                en: Reference appearance, outfit, and era texture only; do not copy pose, angle, or count
+            - asset_id: a4
+              role: character
+              asset_name: 蓝色衣服小伙伴
+              ref_token: '{{Asset 4}}'
+              usage_rule:
+                zh: 只参考外貌特征、服装款式与年代材质；不参考站姿、构图角度与数量
+                en: Reference appearance, outfit, and era texture only; do not copy pose, angle, or count
+        cast_summary:
+            zh: 8岁中国小男孩，寸头，微旧纯白短袖T恤，深蓝色短裤，黑色布鞋，与8岁发小男孩，寸头，浅蓝色棉T恤，黑色短裤，深色布鞋
+            en: 8-year-old Chinese boy with buzz cut, slightly worn plain white t-shirt, dark blue shorts, black cloth shoes, standing opposite 8-year-old childhood buddy with buzz cut, light blue cotton t-shirt, black shorts, dark canvas shoes
+        background_setting:
+            zh: 阳光斑驳的老青砖胡同，晾晒的衣服、旧自行车与远处绿树；明朗柔和的午后阳光洒在青砖墙与两个孩子肩头
+            en: sun-dappled old grey-brick alley with hanging laundry, parked bicycles, and lush summer trees. bright soft afternoon sunlight falling across brick walls and both boys' shoulders
+        continuity_summary:
+            zh: 第6镜（relational_warmth）：社会联结与同伴共享：与发小在巷口分咬同一根冰棍，触发“发小”社交转发冲动
+            en: 'Shot 6 (relational_warmth): 社会联结与同伴共享：与发小在巷口分咬同一根冰棍，触发“发小”社交转发冲动'
+        first_frame_link:
+            zh: 首帧保持与上一镜一致的胶片暖调与自然光向。
+            en: First frame matches previous shot's film palette and natural light direction.
+        last_frame_link:
+            zh: 尾帧动作平稳缓停，下方保留约18%干净留白区供后期极简字幕浮现。
+            en: Last frame settles smoothly with clean lower 18% breathing space for post subtitles.
+        timeline_beats:
+            - start_sec: 0
+              end_sec: 3.1
+              title:
+                zh: 主体微动与氛围展开
+                en: Micro-Action & Atmosphere
+              visual:
+                zh: 蓝衣小伙伴轻轻咬下冰棍微微眯眼，白衣男孩笑着轻晃一下手腕，动作自然克制；巷子里的微风轻拂两人衣角与远处的晾衣绳，树影在地面轻微摇曳
+                en: buddy in blue gently takes a bite of the popsicle with happy squinted eyes while the boy in white smiles warmly. alley breeze lightly ripples their shirt hems and distant laundry as tree shadows sway softly
+              dialogue:
+                zh: 无
+                en: None
+              forbid:
+                zh: 禁止人物直视镜头或张嘴说话；禁止出现现代穿帮物、文字或畸形手指
+                en: No looking at camera, talking mouths, modern props, text, or warped hands
+              constraint:
+                zh: 主体外貌、服装与场景道具数量全程锁定不变，动作自然克制
+                en: Lock subject appearance, outfit, and prop count; restrained physical motion
+              camera:
+                zh: 极轻柔纪实手持呼吸感，仿佛蹲在巷口记录童年日常
+                en: subtle organic documentary handheld breathing stability
+              sfx:
+                zh: 柔和环境声景（summer_cicada）
+                en: Soft ambient soundscape (summer_cicada)
+              psych_mapping: 社会联结与同伴共享：与发小在巷口分咬同一根冰棍，触发“发小”社交转发冲动
+            - start_sec: 3.1
+              end_sec: 5
+              title:
+                zh: 情绪停顿与留白余韵
+                en: Breathing Pause & Lingering Stillness
+              visual:
+                zh: 巷子里的微风轻拂两人衣角与远处的晾衣绳，树影在地面轻微摇曳，主体动作缓缓收住，画面沉静留白。
+                en: alley breeze lightly ripples their shirt hems and distant laundry as tree shadows sway softly, subject motion eases gently into quiet stillness.
+              dialogue:
+                zh: 无
+                en: None
+              forbid:
+                zh: 禁止镜头漂移、高光闪烁或画面文字
+                en: No camera drift, exposure flicker, or rendered text
+              constraint:
+                zh: 结尾最后0.5秒柔和缓停，保持构图稳定
+                en: Ease-out settle in final 0.5s with steady framing
+              camera:
+                zh: 极缓收势定格
+                en: Gentle ease-out hold
+              sfx:
+                zh: 环境底噪延续渐轻
+                en: Ambient tone tapering softly
+              psych_mapping: 预留 ≥25% 无旁白呼吸空间，增强自我投射与沉浸感
+        output_constraints:
+            - zh: 全程不出现任何可读文字、数字、Logo或水印，字幕统一后期压制
+              en: Zero readable text, digits, logos, or watermarks; subtitles added in post
+            - zh: 保持人物外貌、服装与环境光向全程一致，避免五官与背景变形
+              en: Maintain consistent character identity, outfit, and lighting without morphing
+        post_production:
+            subtitle_strategy: 所有旁白文字一律后期 FFmpeg 压制，不写入视频生成指令。
+            subtitle_rhythm:
+                - 0.45s-4.5s 暖白极简字幕：「冰棍分着咬，甜味好像多了一倍。」
+            transition_design:
+                from_prev: 0.40s 柔和叠化承接上一镜
+                to_next: 首尾帧平滑过渡衔接下一镜（分享冰棍后两人自然转身，衔接下一镜并肩走向巷尾的背影）
+    - shot_id: g7
+      order: 7
+      phase: relational_warmth
+      story_summary: 8岁中国小男孩，寸头，微旧纯白短袖T恤，深蓝色短裤，黑色布鞋与8岁发小男孩，寸头，浅蓝色棉T恤，黑色短裤，深色布鞋的并肩背影；两个孩子并肩慢步走入胡同深处，白衣男孩右手还握着一根木冰棍棒，蓝衣小伙伴侧头说着话
+      psych_trigger: 背影留白效应：两个并肩走远的童年背影，让观众自然想起自己失联多年的发小
+      symbols:
+        - 斑驳水泥墙与木门
+        - 老冰棍
+      first_frame_path: /Users/tp/work/aivideo/feelings/g7.jpeg
+      narration: 那时以为，会一直这样并肩走。
+      emotion: nostalgic
+      voice_id: warm-male
+      voice_speed: 0.92
+      ambient_tag: alley_breeze
+      duration_sec: 5
+      locked: false
+      t2i_spec:
+        subject_anchor:
+            zh: 8岁中国小男孩，寸头，微旧纯白短袖T恤，深蓝色短裤，黑色布鞋与8岁发小男孩，寸头，浅蓝色棉T恤，黑色短裤，深色布鞋的并肩背影
+            en: back view of 8-year-old Chinese boy with buzz cut, slightly worn plain white t-shirt, dark blue shorts, black cloth shoes and 8-year-old childhood buddy with buzz cut, light blue cotton t-shirt, black shorts, dark canvas shoes walking side by side
+        action_relation:
+            zh: 两个孩子并肩慢步走入胡同深处，白衣男孩右手还握着一根木冰棍棒，蓝衣小伙伴侧头说着话
+            en: both boys stroll side by side deeper into the alley, white-shirt boy holding a wooden popsicle stick as his buddy turns slightly to chat
+        era_environment:
+            zh: 90年代青砖灰瓦胡同，老电线杆、木门与远处高大杨树
+            en: 1990s grey-brick alley, utility poles, wooden doors, and tall poplar trees at the end
+        shot_framing:
+            zh: 9:16竖屏低机位跟拍背影中景，对称巷道引向远方
+            en: 9:16 vertical low-angle tracking rear medium shot framed symmetrically by the alley
+        lighting_mood:
+            zh: 午后偏斜暖光在水泥路面上投下两人并行的柔和长影
+            en: slanted late-afternoon sunlight casting two parallel shadows on the concrete lane
+        negative:
+            zh: ""
+            en: ""
+      i2v_spec:
+        subject_micro_action:
+            zh: 两个男孩迈着松弛慢步并肩向前缓走，蓝衣男孩微微偏头轻声交谈，手臂自然轻摆
+            en: both boys walk slowly forward side by side at an unhurried summer pace, shoulders relaxed
+        environment_physics:
+            zh: 远处杨树叶在热风里沙沙微晃，阳光尘粒在巷道尽头柔和浮动
+            en: distant poplar leaves rustle gently in the warm wind while golden dust shimmers ahead
+        camera_movement: slow_push_in
+        camera_detail:
+            zh: 极慢平稳后置跟拍，保持一段温柔距离目送两个背影
+            en: gentle slow rear tracking shot keeping an affectionate distance
+        lighting_pacing:
+            zh: 克制绵长的胶片暖光节奏，情绪由欢快缓缓转向怀念
+            en: restrained lingering warm film rhythm easing from joy into tender nostalgia
+        transition_mode: single_frame
+        negative:
+            zh: ""
+            en: ""
+      director_sheet:
+        shot_title:
+            zh: g7 · relational_warmth
+            en: g7 · relational_warmth
+        asset_bindings:
+            - asset_id: a1
+              role: character
+              asset_name: 小卖店老板
+              ref_token: '{{Asset 1}}'
+              usage_rule:
+                zh: 只参考外貌特征、服装款式与年代材质；不参考站姿、构图角度与数量
+                en: Reference appearance, outfit, and era texture only; do not copy pose, angle, or count
+            - asset_id: a2
+              role: scene
+              asset_name: 小卖部内部
+              ref_token: '{{Asset 2}}'
+              usage_rule:
+                zh: 只参考空间材质、建筑结构与光影氛围；不参考空镜正面构图
+                en: Reference spatial textures, architecture, and lighting mood only; do not copy framing
+            - asset_id: a3
+              role: character
+              asset_name: 男孩
+              ref_token: '{{Asset 3}}'
+              usage_rule:
+                zh: 只参考外貌特征、服装款式与年代材质；不参考站姿、构图角度与数量
+                en: Reference appearance, outfit, and era texture only; do not copy pose, angle, or count
+            - asset_id: a4
+              role: character
+              asset_name: 蓝色衣服小伙伴
+              ref_token: '{{Asset 4}}'
+              usage_rule:
+                zh: 只参考外貌特征、服装款式与年代材质；不参考站姿、构图角度与数量
+                en: Reference appearance, outfit, and era texture only; do not copy pose, angle, or count
+        cast_summary:
+            zh: 8岁中国小男孩，寸头，微旧纯白短袖T恤，深蓝色短裤，黑色布鞋与8岁发小男孩，寸头，浅蓝色棉T恤，黑色短裤，深色布鞋的并肩背影
+            en: back view of 8-year-old Chinese boy with buzz cut, slightly worn plain white t-shirt, dark blue shorts, black cloth shoes and 8-year-old childhood buddy with buzz cut, light blue cotton t-shirt, black shorts, dark canvas shoes walking side by side
+        background_setting:
+            zh: 90年代青砖灰瓦胡同，老电线杆、木门与远处高大杨树；午后偏斜暖光在水泥路面上投下两人并行的柔和长影
+            en: 1990s grey-brick alley, utility poles, wooden doors, and tall poplar trees at the end. slanted late-afternoon sunlight casting two parallel shadows on the concrete lane
+        continuity_summary:
+            zh: 第7镜（relational_warmth）：背影留白效应：两个并肩走远的童年背影，让观众自然想起自己失联多年的发小
+            en: 'Shot 7 (relational_warmth): 背影留白效应：两个并肩走远的童年背影，让观众自然想起自己失联多年的发小'
+        first_frame_link:
+            zh: 首帧保持与上一镜一致的胶片暖调与自然光向。
+            en: First frame matches previous shot's film palette and natural light direction.
+        last_frame_link:
+            zh: 尾帧动作平稳缓停，下方保留约18%干净留白区供后期极简字幕浮现。
+            en: Last frame settles smoothly with clean lower 18% breathing space for post subtitles.
+        timeline_beats:
+            - start_sec: 0
+              end_sec: 3.1
+              title:
+                zh: 主体微动与氛围展开
+                en: Micro-Action & Atmosphere
+              visual:
+                zh: 两个男孩迈着松弛慢步并肩向前缓走，蓝衣男孩微微偏头轻声交谈，手臂自然轻摆；远处杨树叶在热风里沙沙微晃，阳光尘粒在巷道尽头柔和浮动
+                en: both boys walk slowly forward side by side at an unhurried summer pace, shoulders relaxed. distant poplar leaves rustle gently in the warm wind while golden dust shimmers ahead
+              dialogue:
+                zh: 无
+                en: None
+              forbid:
+                zh: 禁止人物直视镜头或张嘴说话；禁止出现现代穿帮物、文字或畸形手指
+                en: No looking at camera, talking mouths, modern props, text, or warped hands
+              constraint:
+                zh: 主体外貌、服装与场景道具数量全程锁定不变，动作自然克制
+                en: Lock subject appearance, outfit, and prop count; restrained physical motion
+              camera:
+                zh: 极慢平稳后置跟拍，保持一段温柔距离目送两个背影
+                en: gentle slow rear tracking shot keeping an affectionate distance
+              sfx:
+                zh: 柔和环境声景（alley_breeze）
+                en: Soft ambient soundscape (alley_breeze)
+              psych_mapping: 背影留白效应：两个并肩走远的童年背影，让观众自然想起自己失联多年的发小
+            - start_sec: 3.1
+              end_sec: 5
+              title:
+                zh: 情绪停顿与留白余韵
+                en: Breathing Pause & Lingering Stillness
+              visual:
+                zh: 远处杨树叶在热风里沙沙微晃，阳光尘粒在巷道尽头柔和浮动，主体动作缓缓收住，画面沉静留白。
+                en: distant poplar leaves rustle gently in the warm wind while golden dust shimmers ahead, subject motion eases gently into quiet stillness.
+              dialogue:
+                zh: 无
+                en: None
+              forbid:
+                zh: 禁止镜头漂移、高光闪烁或画面文字
+                en: No camera drift, exposure flicker, or rendered text
+              constraint:
+                zh: 结尾最后0.5秒柔和缓停，保持构图稳定
+                en: Ease-out settle in final 0.5s with steady framing
+              camera:
+                zh: 极缓收势定格
+                en: Gentle ease-out hold
+              sfx:
+                zh: 环境底噪延续渐轻
+                en: Ambient tone tapering softly
+              psych_mapping: 预留 ≥25% 无旁白呼吸空间，增强自我投射与沉浸感
+        output_constraints:
+            - zh: 全程不出现任何可读文字、数字、Logo或水印，字幕统一后期压制
+              en: Zero readable text, digits, logos, or watermarks; subtitles added in post
+            - zh: 保持人物外貌、服装与环境光向全程一致，避免五官与背景变形
+              en: Maintain consistent character identity, outfit, and lighting without morphing
+        post_production:
+            subtitle_strategy: 所有旁白文字一律后期 FFmpeg 压制，不写入视频生成指令。
+            subtitle_rhythm:
+                - 0.45s-4.5s 暖白极简字幕：「那时以为，会一直这样并肩走。」
+            transition_design:
+                from_prev: 0.40s 柔和叠化承接上一镜
+                to_next: 0.40s 柔和叠化衔接下一镜
+    - shot_id: g8
+      order: 8
+      phase: liminal_closure
+      story_summary: 多年后的同一间巷口小店外景，无人空景；斑驳水泥墙挂上褪色的红底白字「副食便利店」招牌，原本木门变为铝合金玻璃推拉门与现代立式冷饮柜
+      psych_trigger: 时间对照冲击（Temporal Contrast）：同机位老木门变成褪色红牌“便利店”与铝合金推拉门，无声道出岁月变迁
+      symbols:
+        - 斑驳水泥墙与木门
+      first_frame_path: /Users/tp/work/aivideo/feelings/g8.jpeg
+      narration: 后来木门换了，旧冰柜也搬走了。
+      emotion: bittersweet
+      voice_id: warm-male
+      voice_speed: 0.92
+      ambient_tag: alley_breeze
+      duration_sec: 5
+      locked: false
+      t2i_spec:
+        subject_anchor:
+            zh: 多年后的同一间巷口小店外景，无人空景
+            en: the exact same alley corner shop years later, quiet empty exterior
+        action_relation:
+            zh: 斑驳水泥墙挂上褪色的红底白字「副食便利店」招牌，原本木门变为铝合金玻璃推拉门与现代立式冷饮柜
+            en: faded red signboard reading convenience store above an aluminum sliding glass door and upright beverage fridge
+        era_environment:
+            zh: 老巷子依旧但门口多了扫帚与电表箱，午后静谧无人
+            en: familiar old concrete alley now with a broom leaning beside plastic crates and utility meter box
+        shot_framing:
+            zh: 9:16竖屏与第一镜完全一致的同机位构图，制造强烈时空对照
+            en: 9:16 vertical match-cut wide framing identical to shot 1 to heighten temporal contrast
+        lighting_mood:
+            zh: 略显清冷平淡的午后斜光，饱和度微降
+            en: slightly quieter, lower-saturation afternoon light emphasizing the passage of years
+        negative:
+            zh: ""
+            en: ""
+      i2v_spec:
+        subject_micro_action:
+            zh: 空镜保持极度克制的寂静感，画面无人物闯入
+            en: quiet empty frame held in still contemplation with no abrupt movement
+        environment_physics:
+            zh: 一阵干爽微风轻拂过巷口地面与电线，树影在斑驳红招牌上缓慢移动
+            en: a quiet breeze drifts down the empty lane as soft tree shadows shift slowly across the faded red sign
+        camera_movement: slow_pull_out
+        camera_detail:
+            zh: 摄影机极缓向后拉远，营造物是人非的距离感
+            en: ultra-slow gentle pull-out evoking quiet temporal distance
+        lighting_pacing:
+            zh: 沉静低饱和胶片调性，留出沉默呼吸感
+            en: quiet muted film tone leaving generous emotional breathing space
+        transition_mode: single_frame
+        negative:
+            zh: ""
+            en: ""
+      director_sheet:
+        shot_title:
+            zh: g8 · liminal_closure
+            en: g8 · liminal_closure
+        asset_bindings:
+            - asset_id: a2
+              role: scene
+              asset_name: 小卖部内部
+              ref_token: '{{Asset 2}}'
+              usage_rule:
+                zh: 只参考空间材质、建筑结构与光影氛围；不参考空镜正面构图
+                en: Reference spatial textures, architecture, and lighting mood only; do not copy framing
+        cast_summary:
+            zh: 多年后的同一间巷口小店外景，无人空景
+            en: the exact same alley corner shop years later, quiet empty exterior
+        background_setting:
+            zh: 老巷子依旧但门口多了扫帚与电表箱，午后静谧无人；略显清冷平淡的午后斜光，饱和度微降
+            en: familiar old concrete alley now with a broom leaning beside plastic crates and utility meter box. slightly quieter, lower-saturation afternoon light emphasizing the passage of years
+        continuity_summary:
+            zh: 第8镜（liminal_closure）：时间对照冲击（Temporal Contrast）：同机位老木门变成褪色红牌“便利店”与铝合金推拉门，无声道出岁月变迁
+            en: 'Shot 8 (liminal_closure): 时间对照冲击（Temporal Contrast）：同机位老木门变成褪色红牌“便利店”与铝合金推拉门，无声道出岁月变迁'
+        first_frame_link:
+            zh: 首帧保持与上一镜一致的胶片暖调与自然光向。
+            en: First frame matches previous shot's film palette and natural light direction.
+        last_frame_link:
+            zh: 尾帧动作平稳缓停，下方保留约18%干净留白区供后期极简字幕浮现。
+            en: Last frame settles smoothly with clean lower 18% breathing space for post subtitles.
+        timeline_beats:
+            - start_sec: 0
+              end_sec: 3.1
+              title:
+                zh: 主体微动与氛围展开
+                en: Micro-Action & Atmosphere
+              visual:
+                zh: 空镜保持极度克制的寂静感，画面无人物闯入；一阵干爽微风轻拂过巷口地面与电线，树影在斑驳红招牌上缓慢移动
+                en: quiet empty frame held in still contemplation with no abrupt movement. a quiet breeze drifts down the empty lane as soft tree shadows shift slowly across the faded red sign
+              dialogue:
+                zh: 无
+                en: None
+              forbid:
+                zh: 禁止人物直视镜头或张嘴说话；禁止出现现代穿帮物、文字或畸形手指
+                en: No looking at camera, talking mouths, modern props, text, or warped hands
+              constraint:
+                zh: 主体外貌、服装与场景道具数量全程锁定不变，动作自然克制
+                en: Lock subject appearance, outfit, and prop count; restrained physical motion
+              camera:
+                zh: 摄影机极缓向后拉远，营造物是人非的距离感
+                en: ultra-slow gentle pull-out evoking quiet temporal distance
+              sfx:
+                zh: 柔和环境声景（alley_breeze）
+                en: Soft ambient soundscape (alley_breeze)
+              psych_mapping: 时间对照冲击（Temporal Contrast）：同机位老木门变成褪色红牌“便利店”与铝合金推拉门，无声道出岁月变迁
+            - start_sec: 3.1
+              end_sec: 5
+              title:
+                zh: 情绪停顿与留白余韵
+                en: Breathing Pause & Lingering Stillness
+              visual:
+                zh: 一阵干爽微风轻拂过巷口地面与电线，树影在斑驳红招牌上缓慢移动，主体动作缓缓收住，画面沉静留白。
+                en: a quiet breeze drifts down the empty lane as soft tree shadows shift slowly across the faded red sign, subject motion eases gently into quiet stillness.
+              dialogue:
+                zh: 无
+                en: None
+              forbid:
+                zh: 禁止镜头漂移、高光闪烁或画面文字
+                en: No camera drift, exposure flicker, or rendered text
+              constraint:
+                zh: 结尾最后0.5秒柔和缓停，保持构图稳定
+                en: Ease-out settle in final 0.5s with steady framing
+              camera:
+                zh: 极缓收势定格
+                en: Gentle ease-out hold
+              sfx:
+                zh: 环境底噪延续渐轻
+                en: Ambient tone tapering softly
+              psych_mapping: 预留 ≥25% 无旁白呼吸空间，增强自我投射与沉浸感
+        output_constraints:
+            - zh: 全程不出现任何可读文字、数字、Logo或水印，字幕统一后期压制
+              en: Zero readable text, digits, logos, or watermarks; subtitles added in post
+            - zh: 保持人物外貌、服装与环境光向全程一致，避免五官与背景变形
+              en: Maintain consistent character identity, outfit, and lighting without morphing
+        post_production:
+            subtitle_strategy: 所有旁白文字一律后期 FFmpeg 压制，不写入视频生成指令。
+            subtitle_rhythm:
+                - 0.45s-4.5s 暖白极简字幕：「后来木门换了，旧冰柜也搬走了。」
+            transition_design:
+                from_prev: 0.40s 柔和叠化承接上一镜
+                to_next: 0.40s 柔和叠化衔接下一镜
+    - shot_id: g9
+      order: 9
+      phase: liminal_closure
+      story_summary: 成年男性的过肩背影与放在泛黄相册边缘的一只手；原木书桌上摊开厚重泛黄旧相册，页面里嵌着当年白衣男孩趴在冰柜前的老照片
+      psych_trigger: 自我连续性触发（Self-Continuity）：现代高楼公寓里的成年双手轻抚旧相册里的童年自己，完成过去与当下的连接
+      symbols:
+        - 发黄旧相册
+      first_frame_path: /Users/tp/work/aivideo/feelings/g9.jpeg
+      narration: 相册里，还留着冰柜前的自己。
+      emotion: nostalgic
+      voice_id: warm-male
+      voice_speed: 0.92
+      ambient_tag: evening_crickets
+      duration_sec: 5
+      locked: false
+      t2i_spec:
+        subject_anchor:
+            zh: 成年男性的过肩背影与放在泛黄相册边缘的一只手
+            en: over-the-shoulder view of a grown man resting his hand gently beside an old yellowed photo album
+        action_relation:
+            zh: 原木书桌上摊开厚重泛黄旧相册，页面里嵌着当年白衣男孩趴在冰柜前的老照片
+            en: open aged photo album on a modern wooden desk displaying the faded photograph of the boy at the corner-store freezer
+        era_environment:
+            zh: 现代城市高楼公寓窗景、水杯、空调遥控器与散落的旧照片
+            en: modern high-rise apartment window view, glass of water, AC remote, and scattered vintage prints
+        shot_framing:
+            zh: 9:16竖屏过肩俯拍近景，焦点落在泛黄老照片与成年人手指
+            en: 9:16 vertical over-the-shoulder downward close-up focused on the old photograph and adult fingers
+        lighting_mood:
+            zh: 柔和现代窗光斜洒木桌，给泛黄纸页镀上温暖回忆感
+            en: soft natural apartment window light falling gently across the yellowed album pages
+        negative:
+            zh: ""
+            en: ""
+      i2v_spec:
+        subject_micro_action:
+            zh: 成年人的指尖极其轻柔地在泛黄相册纸页边缘微顿轻抚，仿佛隔着岁月触碰童年
+            en: adult fingertips pause and gently brush the yellowed album border as if softly touching childhood
+        environment_physics:
+            zh: 窗帘白纱随微风轻轻鼓动，桌面光影柔和微移，水杯微微泛光
+            en: sheer window curtain drifts gently in the breeze as soft daylight shifts subtly across the desk
+        camera_movement: slow_push_in
+        camera_detail:
+            zh: 摄影机极缓向旧照片里的小男孩推进，建立记忆穿越感
+            en: very slow gentle push-in toward the childhood photo inside the album
+        lighting_pacing:
+            zh: 静谧克制的电影慢拍，温柔而不煽情
+            en: intimate tranquil cinematic pacing, tender and unforced
+        transition_mode: single_frame
+        negative:
+            zh: ""
+            en: ""
+      director_sheet:
+        shot_title:
+            zh: g9 · liminal_closure
+            en: g9 · liminal_closure
+        asset_bindings:
+            - asset_id: a2
+              role: scene
+              asset_name: 小卖部内部
+              ref_token: '{{Asset 2}}'
+              usage_rule:
+                zh: 只参考空间材质、建筑结构与光影氛围；不参考空镜正面构图
+                en: Reference spatial textures, architecture, and lighting mood only; do not copy framing
+        cast_summary:
+            zh: 成年男性的过肩背影与放在泛黄相册边缘的一只手
+            en: over-the-shoulder view of a grown man resting his hand gently beside an old yellowed photo album
+        background_setting:
+            zh: 现代城市高楼公寓窗景、水杯、空调遥控器与散落的旧照片；柔和现代窗光斜洒木桌，给泛黄纸页镀上温暖回忆感
+            en: modern high-rise apartment window view, glass of water, AC remote, and scattered vintage prints. soft natural apartment window light falling gently across the yellowed album pages
+        continuity_summary:
+            zh: 第9镜（liminal_closure）：自我连续性触发（Self-Continuity）：现代高楼公寓里的成年双手轻抚旧相册里的童年自己，完成过去与当下的连接
+            en: 'Shot 9 (liminal_closure): 自我连续性触发（Self-Continuity）：现代高楼公寓里的成年双手轻抚旧相册里的童年自己，完成过去与当下的连接'
+        first_frame_link:
+            zh: 首帧保持与上一镜一致的胶片暖调与自然光向。
+            en: First frame matches previous shot's film palette and natural light direction.
+        last_frame_link:
+            zh: 尾帧动作平稳缓停，下方保留约18%干净留白区供后期极简字幕浮现。
+            en: Last frame settles smoothly with clean lower 18% breathing space for post subtitles.
+        timeline_beats:
+            - start_sec: 0
+              end_sec: 3.1
+              title:
+                zh: 主体微动与氛围展开
+                en: Micro-Action & Atmosphere
+              visual:
+                zh: 成年人的指尖极其轻柔地在泛黄相册纸页边缘微顿轻抚，仿佛隔着岁月触碰童年；窗帘白纱随微风轻轻鼓动，桌面光影柔和微移，水杯微微泛光
+                en: adult fingertips pause and gently brush the yellowed album border as if softly touching childhood. sheer window curtain drifts gently in the breeze as soft daylight shifts subtly across the desk
+              dialogue:
+                zh: 无
+                en: None
+              forbid:
+                zh: 禁止人物直视镜头或张嘴说话；禁止出现现代穿帮物、文字或畸形手指
+                en: No looking at camera, talking mouths, modern props, text, or warped hands
+              constraint:
+                zh: 主体外貌、服装与场景道具数量全程锁定不变，动作自然克制
+                en: Lock subject appearance, outfit, and prop count; restrained physical motion
+              camera:
+                zh: 摄影机极缓向旧照片里的小男孩推进，建立记忆穿越感
+                en: very slow gentle push-in toward the childhood photo inside the album
+              sfx:
+                zh: 柔和环境声景（evening_crickets）
+                en: Soft ambient soundscape (evening_crickets)
+              psych_mapping: 自我连续性触发（Self-Continuity）：现代高楼公寓里的成年双手轻抚旧相册里的童年自己，完成过去与当下的连接
+            - start_sec: 3.1
+              end_sec: 5
+              title:
+                zh: 情绪停顿与留白余韵
+                en: Breathing Pause & Lingering Stillness
+              visual:
+                zh: 窗帘白纱随微风轻轻鼓动，桌面光影柔和微移，水杯微微泛光，主体动作缓缓收住，画面沉静留白。
+                en: sheer window curtain drifts gently in the breeze as soft daylight shifts subtly across the desk, subject motion eases gently into quiet stillness.
+              dialogue:
+                zh: 无
+                en: None
+              forbid:
+                zh: 禁止镜头漂移、高光闪烁或画面文字
+                en: No camera drift, exposure flicker, or rendered text
+              constraint:
+                zh: 结尾最后0.5秒柔和缓停，保持构图稳定
+                en: Ease-out settle in final 0.5s with steady framing
+              camera:
+                zh: 极缓收势定格
+                en: Gentle ease-out hold
+              sfx:
+                zh: 环境底噪延续渐轻
+                en: Ambient tone tapering softly
+              psych_mapping: 预留 ≥25% 无旁白呼吸空间，增强自我投射与沉浸感
+        output_constraints:
+            - zh: 全程不出现任何可读文字、数字、Logo或水印，字幕统一后期压制
+              en: Zero readable text, digits, logos, or watermarks; subtitles added in post
+            - zh: 保持人物外貌、服装与环境光向全程一致，避免五官与背景变形
+              en: Maintain consistent character identity, outfit, and lighting without morphing
+        post_production:
+            subtitle_strategy: 所有旁白文字一律后期 FFmpeg 压制，不写入视频生成指令。
+            subtitle_rhythm:
+                - 0.45s-4.5s 暖白极简字幕：「相册里，还留着冰柜前的自己。」
+            transition_design:
+                from_prev: 0.40s 柔和叠化承接上一镜
+                to_next: 0.40s 柔和叠化衔接下一镜
+    - shot_id: g10
+      order: 10
+      phase: liminal_closure
+      story_summary: 记忆中黄昏时分的90年代老小卖部外景空镜；木门依旧敞开，门前静静摆着两张空小木凳、一辆老二八自行车与一箱绿玻璃汽水瓶
+      psych_trigger: 怀旧救赎与开放式留白：回到记忆中金色黄昏下的小卖部空凳，给予心理慰藉并引导评论区共鸣
+      symbols:
+        - 斑驳水泥墙与木门
+        - 二八大杠自行车
+        - 绿玻璃汽水瓶
+      first_frame_path: /Users/tp/work/aivideo/feelings/g10.jpeg
+      narration: 你家巷口的那间小卖部，现在还在吗？
+      emotion: calm
+      voice_id: warm-male
+      voice_speed: 0.92
+      ambient_tag: evening_crickets
+      duration_sec: 6
+      locked: false
+      t2i_spec:
+        subject_anchor:
+            zh: 记忆中黄昏时分的90年代老小卖部外景空镜
+            en: nostalgic 1990s alley corner store exterior at golden hour dusk, peaceful empty scene
+        action_relation:
+            zh: 木门依旧敞开，门前静静摆着两张空小木凳、一辆老二八自行车与一箱绿玻璃汽水瓶
+            en: open wooden doorway with two empty small wooden stools, a parked vintage bicycle, and green soda bottles
+        era_environment:
+            zh: 上方绿树枝叶垂落，斑驳老灰砖楼与水泥墙沐浴在夕阳余晖中
+            en: overhanging green tree branches above old grey-brick apartments bathed in warm sunset glow
+        shot_framing:
+            zh: 9:16竖屏静谧中远景，大面积温暖夕阳地面留白
+            en: 9:16 vertical contemplative medium-wide shot with generous sunlit foreground breathing room
+        lighting_mood:
+            zh: 浓郁温柔的琥珀金黄昏低角度斜阳，长影静谧安宁
+            en: rich tender amber golden-hour sunlight casting long tranquil shadows
+        negative:
+            zh: ""
+            en: ""
+      i2v_spec:
+        subject_micro_action:
+            zh: 纯粹空镜凝视，两张空木凳在夕阳中静静守候
+            en: pure quiet contemplative still scene with two empty wooden stools bathed in dusk
+        environment_physics:
+            zh: 上方枝叶在晚风中极缓摇曳，墙面夕阳树影轻晃，金色空气颗粒缓缓飘落
+            en: overhead branches sway gently in the evening breeze while golden sunset leaf shadows dance softly on the concrete wall
+        camera_movement: slow_pull_out
+        camera_detail:
+            zh: 摄影机极缓向后拉远定格，留出充足环境音与思绪余韵
+            en: ultra-slow pull-out fading into peaceful nostalgic stillness
+        lighting_pacing:
+            zh: 黄昏琥珀暖光缓缓沉淀，极致温柔安宁
+            en: golden-hour amber light settling gently in serene stillness
+        transition_mode: single_frame
+        negative:
+            zh: ""
+            en: ""
+      director_sheet:
+        shot_title:
+            zh: 时空余韵 · 黄昏空凳小卖部
+            en: Liminal Closure · Golden Hour Empty Stools
+        asset_bindings:
+            - asset_id: a2
+              role: scene
+              asset_name: 小卖部内部
+              ref_token: '{{Asset 2}}'
+              usage_rule:
+                zh: 只参考门口老白冰柜与木门框材质，保持与第1镜同一栋建筑结构
+                en: Match Shot 1 architecture and doorway freezer texture
+              exclude_hint:
+                zh: 结尾空镜无人出镜，严禁出现任何角色
+                en: Empty contemplative closing shot; no characters
+        cast_summary:
+            zh: 无人物出镜（纯空镜留白）。
+            en: No characters (pure contemplative empty frame).
+        background_setting:
+            zh: 记忆中琥珀金黄昏下的90年代老小卖部外景，木门敞开，门前静放两张空小木凳、一辆老二八自行车与绿汽水箱，上方绿树垂枝。
+            en: Nostalgic 1990s corner store at amber golden hour with two empty wooden stools, vintage bicycle, and overhanging green branches.
+        continuity_summary:
+            zh: 当前分镜为全片第10镜收尾，承接第9镜成年翻看相册：回到记忆中最温暖安宁的黄昏瞬间，完成怀旧救赎闭环并引导评论区共鸣。
+            en: Shot 10 closes the nostalgic redemptive arc after Shot 9's photo album, offering serene emotional closure.
+        first_frame_link:
+            zh: 首帧由第9镜旧相册暖黄色纸页柔和叠化切入，无缝承接琥珀夕阳色调。
+            en: Dissolves seamlessly from Shot 9's warm yellowed photo album into golden-hour dusk.
+        last_frame_link:
+            zh: 尾帧画面极度安宁平稳，下方大面积夕阳水泥路面留白，供结尾开放式提问字幕停留后缓慢淡入黑场。
+            en: Ends in deep serene stillness with clean sunlit foreground for the closing question and fade-out.
+        timeline_beats:
+            - start_sec: 0
+              end_sec: 3.2
+              title:
+                zh: 晚风拂枝与夕阳树影轻晃
+                en: Evening Breeze & Golden Leaf Shadows
+              visual:
+                zh: 低角度琥珀金夕阳温暖包裹水泥墙面与两张空木凳，上方垂落的绿树枝叶被晚风轻轻吹动，墙面树影柔和慢晃，金色微尘缓缓浮沉。
+                en: Amber sunset wraps the concrete walls and two empty wooden stools as overhead branches sway gently and leaf shadows dance softly.
+              dialogue:
+                zh: 无
+                en: None
+              forbid:
+                zh: 禁止出现人物、现代车辆、文字、剧烈风吹或光线闪烁
+                en: No people, modern vehicles, text, harsh wind, or light flicker
+              constraint:
+                zh: 两张空木凳、自行车与汽水瓶完全静止不动，只靠晚风枝叶、树影与极缓镜头运动传递时间感
+                en: Stools, bicycle, and bottles stay completely still; motion lives purely in leaves, shadows, and gentle camera pull-out
+              camera:
+                zh: 极缓慢平稳向后拉远，温柔拉开时空距离
+                en: Ultra-slow steady camera pull-out evoking tender temporal distance
+              sfx:
+                zh: 温柔夏夜虫鸣与晚风拂叶声轻柔铺满
+                en: Gentle evening crickets and soft breeze through leaves
+              psych_mapping: 怀旧救赎曲线落点：苦乐参半转化为温和安宁的自我连续性慰藉
+            - start_sec: 3.2
+              end_sec: 6
+              title:
+                zh: 静谧定格与开放式余韵
+                en: Peaceful Hold & Open Closure
+              visual:
+                zh: 镜头缓慢停住，夕阳暖光沉静稳定，两张空凳在金光里仿佛仍在等候放学的孩子，画面下方三分之一为干净暖光地面留白。
+                en: Camera eases to rest as golden dusk holds peacefully over the empty stools with clean sunlit lower third.
+              dialogue:
+                zh: 无
+                en: None
+              forbid:
+                zh: 禁止镜头漂移、高光突变、出现任何可读文字
+                en: No camera drift, brightness jump, or rendered text
+              constraint:
+                zh: 最后1秒几乎完全静止，方便后期字幕停留与黑场淡出
+                en: Nearly static final second ready for closing subtitle and fade to black
+              camera:
+                zh: 缓停固定定格
+                en: Ease-out to locked stillness
+              sfx:
+                zh: 夏夜虫鸣伴随温暖和弦余音渐弱收干
+                en: Crickets and warm chord pad gently tapering out
+              psych_mapping: 社交货币与评论区钩子：留白触发观众回答“我家巷口的小卖部”
+        output_constraints:
+            - zh: 全程无人出镜，保持空木凳与旧小卖部的宁静守候感
+              en: Strictly zero people; preserve serene empty-stool stillness
+            - zh: 夕阳暖金光向全程稳定，无曝光跳变与画面闪烁
+              en: Steady warm golden-hour lighting with zero exposure jump
+            - zh: 画面中严禁生成文字、字幕或水印，尾句提问仅在后期压字
+              en: No generated text or watermark; closing hook added strictly in post
+        post_production:
+            subtitle_strategy: 尾镜只放一句轻量开放式回忆提问（不硬广求赞），配合0.75s黑场淡出制造强烈余韵。
+            subtitle_rhythm:
+                - 0.6s-5.2s 暖白极简字幕：「你家巷口的那间小卖部，现在还在吗？」
+            transition_design:
+                from_prev: 承接第9镜旧相册暖黄画面，0.45s 柔和叠化切入记忆黄昏
+                to_outro: 5.25s 起 0.75s 缓慢黑场淡出，BGM与虫鸣同步缓落收尾
+critic_report:
+    passed: true
+    score: 100
+    phase_distribution:
+        concrete_ritual: 2
+        liminal_closure: 3
+        relational_warmth: 3
+        sensory_hook: 2
+    avg_silence_ratio: 0.2972222222222222
+    symbol_hit_count: 10
+    issues: []
+created_at: 2026-11-25T07:08:26.730148Z
+updated_at: 2026-11-25T08:55:30.462413Z

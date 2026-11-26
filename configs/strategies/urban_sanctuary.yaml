@@ -1,0 +1,80 @@
+id: urban_sanctuary
+name: 都市疲惫与心理避风港
+tagline: 以短暂都市压迫对照慢生活感官释放，为高负荷大脑提供心理恢复空间
+theory_basis:
+  - 注意力恢复理论（Kaplan ART）：低信息密度自然/日常微动态可修复都市人的定向注意力疲劳
+  - 压力缓冲假说（Stress Buffering）：提供“被允许慢下来”的心理安全区，驱动收藏与睡前反复观看
+  - 感官对比切场：前1-2镜短暂呈现冷硬都市节奏，随后由一阵晚风/老风扇声切入温暖慢生活
+  - 自主感与心理许可：不鸡汤式鼓励“明天继续加油”，而是温柔确认“此刻可以什么都不想”
+target_audience: 22-38岁高压都市青年、深夜通勤或睡前需要情绪降噪的人群
+default_style: cinematic_heal
+emotional_arc:
+  - phase: sensory_hook
+    label: 第一幕 · 都市疲劳对照切口
+    psychology_goal: 用短暂冷白写字楼/晚高峰车窗建立当下现实共鸣，制造轻微呼吸紧绷感
+    min_ratio: 0.15
+    max_ratio: 0.25
+    pacing_hint: 轻微冷色调与都市白噪，随后通过声音先行柔切释放
+  - phase: concrete_ritual
+    label: 第二幕 · 感官降噪与慢仪式
+    psychology_goal: 切入温暖低频日常（切冰西瓜、老风扇摇头、阳台上晒被子、泡一杯热茶）
+    min_ratio: 0.25
+    max_ratio: 0.35
+    pacing_hint: 极慢运镜与清晰环境音，刻意放慢视觉信息流速
+  - phase: relational_warmth
+    label: 第三幕 · 无人催促的松弛片刻
+    psychology_goal: 与自己、猫咪、晚霞或老街烟火相处，重建“此刻安全且松弛”的体感
+    min_ratio: 0.25
+    max_ratio: 0.30
+    pacing_hint: 柔和景深与自然微风动态，留出完整停顿
+  - phase: liminal_closure
+    label: 第四幕 · 心理许可与余韵收藏
+    psychology_goal: 给予一句极轻的心理许可，不催促振作，让视频成为用户的“情绪充电站”
+    min_ratio: 0.20
+    max_ratio: 0.30
+    pacing_hint: 夕阳余晖或夜风窗帘缓摇，余音拉长
+era_symbols:
+  - 摇头老电扇
+  - 阳台的晚风与白纱帘
+  - 玻璃杯里的气泡与冰块
+  - 刚晒过太阳的棉被
+  - 窗台绿植与夕阳影子
+  - 街角亮灯的小面馆
+  - 橘猫在台阶打盹
+  - 落日下的旧天台
+sensory_anchors:
+  visual_palette: 由都市冷青灰过渡到低饱和夕阳琥珀与柔和奶白
+  ambient_tags:
+    - urban_rain_soft
+    - old_fan_hum
+    - evening_breeze
+    - soft_kettle
+  bgm_mood: 极简氛围钢琴与温暖低频 Pad，像夜晚轻呼吸
+narration_rules:
+  perspective: 轻柔平等的第二人称对话（像深夜朋友坐在身旁轻声说话）
+  chars_per_second_min: 1.8
+  chars_per_second_max: 3.2
+  min_silence_ratio: 0.30
+  max_chars_per_shot: 22
+  forbidden_cliches:
+    - 加油打工人
+    - 明天会更好
+    - 努力就会成功
+    - 卷不动了
+    - 治愈系天花板
+    - 致敬每一个努力的你
+    - 不禁潸然泪下
+    - 人生就是一场修行
+  preferred_sensory_verbs:
+    - 吹
+    - 落
+    - 浮
+    - 晒
+    - 晃
+    - 停
+    - 泡
+    - 听
+closure_hooks:
+  - 今晚的风很慢，你也先不用急着赶路。
+  - 累了的时候，就先在这阵晚风里停五分钟吧。
+  - 什么都不必证明的傍晚，本身就已经很好了。

@@ -1,0 +1,80 @@
+id: family_bond
+name: 家庭与跨代际温情
+tagline: 以含蓄动作细节替代道德说教，唤醒“安全基地”的深层依恋共鸣
+theory_basis:
+  - 依恋理论（Bowlby 安全基地）：老家的饭桌、窗口的灯是成年人漂泊时的隐性兜底
+  - 中国式含蓄情感表达：不直接说“爱”，而是把爱藏在装满的后备箱、剥好的水果与修好的灯里
+  - 心理抗拒规避（Reactance Theory）：严禁“父母老了要多陪陪”式说教，避免引发内疚与防御
+  - 时间对比效应：以父母微驼的背影、变慢的脚步对照不变的牵挂，触发克制而绵长的感动
+target_audience: 在外漂泊的25-45岁职场人、节日/深夜容易思乡的观众
+default_style: retro_dv
+emotional_arc:
+  - phase: sensory_hook
+    label: 第一幕 · 归家/离家感官序幕
+    psychology_goal: 用厨房油烟热气、老楼道感应灯或清晨行李箱滚轮声瞬间建立情境代入
+    min_ratio: 0.15
+    max_ratio: 0.25
+    pacing_hint: 轻柔手持呼吸感，突出生活真实颗粒
+  - phase: concrete_ritual
+    label: 第二幕 · 含蓄照料的日常动作
+    psychology_goal: 聚焦不言爱却满是爱的具体动作（装袋、盛汤、往兜里塞零食、检查门锁）
+    min_ratio: 0.25
+    max_ratio: 0.35
+    pacing_hint: 手部与神态近景，克制平实，不刻意煽情
+  - phase: relational_warmth
+    label: 第三幕 · 岁月细节与无声守候
+    psychology_goal: 捕捉长辈白发、老花镜、站在路口目送的微动作，触发深层依恋安全感
+    min_ratio: 0.25
+    max_ratio: 0.30
+    pacing_hint: 缓慢推镜或过肩视角，给予停顿与沉默空间
+  - phase: liminal_closure
+    label: 第四幕 · 回望与灯火余韵
+    psychology_goal: 离去时的车窗回望或家中亮着的一盏暖灯，落点在“心里有处可归”的安心感
+    min_ratio: 0.20
+    max_ratio: 0.30
+    pacing_hint: 固定机位缓慢拉远，保留环境白噪与极短尾句
+era_symbols:
+  - 搪瓷汤盆
+  - 塑料编织袋与土特产
+  - 老式保温壶
+  - 厨房暖黄白炽灯
+  - 阳台的旧晾衣绳
+  - 磨亮的木饭桌
+  - 老花镜与缝纫针线盒
+  - 车站月台微风
+sensory_anchors:
+  visual_palette: 室内暖黄白炽灯与暮色窗外冷蓝形成温暖庇护对比
+  ambient_tags:
+    - kitchen_simmer
+    - old_clock_tick
+    - evening_breeze
+    - distant_train
+  bgm_mood: 极简大提琴与钢琴低音铺陈，留白大于旋律
+narration_rules:
+  perspective: 温和克制的第一人称观察视角，陈述具体动作而非评价情感
+  chars_per_second_min: 1.8
+  chars_per_second_max: 3.4
+  min_silence_ratio: 0.28
+  max_chars_per_shot: 22
+  forbidden_cliches:
+    - 树欲静而风不止
+    - 子欲养而亲不待
+    - 父母在慢慢变老
+    - 一定要多陪陪父母
+    - 不禁潸然泪下
+    - 世上只有妈妈好
+    - 泪目了
+    - 致敬伟大的父爱母爱
+  preferred_sensory_verbs:
+    - 塞
+    - 夹
+    - 掖
+    - 递
+    - 擦
+    - 望
+    - 亮
+    - 盛
+closure_hooks:
+  - 每次出门前，后备箱总比来时重上几斤。
+  - 走得再远，回头时那盏灯总还亮着。
+  - 今晚，记得给家里打个不用找理由的电话。

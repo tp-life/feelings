@@ -1,0 +1,84 @@
+id: childhood_90s
+name: 80/90后集体童年与物质记忆
+tagline: 用具体可触摸的旧物件与关系微光，唤醒代际暗号与自我连续性
+theory_basis:
+  - Halbwachs 集体记忆理论：通过共享物质符号唤醒群体归属感
+  - Wildschut & Sedikides 怀旧救赎弧线：苦乐参半最终走向温暖慰藉，而非纯悲伤
+  - 普鲁斯特感官线索效应：蝉鸣、冰柜白雾、午后光影比说教更快触发自传体记忆
+  - 社会认同与投射留白：不解释时代细节，让观众在评论区“认亲”并代入自己的童年
+target_audience: 28-45岁在都市打拼的80/90后，渴望在碎片时间获得心理缓冲与情感共鸣
+default_style: film_90s
+emotional_arc:
+  - phase: sensory_hook
+    label: 第一幕 · 感官唤起
+    psychology_goal: 用午后光影、环境声景与静态旧物迅速将大脑拉回1990年代的夏天
+    min_ratio: 0.15
+    max_ratio: 0.25
+    pacing_hint: 极慢推进或静止凝视，环境音先行，旁白轻柔切入
+  - phase: concrete_ritual
+    label: 第二幕 · 具象仪式与代际暗号
+    psychology_goal: 埋入不加解释的时代细节（冰柜挑冰棍、掌心数硬币），激活集体记忆
+    min_ratio: 0.20
+    max_ratio: 0.30
+    pacing_hint: 近景与特写交替，聚焦手部动作与老物件质感
+  - phase: relational_warmth
+    label: 第三幕 · 关系微光
+    psychology_goal: 展现童年被无条件善待与同伴共享的温暖瞬间，提升社会联结感
+    min_ratio: 0.25
+    max_ratio: 0.35
+    pacing_hint: 人物克制微笑、微倾递物、并肩背影，情绪到达温暖高点
+  - phase: liminal_closure
+    label: 第四幕 · 时空对照与留白余韵
+    psychology_goal: 引入时间流逝对照（老店翻新/翻看相册）后回到记忆余晖，完成自我连续性修复
+    min_ratio: 0.20
+    max_ratio: 0.35
+    pacing_hint: 最后一镜放慢呼吸，保留大段环境音与夕阳空景，给观众投射空间
+era_symbols:
+  - 玻璃糖罐
+  - 水果硬糖
+  - 老式白色卧式冰柜
+  - 五毛硬币
+  - 老冰棍
+  - 绿玻璃汽水瓶
+  - 算盘与铁皮零钱盒
+  - 二八大杠自行车
+  - 斑驳水泥墙与木门
+  - 发黄旧相册
+sensory_anchors:
+  visual_palette: 午后暖白强光转向黄昏琥珀金，保留胶片暗部层次与灰尘光柱
+  ambient_tags:
+    - summer_cicada
+    - old_freezer_hum
+    - alley_breeze
+    - evening_crickets
+  bgm_mood: 稀疏木吉他与轻柔电钢单音，克制不抢戏
+narration_rules:
+  perspective: 第二人称或克制的第一人称回忆口吻（像写给旧友的短笺）
+  chars_per_second_min: 2.0
+  chars_per_second_max: 3.6
+  min_silence_ratio: 0.25
+  max_chars_per_shot: 24
+  forbidden_cliches:
+    - 时光飞逝
+    - 岁月如梭
+    - 致敬逝去的青春
+    - 且行且珍惜
+    - 不禁潸然泪下
+    - 那一刻我终于明白
+    - 泪目了
+    - 破防了
+    - 满满的回忆杀
+    - 值得我们深思
+  preferred_sensory_verbs:
+    - 攥
+    - 趴
+    - 递
+    - 咬
+    - 翻
+    - 晃
+    - 晒
+    - 吹
+closure_hooks:
+  - 你家巷口的那间小卖部，现在还在吗？
+  - 那个陪你分过半根冰棍的人，如今在哪座城市？
+  - 翻开相册才发现，原来那个夏天从未真正离开。

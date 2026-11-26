@@ -1,0 +1,2609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Feelings Studio · 情怀 AI 视频心理学工作台</title>
+<style>
+  :root {
+    --bg: #121110;
+    --surface: #1b1917;
+    --surface-2: #24211e;
+    --border: #332e29;
+    --text: #f3ede4;
+    --muted: #a69b8d;
+    --gold: #e0a96d;
+    --gold-soft: rgba(224, 169, 109, 0.14);
+    --green: #6db889;
+    --warn: #e09f5a;
+    --red: #d96b6b;
+    --blue: #7aa7d9;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.5;
+  }
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 24px; border-bottom: 1px solid var(--border);
+    background: rgba(18, 17, 16, 0.92); position: sticky; top: 0; z-index: 20; backdrop-filter: blur(8px);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand h1 { margin: 0; font-size: 18px; letter-spacing: 0.5px; color: var(--gold); }
+  .brand span { font-size: 12px; color: var(--muted); }
+  .toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  select, input, textarea {
+    background: var(--surface-2); color: var(--text); border: 1px solid var(--border);
+    border-radius: 6px; padding: 7px 10px; font-size: 13px; font-family: inherit;
+  }
+  textarea { width: 100%; resize: vertical; }
+  button {
+    background: var(--surface-2); color: var(--text); border: 1px solid var(--border);
+    border-radius: 6px; padding: 7px 13px; font-size: 13px; cursor: pointer; transition: 0.15s;
+  }
+  button:hover { border-color: var(--gold); color: var(--gold); }
+  button.primary { background: var(--gold); color: #191510; border-color: var(--gold); font-weight: 600; }
+  button.primary:hover { opacity: 0.9; color: #191510; }
+  button.danger { border-color: rgba(217,107,107,0.45); color: var(--red); }
+  button.small { padding: 4px 9px; font-size: 12px; }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  main { max-width: 1440px; margin: 0 auto; padding: 20px 24px 64px; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 18px; border-bottom: 1px solid var(--border); padding-bottom: 10px; flex-wrap: wrap; }
+  .tab { padding: 8px 16px; border-radius: 6px; cursor: pointer; color: var(--muted); font-size: 14px; border: 1px solid transparent; }
+  .tab.active { background: var(--gold-soft); color: var(--gold); border-color: rgba(224,169,109,0.35); font-weight: 600; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px; margin-bottom: 16px;
+  }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+  @media (max-width: 1080px) { .grid-5 { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 980px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px;
+    background: var(--surface-2); border: 1px solid var(--border); color: var(--muted);
+  }
+  .badge.sensory_hook { color: #8ec5e8; border-color: #365970; }
+  .badge.concrete_ritual { color: #e8c37a; border-color: #6b542a; }
+  .badge.relational_warmth { color: #e89b8e; border-color: #703e36; }
+  .badge.liminal_closure { color: #b9a4e8; border-color: #504170; }
+  .badge.domestic { color: #e8c37a; border-color: #6b542a; }
+  .badge.overseas { color: #8ec5e8; border-color: #365970; }
+  .badge.local { color: #6db889; border-color: rgba(109,184,137,0.4); }
+  .badge.ok { color: var(--green); border-color: rgba(109,184,137,0.4); }
+  .badge.warn { color: var(--warn); border-color: rgba(224,159,90,0.4); }
+  .badge.err { color: var(--red); border-color: rgba(217,107,107,0.4); }
+  .arc-bar { display: flex; height: 10px; border-radius: 999px; overflow: hidden; background: var(--surface-2); margin: 10px 0; }
+  .arc-seg { height: 100%; }
+  .shot-card {
+    display: grid; grid-template-columns: 200px 1fr; gap: 18px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px; margin-bottom: 14px;
+  }
+  @media (max-width: 780px) { .shot-card { grid-template-columns: 1fr; } }
+  .media-box {
+    width: 100%; aspect-ratio: 9 / 16; background: #0a0908; border-radius: 8px;
+    overflow: hidden; border: 1px solid var(--border); position: relative;
+  }
+  .media-box img, .media-box video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .field-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin-bottom: 10px; }
+  label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .prompt-preview {
+    background: #0f0e0d; border: 1px solid var(--border); border-radius: 6px;
+    padding: 10px 12px; font-size: 12px; color: #dfd6c7; white-space: pre-wrap; margin-top: 6px;
+    max-height: 280px; overflow-y: auto; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .beat-box {
+    background: #161412; border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px; margin-bottom: 10px;
+  }
+  .prov-card {
+    background: #161412; border: 1px solid var(--border); border-radius: 9px;
+    padding: 14px; display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .prov-card.active-card { border-color: var(--gold); box-shadow: 0 0 0 1px rgba(224,169,109,0.25); }
+  .asset-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; margin-top: 12px; }
+  .asset-card {
+    display: grid; grid-template-columns: 96px 1fr; gap: 12px;
+    background: #161412; border: 1px solid var(--border); border-radius: 9px; padding: 12px;
+  }
+  .asset-thumb {
+    width: 96px; aspect-ratio: 9 / 16; background: #0a0908; border-radius: 6px;
+    overflow: hidden; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
+    font-size: 11px; color: var(--muted); text-align: center; padding: 4px;
+  }
+  .asset-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .asset-chip {
+    display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 999px;
+    font-size: 12px; cursor: pointer; border: 1px solid var(--border); background: #161412; color: var(--muted);
+    user-select: none;
+  }
+  .asset-chip.bound { background: var(--gold-soft); border-color: var(--gold); color: var(--gold); font-weight: 600; }
+  .binding-row {
+    background: #161412; border: 1px solid var(--border); border-radius: 7px; padding: 8px 10px; margin-top: 6px;
+  }
+  .notice-bar {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+    background: rgba(224, 159, 90, 0.12); border: 1px solid rgba(224, 159, 90, 0.35);
+    border-radius: 8px; padding: 8px 12px; margin-top: 10px; font-size: 12px; color: #f1c992;
+  }
+  .stepper {
+    display: grid; grid-template-columns: repeat(6, 1fr); gap: 9px; margin-bottom: 16px;
+  }
+  @media (max-width: 1180px) { .stepper { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 720px) { .stepper { grid-template-columns: repeat(2, 1fr); } }
+  .step-item {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 14px; cursor: pointer; transition: 0.15s; position: relative;
+  }
+  .step-item:hover { border-color: rgba(224,169,109,0.55); }
+  .step-item.active {
+    border-color: var(--gold); background: linear-gradient(180deg, rgba(224,169,109,0.13), var(--surface));
+    box-shadow: 0 0 0 1px rgba(224,169,109,0.28);
+  }
+  .step-item.done { border-color: rgba(109,184,137,0.45); }
+  .step-num { font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .step-title { font-size: 14px; font-weight: 600; color: var(--text); }
+  .step-item.active .step-title { color: var(--gold); }
+  .step-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .stage-header {
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 16px; margin-bottom: 14px;
+  }
+  .stage-footer {
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 16px; margin-top: 16px;
+  }
+  .story-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px; margin-bottom: 12px;
+  }
+  .asset-render-card {
+    display: grid; grid-template-columns: 165px 1fr; gap: 16px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px;
+  }
+  @media (max-width: 720px) { .asset-render-card { grid-template-columns: 1fr; } }
+  details { margin-top: 10px; border-top: 1px dashed var(--border); padding-top: 10px; }
+  summary { cursor: pointer; font-size: 13px; color: var(--gold); user-select: none; }
+  .log-console {
+    background: #0c0b0a; border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px; height: 220px; overflow-y: auto; font-family: ui-monospace, SFMono-Regular, monospace; font-size: 12px;
+  }
+  .log-line { margin-bottom: 4px; color: var(--muted); }
+  .log-line b { color: var(--gold); }
+  .modal-bg {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.68); display: none;
+    align-items: center; justify-content: center; z-index: 50;
+  }
+  .modal-bg.open { display: flex; }
+  .modal { width: 520px; max-width: 92vw; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .toast {
+    position: fixed; bottom: 20px; right: 20px; background: var(--gold); color: #191510;
+    padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; display: none; z-index: 60;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <h1>FEELINGS STUDIO</h1>
+    <span>社会心理学驱动 · 情怀 AI 视频工作台</span>
+  </div>
+  <div class="toolbar">
+    <select id="projectSelect" onchange="loadProject(this.value)"></select>
+    <button onclick="openNewModal()">+ 新建项目</button>
+    <button onclick="openManageProjectsModal()">管理项目</button>
+    <button onclick="saveProject()">保存修改</button>
+    <button onclick="runAnimaticPreview()" title="不消耗真实视频API，快速验证旁白节奏与运镜">🎬 零成本预演</button>
+    <button class="primary" id="btnHeaderAutoPilot" onclick="startAutoPilot('auto')">⚡ 一键全自动出片</button>
+    <button onclick="downloadExportPack()" title="打包下载成片、独立字幕、分轨音频与剪映草稿">📦 导出剪映包</button>
+  </div>
+</header>
+
+<main>
+  <div id="autopilotBanner" style="display:none;margin-bottom:14px;"></div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('storyboard', this)">① 六步导演工作台（故事 → 分镜 → 资产 → 出图 → 视频）</div>
+    <div class="tab" onclick="switchTab('promptStudio', this)">② Prompt Studio（系统词 & 双模式双语）</div>
+    <div class="tab" onclick="switchTab('compose', this)">③ 声景精编与成片预览</div>
+    <div class="tab" onclick="switchTab('providers', this)">④ 模型供应商设置（即梦 / Wan / MiniMax / 海外）</div>
+  </div>
+
+  <!-- TAB 1: 6-Step Guided Pipeline -->
+  <section id="tab-storyboard" class="panel active">
+    <div class="card" id="summaryCard">正在加载项目...</div>
+    <div class="stepper" id="workflowStepper"></div>
+    <div id="stageWorkspace"></div>
+  </section>
+
+  <!-- TAB 2: Prompt Studio -->
+  <section id="tab-promptStudio" class="panel">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+        <div>
+          <strong style="color:var(--gold)">五层导演级系统提示词模板（全局默认 + 当前项目独立覆盖）</strong>
+          <span id="tmplScopeBadge" class="badge ok" style="margin-left:6px;">继承全局默认</span>
+          <div style="font-size:12px;color:var(--muted);margin-top:3px;">推荐「保存为当前项目独立模板」（写入 projects/&lt;id&gt;/prompts/），避免单个项目的修改串味到新项目。</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <select id="tmplSelect" onchange="renderSelectedTemplate()">
+            <option value="prompts/story_outline.tmpl">Step 1 · 整体故事剧情 System Prompt</option>
+            <option value="prompts/director_storyboard.tmpl">Step 2 · 按剧情拆解故事板 System Prompt</option>
+            <option value="prompts/asset_extraction.tmpl">Step 3 · 故事板反推资产与绑定 System Prompt</option>
+            <option value="prompts/t2i_system.tmpl">Step 4/5 · 美术指导 T2I System Prompt</option>
+            <option value="prompts/i2v_system.tmpl">Step 6 · 图生视频动态导演 I2V System Prompt</option>
+          </select>
+          <button onclick="saveCurrentTemplate('project')" class="primary">保存为本项目独立模板</button>
+          <button onclick="saveCurrentTemplate('global')">设为全局默认模板</button>
+          <button onclick="resetCurrentTemplate('project')">恢复继承全局</button>
+          <button onclick="resetCurrentTemplate('global')">重置内置出厂</button>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div>
+          <label>模板源码（Go text/template）</label>
+          <textarea id="tmplEditor" rows="18" style="font-family:ui-monospace,monospace;font-size:12px;"></textarea>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <label>当前项目编译后的最终 System Prompt</label>
+            <button class="small" onclick="copyElementText('compiledSysPreview')">一键复制</button>
+          </div>
+          <div id="compiledSysPreview" class="prompt-preview" style="height:352px;max-height:352px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+        <strong style="color:var(--gold)">全片双模式 × 双语分镜提示词总览（即梦 / Wan / 可灵 / Veo / Runway 一键复制）</strong>
+        <div style="display:flex;gap:8px;">
+          <select id="promptModeSwitch" onchange="renderAllCompiledPrompts()">
+            <option value="director">导演时序详版（即梦 Seedance / 可灵 / Wan / Veo）</option>
+            <option value="concise">精炼电影单段版（Runway / Luma / MiniMax 海螺）</option>
+          </select>
+          <select id="promptLangSwitch" onchange="renderAllCompiledPrompts()">
+            <option value="zh">中文 (zh)</option>
+            <option value="en">English (en)</option>
+          </select>
+        </div>
+      </div>
+      <div id="allCompiledPrompts"></div>
+    </div>
+  </section>
+
+  <!-- TAB 3: Compose & Preview -->
+  <section id="tab-compose" class="panel">
+    <div class="grid-2">
+      <div class="card">
+        <strong style="color:var(--gold)">成片画幅 · 旁白音色 · 怀旧配乐 · 硬字幕与三轨混音台</strong>
+        <div class="field-row" style="margin-top:12px;">
+          <div>
+            <label>成片画幅比例（联动生图/生视频/字幕/封面）</label>
+            <select id="mixAspectRatio" onchange="syncMixFields()">
+              <option value="9:16">9:16 竖屏短视频 (1080×1920)</option>
+              <option value="16:9">16:9 横屏电影感 (1920×1080)</option>
+              <option value="3:4">3:4 小红书竖屏 (1080×1440)</option>
+            </select>
+          </div>
+          <div>
+            <label>视觉风格预设</label>
+            <select id="mixStylePreset" onchange="syncMixFields()"></select>
+          </div>
+          <div>
+            <label>视频 API 提示词模式</label>
+            <select id="mixPromptMode" onchange="syncMixFields()">
+              <option value="">自动（按所选视频供应商推荐）</option>
+              <option value="director">强制导演时序详版 (director)</option>
+              <option value="concise">强制精炼电影版 (concise)</option>
+            </select>
+          </div>
+          <div>
+            <label>提示词语言</label>
+            <select id="mixPromptLang" onchange="syncMixFields()">
+              <option value="zh">中文 (zh)</option>
+              <option value="en">英文 (en)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div>
+            <label>全局旁白声线预设</label>
+            <div style="display:flex;gap:6px;">
+              <select id="mixNarratorVoice" onchange="syncMixFields()" style="flex:1;"></select>
+              <button class="small" onclick="applyNarratorVoiceToAll()" title="将该音色与语速应用到当前所有分镜">同步全片</button>
+            </div>
+          </div>
+          <div>
+            <label>全局旁白语速 (<span id="lblSpeed">0.92</span>x)</label>
+            <input type="range" id="rngSpeed" min="0.75" max="1.20" step="0.02" value="0.92" oninput="syncMixFields()" style="width:100%">
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div>
+            <label>怀旧背景配乐预设 (BGM)</label>
+            <div style="display:flex;gap:6px;">
+              <select id="mixBgmPreset" onchange="syncMixFields()" style="flex:1;"></select>
+              <button class="small" onclick="previewBGMPreset()">▶ 试听</button>
+              <button class="small" onclick="triggerBGMUpload()">上传配乐</button>
+            </div>
+          </div>
+          <div>
+            <label>自定义 BGM 路径（上传后自动填入）</label>
+            <input type="text" id="txtBgmPath" placeholder="可选：本地 .mp3/.wav/.m4a 路径" oninput="syncMixFields()" style="width:100%">
+          </div>
+        </div>
+        <div id="bgmPreviewPlayerBox" style="display:none;margin-bottom:10px;"></div>
+
+        <div class="field-row">
+          <div><label>旁白音量 (<span id="lblVoice">1.0</span>)</label><input type="range" id="rngVoice" min="0" max="1.5" step="0.05" oninput="syncMixFields()" style="width:100%"></div>
+          <div><label>环境声景 (<span id="lblAmb">0.34</span>)</label><input type="range" id="rngAmb" min="0" max="1.0" step="0.02" oninput="syncMixFields()" style="width:100%"></div>
+        </div>
+        <div class="field-row">
+          <div><label>怀旧 BGM 音量 (<span id="lblBgm">0.22</span>)</label><input type="range" id="rngBgm" min="0" max="0.8" step="0.02" oninput="syncMixFields()" style="width:100%"></div>
+          <div><label>胶片颗粒强度 (<span id="lblGrain">5</span>)</label><input type="range" id="rngGrain" min="0" max="14" step="1" oninput="syncMixFields()" style="width:100%"></div>
+          <div><label>镜头叠化 秒 (<span id="lblFade">0.40</span>)</label><input type="range" id="rngFade" min="0" max="1.0" step="0.05" oninput="syncMixFields()" style="width:100%"></div>
+        </div>
+
+        <div style="display:flex;gap:18px;flex-wrap:wrap;padding:10px 12px;background:#161412;border:1px solid var(--border);border-radius:8px;margin:8px 0 12px;">
+          <label style="display:flex;align-items:center;gap:6px;margin:0;color:var(--text);cursor:pointer;">
+            <input type="checkbox" id="chkBurnSubtitles" checked onchange="syncMixFields()" />
+            硬压暖白电影字幕（防平台吞软字幕，同时保留独立 .srt/.ass）
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;margin:0;color:var(--text);cursor:pointer;">
+            <input type="checkbox" id="chkGenerateCover" checked onchange="syncMixFields()" />
+            自动生成片名排版封面图 (cover.jpg)
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;margin:0;color:var(--muted);cursor:pointer;">
+            <input type="checkbox" id="chkSkipKeyframes" onchange="syncMixFields()" />
+            跳过分镜首帧定妆图（直用资产图/文本生视频）
+          </label>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+          <button onclick="saveProject()">保存配置</button>
+          <button onclick="runAnimaticPreview()">🎬 生成零成本动态预演样片</button>
+          <button class="primary" onclick="runCompose()">立即合成成片 final.mp4</button>
+          <button class="primary" onclick="startAutoPilot('auto')">⚡ 一键全自动补齐并出片</button>
+          <button onclick="downloadExportPack()">📦 导出剪映草稿 & 分轨 ZIP</button>
+        </div>
+
+        <div style="margin-top:18px;">
+          <label>实时渲染与合成日志（SSE）</label>
+          <div id="logConsole" class="log-console"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+          <strong style="color:var(--gold)">成片 · 动态预演 · 封面海报交付台</strong>
+          <div style="display:flex;gap:6px;">
+            <button class="small primary" id="btnPreviewTabFinal" onclick="switchPreviewKind('final')">正式成片 (final.mp4)</button>
+            <button class="small" id="btnPreviewTabAnimatic" onclick="switchPreviewKind('animatic')">动态预演 (animatic.mp4)</button>
+          </div>
+        </div>
+        <div id="finalVideoBox" style="margin-top:12px;display:flex;flex-direction:column;align-items:center;"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 4: Model Provider Settings -->
+  <section id="tab-providers" class="panel">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+        <div>
+          <strong style="color:var(--gold);font-size:16px;">全链路模型供应商设置（按阶段热切换 · 本地安全落盘）</strong>
+          <div style="font-size:12px;color:var(--muted);margin-top:3px;">
+            配置保存至 <code id="provConfigPath">.feelings/providers.yaml</code>（已加入 .gitignore，权限 0600，密钥在界面脱敏显示），保存后无需重启立即生效。
+          </div>
+        </div>
+        <button class="primary" onclick="saveProviderSettings()">保存全部供应商配置并热生效</button>
+      </div>
+
+      <div class="grid-5" id="activeStageBar"></div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+        <strong style="color:var(--gold)">供应商密钥与模型配置</strong>
+        <div style="display:flex;gap:8px;">
+          <select id="provFilterStage" onchange="renderProviderCards()">
+            <option value="all">全部环节 (LLM / T2I / I2V / TTS)</option>
+            <option value="i2v">图生视频 I2V（即梦 / Wan / MiniMax / 可灵 / Veo / Runway / Luma）</option>
+            <option value="llm">剧本大脑 LLM（DeepSeek / Qwen / 豆包 / OpenAI / Gemini）</option>
+            <option value="t2i">首帧生图 T2I（Seedream / OpenAI Images）</option>
+            <option value="tts">情感配音 TTS（豆包 / MiniMax / ElevenLabs）</option>
+          </select>
+          <select id="provFilterRegion" onchange="renderProviderCards()">
+            <option value="all">国内 + 国外全部</option>
+            <option value="domestic">国内主流</option>
+            <option value="overseas">国外主流</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid-2" id="providerCardsGrid"></div>
+    </div>
+  </section>
+</main>
+
+<!-- New Project Modal -->
+<div class="modal-bg" id="newModal">
+  <div class="modal" style="width:580px;">
+    <h3 style="margin-top:0;color:var(--gold)">新建情怀视频项目</h3>
+    <div class="field-row">
+      <div><label>项目 ID（英文/短横线）</label><input id="npId" placeholder="如 family-spring" style="width:100%"></div>
+      <div><label>项目标题</label><input id="npTitle" placeholder="如 离家前的后备箱" style="width:100%"></div>
+    </div>
+    <div class="field-row">
+      <div><label>社会心理学赛道</label><select id="npTrack" style="width:100%"></select></div>
+      <div><label>视觉风格预设</label><select id="npStyle" style="width:100%"></select></div>
+    </div>
+    <div style="margin-bottom:10px;">
+      <label>创作主题（一句话灵感即可；支持分步精调或全自动一键出片）</label>
+      <input id="npTheme" placeholder="例如：离家前父母塞满的后备箱与窗口亮着的灯" style="width:100%">
+    </div>
+    <div class="field-row">
+      <div>
+        <label>成片画幅比例</label>
+        <select id="npAspect" style="width:100%">
+          <option value="9:16" selected>9:16 竖屏短视频 (抖音/视频号)</option>
+          <option value="16:9">16:9 横屏电影感 (B站/中视频)</option>
+          <option value="3:4">3:4 竖屏图文感 (小红书)</option>
+        </select>
+      </div>
+      <div>
+        <label>默认旁白声线</label>
+        <select id="npVoice" style="width:100%"></select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div>
+        <label>目标篇幅 / 节奏倾向</label>
+        <select id="npPacing" style="width:100%">
+          <option value="auto" selected>由剧情自动决定（推荐）</option>
+          <option value="short">精炼短片（约 20~30 秒）</option>
+          <option value="standard">完整叙事（约 40~60 秒）</option>
+        </select>
+      </div>
+      <div><label>可选：导入本地素材目录</label><input id="npImport" placeholder="留空则从零自动创作" style="width:100%"></div>
+    </div>
+    <label style="display:flex;align-items:center;gap:6px;margin-top:4px;color:var(--muted);cursor:pointer;">
+      <input type="checkbox" id="npSkipKeyframes" />
+      跳过第 5 步分镜首帧定妆图（不勾则默认先生成首帧定妆图再图生视频，构图更稳）
+    </label>
+    <div id="npEngineHint" style="font-size:12px;color:var(--muted);margin-top:8px;"></div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;flex-wrap:wrap;">
+      <button onclick="closeNewModal()">取消</button>
+      <button onclick="createProject(false)">创建并分步精调（先审故事）</button>
+      <button class="primary" onclick="createProject(true)">⚡ 创建并全自动一键出片</button>
+    </div>
+  </div>
+</div>
+
+<!-- Project Manager Modal -->
+<div class="modal-bg" id="manageProjectsModal">
+  <div class="modal" style="width:760px;max-height:84vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;">
+      <div>
+        <h3 style="margin:0;color:var(--gold)">项目管理</h3>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;">查看所有本地项目进度、快速切换、重命名或彻底删除不需要的项目。</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="primary small" onclick="closeManageProjectsModal();openNewModal();">+ 新建项目</button>
+        <button class="small" onclick="closeManageProjectsModal()">关闭</button>
+      </div>
+    </div>
+    <div id="manageProjectsList"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let meta = { strategies: [], styles: [], voices: [], bgm_presets: [], providers: {}, llm_is_mock: true, t2i_is_mock: true };
+let state = { project: null, system_prompts: {}, compiled_prompts: [], jobs: [], clip_paths: {}, voice_paths: {}, final_video: null, animatic_video: null, cover_path: '', autopilot: null };
+let previewVideoKind = 'final'; // 'final' | 'animatic'
+let provState = { config_path: '', catalog: [], config: { active: {}, profiles: {} }, runtime: {} };
+let templates = {};
+let templateOverrides = {};
+let shotPreviewMode = {}; // shot_id -> 'director' | 'concise'
+
+async function api(url, opts = {}) {
+  const res = await fetch(url, opts);
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
+  return data;
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 2600);
+}
+
+let copyStore = {};
+let copySeq = 0;
+
+function registerCopy(text) {
+  const id = 'cp_' + (++copySeq);
+  copyStore[id] = String(text || '');
+  return id;
+}
+
+function copyById(id) {
+  copyText(copyStore[id] || '');
+}
+
+function copyElementText(elId) {
+  const el = document.getElementById(elId);
+  copyText(el ? (el.textContent || '') : '');
+}
+
+async function copyText(text) {
+  const str = String(text || '');
+  if (!str.trim()) {
+    toast('当前没有可复制的内容');
+    return;
+  }
+  try {
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function' && window.isSecureContext) {
+      await navigator.clipboard.writeText(str);
+      toast(`已复制到剪贴板（${str.length} 字）`);
+      return;
+    }
+  } catch (_) {
+    // 浏览器限制剪贴板 API 时自动降级到 textarea + execCommand
+  }
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = str;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.top = '-9999px';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    ta.setSelectionRange(0, str.length);
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    if (ok) {
+      toast(`已复制到剪贴板（${str.length} 字）`);
+      return;
+    }
+  } catch (_) {}
+  toast('自动复制被浏览器拦截，请手动选中复制');
+}
+
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  if (btn) {
+    btn.classList.add('active');
+  } else {
+    const idxMap = { storyboard: 0, promptStudio: 1, compose: 2, providers: 3 };
+    const tabs = document.querySelectorAll('.tab');
+    if (tabs[idxMap[name]]) tabs[idxMap[name]].classList.add('active');
+  }
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+function mediaURL(path) {
+  return '/api/media?path=' + encodeURIComponent(path) + '&t=' + Date.now();
+}
+
+async function boot() {
+  meta = await api('/api/meta');
+  const tResp = await api('/api/templates');
+  templates = tResp.templates || {};
+  await loadProviderSettings();
+
+  document.getElementById('npTrack').innerHTML = meta.strategies.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+  const styleOpts = meta.styles.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+  document.getElementById('npStyle').innerHTML = styleOpts;
+  document.getElementById('mixStylePreset').innerHTML = styleOpts;
+
+  const voiceOpts = (meta.voices && meta.voices.length ? meta.voices : [
+    { id: 'warm-male', name: '温柔怀旧男声（默认）' },
+    { id: 'healing-female', name: '治愈叙事女声' },
+    { id: 'childhood-boy', name: '清澈少年独白' },
+    { id: 'calm-senior', name: '沉稳岁月旁白' }
+  ]).map(v => `<option value="${v.id}">${v.name}</option>`).join('');
+  document.getElementById('npVoice').innerHTML = voiceOpts;
+  document.getElementById('mixNarratorVoice').innerHTML = voiceOpts;
+
+  const bgmOpts = (meta.bgm_presets && meta.bgm_presets.length ? meta.bgm_presets : [
+    { id: 'warm_pad', name: '温暖胶片弦垫（默认）' },
+    { id: 'tape_piano', name: '旧磁带电钢泛音' },
+    { id: 'acoustic_breeze', name: '午后木吉他泛音' },
+    { id: 'music_box', name: '童年八音盒余韵' },
+    { id: 'none', name: '无背景配乐（纯声景）' },
+    { id: 'custom', name: '自定义上传配乐' }
+  ]).map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+  document.getElementById('mixBgmPreset').innerHTML = bgmOpts;
+
+  connectSSE();
+  await refreshProjects();
+  renderSelectedTemplate();
+}
+
+function connectSSE() {
+  const es = new EventSource('/api/events');
+  es.onmessage = async (e) => {
+    try {
+      const ev = JSON.parse(e.data);
+      const box = document.getElementById('logConsole');
+      const line = document.createElement('div');
+      line.className = 'log-line';
+      line.innerHTML = `[${new Date(ev.timestamp).toLocaleTimeString()}] <b>${ev.shot_id || ev.project_id}</b> · ${ev.kind} · ${ev.stage} — ${escapeHTML(ev.message)}`;
+      box.prepend(line);
+
+      if (state.project && ev.project_id === state.project.id && ev.kind === 'autopilot') {
+        if (ev.stage === 'running') {
+          const st = await api('/api/projects/' + encodeURIComponent(state.project.id) + '/autopilot').catch(() => null);
+          if (st) {
+            state.autopilot = st;
+            renderAutoPilotBanner();
+          }
+        } else if (ev.stage === 'succeeded' || ev.stage === 'failed' || ev.stage === 'cancelled') {
+          await loadProject(state.project.id);
+          if (ev.stage === 'succeeded') {
+            previewVideoKind = 'final';
+            switchTab('compose');
+            renderFinalVideo();
+            toast('🎉 一键全自动出片完成！成片与封面已就绪');
+          } else {
+            toast(ev.message || ('一键出片状态：' + ev.stage));
+          }
+        }
+      }
+    } catch (_) {}
+  };
+}
+
+// --- Provider Settings Tab ---
+
+async function loadProviderSettings() {
+  provState = await api('/api/providers');
+  meta.providers = provState.runtime || meta.providers;
+  meta.llm_is_mock = String(meta.providers.llm || '').startsWith('mock-');
+  meta.t2i_is_mock = String(meta.providers.t2i || '').startsWith('mock-');
+  document.getElementById('provConfigPath').textContent = provState.config_path || '.feelings/providers.yaml';
+  renderActiveStageBar();
+  renderProviderCards();
+}
+
+function renderActiveStageBar() {
+  const stages = [
+    { key: 'llm', label: '剧本大脑 (LLM)' },
+    { key: 't2i', label: '首帧生图 (T2I)' },
+    { key: 'i2v', label: '图生视频 (I2V)' },
+    { key: 'tts', label: '情感配音 (TTS)' },
+    { key: 'sfx', label: '环境声景 (SFX)' }
+  ];
+  const bar = document.getElementById('activeStageBar');
+  bar.innerHTML = stages.map(st => {
+    const opts = (provState.catalog || []).filter(c => c.stage === st.key);
+    const cur = (provState.config.active || {})[st.key] || 'mock';
+    return `
+      <div style="background:#161412;border:1px solid var(--border);border-radius:8px;padding:10px;">
+        <label style="color:var(--gold);font-weight:600;">${st.label}</label>
+        <select onchange="setActiveProvider('${st.key}', this.value)" style="width:100%;">
+          ${opts.map(o => `<option value="${o.id}" ${o.id===cur?'selected':''}>${o.name}</option>`).join('')}
+        </select>
+        <div style="font-size:11px;color:var(--muted);margin-top:5px;">当前运行：${(provState.runtime||{})[st.key]||cur}</div>
+      </div>`;
+  }).join('');
+}
+
+function setActiveProvider(stage, id) {
+  provState.config.active[stage] = id;
+  renderProviderCards();
+}
+
+function renderProviderCards() {
+  const stageFilter = document.getElementById('provFilterStage').value;
+  const regionFilter = document.getElementById('provFilterRegion').value;
+  const items = (provState.catalog || []).filter(c => {
+    if (c.id === 'mock' || c.id === 'macos_say') return false;
+    if (stageFilter !== 'all' && c.stage !== stageFilter) return false;
+    if (regionFilter !== 'all' && c.region !== regionFilter) return false;
+    return true;
+  });
+
+  const activeMap = provState.config.active || {};
+  const profiles = provState.config.profiles || {};
+
+  document.getElementById('providerCardsGrid').innerHTML = items.map(spec => {
+    const prof = profiles[spec.id] || { base_url: spec.default_base_url || '', model: (spec.preset_models||[])[0] || '' };
+    const isActive = activeMap[spec.stage] === spec.id;
+    const regionLabel = spec.region === 'domestic' ? '国内主流' : (spec.region === 'overseas' ? '国外主流' : '本地');
+    const allFields = [...(spec.required_fields || []), ...(spec.optional_fields || [])];
+    const hasField = f => allFields.includes(f);
+    const isReq = f => (spec.required_fields || []).includes(f);
+
+    const modelInput = (spec.preset_models && spec.preset_models.length > 0)
+      ? `<input list="models_${spec.id}" value="${escapeAttr(prof.model||'')}" oninput="updateProvField('${spec.id}','model',this.value)" placeholder="选择或输入自定义模型/接入点ID" style="width:100%" />
+         <datalist id="models_${spec.id}">${spec.preset_models.map(m=>`<option value="${m}">`).join('')}</datalist>`
+      : `<input value="${escapeAttr(prof.model||'')}" oninput="updateProvField('${spec.id}','model',this.value)" style="width:100%" />`;
+
+    return `
+      <div class="prov-card ${isActive?'active-card':''}">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap;">
+            <strong style="color:${isActive?'var(--gold)':'var(--text)'}">${spec.name}</strong>
+            <div style="display:flex;gap:4px;">
+              <span class="badge ${spec.region}">${regionLabel}</span>
+              <span class="badge">${spec.stage.toUpperCase()}</span>
+              ${spec.prompt_profile ? `<span class="badge">${spec.prompt_profile==='director'?'推荐:导演详版':'推荐:精炼版'}</span>` : ''}
+              ${spec.supports_tail_ref ? `<span class="badge ok">首尾帧</span>` : ''}
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--muted);margin:6px 0 10px;">${spec.description}</div>
+
+          <div class="field-row">
+            ${hasField('base_url') ? `<div><label>Base URL</label><input value="${escapeAttr(prof.base_url||spec.default_base_url||'')}" oninput="updateProvField('${spec.id}','base_url',this.value)" style="width:100%" /></div>` : ''}
+            ${hasField('model') ? `<div><label>Model / 接入点 ${isReq('model')?'*':''}</label>${modelInput}</div>` : ''}
+          </div>
+          <div class="field-row">
+            ${hasField('api_key') ? `<div><label>API Key / Token ${isReq('api_key')?'*':''}</label><input type="password" value="${escapeAttr(prof.api_key||'')}" oninput="updateProvField('${spec.id}','api_key',this.value)" placeholder="${prof.api_key?'已配置（留空保持不变）':'输入 API Key'}" style="width:100%" /></div>` : ''}
+            ${hasField('access_key') ? `<div><label>Access Key *</label><input type="password" value="${escapeAttr(prof.access_key||'')}" oninput="updateProvField('${spec.id}','access_key',this.value)" placeholder="输入 Access Key" style="width:100%" /></div>` : ''}
+            ${hasField('secret_key') ? `<div><label>Secret Key *</label><input type="password" value="${escapeAttr(prof.secret_key||'')}" oninput="updateProvField('${spec.id}','secret_key',this.value)" placeholder="输入 Secret Key" style="width:100%" /></div>` : ''}
+          </div>
+          <div class="field-row">
+            ${hasField('app_id') ? `<div><label>App ID *</label><input value="${escapeAttr(prof.app_id||'')}" oninput="updateProvField('${spec.id}','app_id',this.value)" style="width:100%" /></div>` : ''}
+            ${hasField('group_id') ? `<div><label>Group ID *</label><input value="${escapeAttr(prof.group_id||'')}" oninput="updateProvField('${spec.id}','group_id',this.value)" style="width:100%" /></div>` : ''}
+            ${hasField('voice_id') ? `<div><label>默认音色 Voice ID</label><input value="${escapeAttr(prof.voice_id||'')}" oninput="updateProvField('${spec.id}','voice_id',this.value)" style="width:100%" /></div>` : ''}
+            ${hasField('mode') ? `<div><label>画质档位 (std / pro)</label><input value="${escapeAttr(prof.mode||'pro')}" oninput="updateProvField('${spec.id}','mode',this.value)" style="width:100%" /></div>` : ''}
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);">
+          <div id="testRes_${spec.id}" style="font-size:12px;color:var(--muted);"></div>
+          <div style="display:flex;gap:6px;">
+            <button class="small" onclick="testSingleProvider('${spec.id}')">校验/测通</button>
+            <button class="small ${isActive?'primary':''}" onclick="activateAndSave('${spec.stage}','${spec.id}')">${isActive?'当前已启用':'设为当前 ' + spec.stage.toUpperCase()}</button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function updateProvField(id, field, val) {
+  provState.config.profiles[id] = provState.config.profiles[id] || {};
+  provState.config.profiles[id][field] = val;
+}
+
+async function activateAndSave(stage, id) {
+  provState.config.active[stage] = id;
+  await saveProviderSettings();
+}
+
+async function saveProviderSettings() {
+  try {
+    const res = await api('/api/providers', {
+      method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(provState.config)
+    });
+    provState.config = res.config;
+    provState.runtime = res.runtime;
+    meta.providers = res.runtime;
+    meta.llm_is_mock = String(meta.providers.llm || '').startsWith('mock-');
+    meta.t2i_is_mock = String(meta.providers.t2i || '').startsWith('mock-');
+    renderActiveStageBar();
+    renderProviderCards();
+    if (state.project) renderSummary();
+    toast('供应商配置已安全保存并热生效');
+  } catch (e) { alert('保存失败：' + e.message); }
+}
+
+async function testSingleProvider(id) {
+  await saveProviderSettings();
+  const el = document.getElementById('testRes_' + id);
+  if (el) el.innerHTML = '正在校验...';
+  try {
+    const res = await api('/api/providers/test', {
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ provider_id: id })
+    });
+    if (el) {
+      el.innerHTML = `<span class="badge ${res.ok?'ok':'err'}">${res.ok?'OK':'失败'}</span> ${escapeHTML(res.message)} ${res.latency_ms?`(${res.latency_ms}ms)`:''}`;
+    }
+  } catch (e) {
+    if (el) el.innerHTML = `<span class="badge err">错误</span> ${escapeHTML(e.message)}`;
+  }
+}
+
+// --- Projects & Storyboard ---
+
+let projectsCache = [];
+
+function stageLabel(st) {
+  return ({
+    story: 'Step 1 · 整体故事',
+    storyboard: 'Step 2 · 故事板分镜',
+    assets_plan: 'Step 3 · 决定资产',
+    assets_render: 'Step 4 · 资产定妆图',
+    keyframes: 'Step 5 · 分镜定妆图',
+    video: 'Step 6 · 生成视频'
+  })[st] || st || 'Step 1 · 整体故事';
+}
+
+async function refreshProjects(selectId) {
+  const res = await api('/api/projects');
+  const sel = document.getElementById('projectSelect');
+  const list = res.projects || [];
+  projectsCache = list;
+  if (list.length === 0) {
+    state = { project: null, system_prompts: {}, compiled_prompts: [], jobs: [], clip_paths: {}, final_video: null };
+    sel.innerHTML = '<option value="">暂无项目，请新建</option>';
+    document.getElementById('summaryCard').innerHTML = '当前还没有项目，请点击右上角 <b>+ 新建项目</b> 开始创作。';
+    document.getElementById('workflowStepper').innerHTML = '';
+    document.getElementById('stageWorkspace').innerHTML = '';
+    document.getElementById('allCompiledPrompts').innerHTML = '';
+    document.getElementById('finalVideoBox').innerHTML = '';
+    return;
+  }
+  sel.innerHTML = list.map(p => `<option value="${p.id}">${escapeHTML(p.title)} (${p.id})</option>`).join('');
+  const exists = selectId && list.some(p => p.id === selectId);
+  const target = exists ? selectId : list[0].id;
+  sel.value = target;
+  await loadProject(target);
+}
+
+async function openManageProjectsModal() {
+  const res = await api('/api/projects');
+  projectsCache = res.projects || [];
+  renderManageProjectsList();
+  document.getElementById('manageProjectsModal').classList.add('open');
+}
+
+function closeManageProjectsModal() {
+  document.getElementById('manageProjectsModal').classList.remove('open');
+}
+
+function renderManageProjectsList() {
+  const box = document.getElementById('manageProjectsList');
+  if (!projectsCache.length) {
+    box.innerHTML = `<div style="padding:28px;text-align:center;color:var(--muted);border:1px dashed var(--border);border-radius:8px;">暂无项目，点击右上角「+ 新建项目」创建第一个作品。</div>`;
+    return;
+  }
+  const curId = state.project ? state.project.id : '';
+  box.innerHTML = projectsCache.map(p => {
+    const isCur = p.id === curId;
+    return `
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:#161412;border:1px solid ${isCur?'var(--gold)':'var(--border)'};border-radius:9px;padding:12px 14px;margin-bottom:10px;">
+        <div style="min-width:260px;flex:1;">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <strong style="color:${isCur?'var(--gold)':'var(--text)'};font-size:14px;">${escapeHTML(p.title)}</strong>
+            <span class="badge">${escapeHTML(p.id)}</span>
+            ${isCur ? '<span class="badge ok">当前打开</span>' : ''}
+            <span class="badge">${stageLabel(p.stage)}</span>
+            ${p.has_final ? '<span class="badge ok">已出成片</span>' : ''}
+          </div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px;">
+            主题：${escapeHTML(p.theme || '未填写')} ｜ ${p.shot_count} 镜 · ${p.asset_count} 资产${p.updated_at ? ' ｜ 更新于 ' + escapeHTML(p.updated_at) : ''}
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="small ${isCur?'':'primary'}" onclick="selectProjectFromManager('${escapeAttr(p.id)}')">${isCur?'查看':'打开'}</button>
+          <button class="small" onclick="renameProjectFromManager('${escapeAttr(p.id)}','${escapeAttr(p.title)}')">重命名</button>
+          <button class="small danger" onclick="deleteProjectById('${escapeAttr(p.id)}','${escapeAttr(p.title)}')">删除项目</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+async function selectProjectFromManager(id) {
+  closeManageProjectsModal();
+  document.getElementById('projectSelect').value = id;
+  await loadProject(id);
+}
+
+async function renameProjectFromManager(id, oldTitle) {
+  const nextTitle = prompt(`请输入项目「${id}」的新标题：`, oldTitle || '');
+  if (!nextTitle || !nextTitle.trim() || nextTitle.trim() === oldTitle) return;
+  try {
+    const detail = await api('/api/projects/' + encodeURIComponent(id));
+    detail.project.title = nextTitle.trim();
+    await api('/api/projects/' + encodeURIComponent(id), {
+      method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(detail.project)
+    });
+    const curId = state.project ? state.project.id : '';
+    await refreshProjects(curId || id);
+    await openManageProjectsModal();
+    toast('项目标题已更新');
+  } catch (e) { alert('重命名失败：' + e.message); }
+}
+
+async function deleteProjectById(id, title) {
+  if (!confirm(`确定要彻底删除项目「${title || id} (${id})」吗？\n\n此操作将删除 projects/${id}/ 下的全部故事、分镜、资产图、成片视频及任务缓存，且不可恢复。`)) {
+    return;
+  }
+  try {
+    await api('/api/projects/' + encodeURIComponent(id), { method: 'DELETE' });
+    toast(`项目 ${id} 已删除`);
+    const curId = state.project ? state.project.id : '';
+    const nextSelect = curId === id ? '' : curId;
+    await refreshProjects(nextSelect);
+    renderManageProjectsList();
+  } catch (e) { alert('删除项目失败：' + e.message); }
+}
+
+async function loadProject(id) {
+  if (!id) return;
+  const [projData, tResp] = await Promise.all([
+    api('/api/projects/' + encodeURIComponent(id)),
+    api('/api/templates?project_id=' + encodeURIComponent(id))
+  ]);
+  state = projData;
+  templates = tResp.templates || {};
+  templateOverrides = tResp.overrides || {};
+  renderAutoPilotBanner();
+  renderSummary();
+  renderWorkflow();
+  renderSelectedTemplate();
+  renderAllCompiledPrompts();
+  renderMixControls();
+  renderFinalVideo();
+}
+
+function renderAutoPilotBanner() {
+  const banner = document.getElementById('autopilotBanner');
+  const headerBtn = document.getElementById('btnHeaderAutoPilot');
+  const ap = state.autopilot;
+  if (!ap || !ap.running) {
+    if (headerBtn) {
+      headerBtn.textContent = '⚡ 一键全自动出片';
+      headerBtn.onclick = () => startAutoPilot('auto');
+    }
+    if (ap && ap.state === 'failed' && ap.error) {
+      banner.style.display = 'block';
+      banner.innerHTML = `
+        <div class="card" style="margin-bottom:0;border-color:var(--red);background:rgba(217,107,107,0.08);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+          <div>
+            <strong style="color:var(--red)">上次一键出片未完成：</strong>
+            <span style="font-size:13px;color:var(--text)">${escapeHTML(ap.error)}（已完成的分镜与音频已缓存，点击续跑仅补齐缺失部分）</span>
+          </div>
+          <button class="small primary" onclick="startAutoPilot('auto')">⚡ 断点续跑一键出片</button>
+        </div>`;
+    } else {
+      banner.style.display = 'none';
+      banner.innerHTML = '';
+    }
+    return;
+  }
+  if (headerBtn) {
+    headerBtn.textContent = `⏳ 自动出片中 (${ap.percent || 5}%)`;
+    headerBtn.onclick = () => cancelAutoPilot();
+  }
+  banner.style.display = 'block';
+  banner.innerHTML = `
+    <div class="card" style="margin-bottom:0;border-color:var(--gold);background:linear-gradient(90deg, rgba(224,169,109,0.14), var(--surface));">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+        <div>
+          <strong style="color:var(--gold)">⚡ 后台全自动一键出片运行中（${ap.percent || 5}%）</strong>
+          <div style="font-size:13px;color:var(--text);margin-top:3px;">${escapeHTML(ap.message || '正在自动推进流水线...')}</div>
+        </div>
+        <button class="small danger" onclick="cancelAutoPilot()">⏹ 取消后台任务</button>
+      </div>
+      <div style="height:8px;border-radius:999px;background:var(--surface-2);overflow:hidden;margin-top:10px;">
+        <div style="height:100%;width:${Math.max(4, ap.percent || 5)}%;background:var(--gold);transition:width 0.35s;"></div>
+      </div>
+    </div>`;
+}
+
+function phaseLabel(phase) {
+  const map = {
+    sensory_hook: '第一幕 · 感官唤起',
+    concrete_ritual: '第二幕 · 具象仪式',
+    relational_warmth: '第三幕 · 关系微光',
+    liminal_closure: '第四幕 · 时空余韵'
+  };
+  return map[phase] || phase;
+}
+
+function renderSummary() {
+  const p = state.project;
+  const rep = p.critic_report || { passed: true, score: 100, phase_distribution: {}, avg_silence_ratio: 0, symbol_hit_count: 0, issues: [] };
+  const strat = meta.strategies.find(s => s.id === p.track);
+  const total = Math.max(1, (p.shots || []).length);
+  const dist = rep.phase_distribution || {};
+  const colors = { sensory_hook: '#5c9ec9', concrete_ritual: '#d9a852', relational_warmth: '#d6786a', liminal_closure: '#9b82d6' };
+
+  const segs = ['sensory_hook', 'concrete_ritual', 'relational_warmth', 'liminal_closure']
+    .map(k => `<div class="arc-seg" title="${phaseLabel(k)}: ${dist[k]||0}镜" style="width:${((dist[k]||0)/total)*100}%;background:${colors[k]}"></div>`).join('');
+
+  const issuesHTML = (rep.issues || []).length === 0
+    ? '<span class="badge ok">心理学质检通过 · 无说教/AI味风险</span>'
+    : rep.issues.map(i => `<span class="badge ${i.severity==='error'?'err':'warn'}">${i.shot_id||'全局'}: ${i.message}</span>`).join(' ');
+
+  const assetsHTML = (p.assets || []).length > 0
+    ? `<div style="margin-top:8px;font-size:12px;color:var(--muted);">已锚定资产图：` + p.assets.map((a, idx) => `<span class="badge">{{Asset ${idx+1}}} ${a.name}</span>`).join(' ') + `</div>`
+    : '';
+
+  const llmBadge = meta.llm_is_mock
+    ? `<span class="badge warn">Mock 占位剧本引擎</span>`
+    : `<span class="badge ok">真实 LLM：${escapeHTML(meta.providers.llm || '')}</span>`;
+  const mockNotice = meta.llm_is_mock
+    ? `<div class="notice-bar">
+         <span>当前剧本大脑处于 <b>Mock 本地模式</b>（已隔离旧项目，仅按当前主题生成占位资产与分镜）。如需针对任意创意生成深度定制剧本与真实资产图，请配置真实 LLM 与 T2I 模型。</span>
+         <button class="small primary" onclick="switchTab('providers')">去配置真实模型 →</button>
+       </div>`
+    : '';
+
+  document.getElementById('summaryCard').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+      <div>
+        <div style="font-size:17px;font-weight:600;">${escapeHTML(p.title)} <span class="badge">${strat ? strat.name : p.track}</span> <span class="badge">${p.style_preset}</span> <span class="badge ok">${escapeHTML(p.aspect_ratio || '9:16')}</span> <span class="badge">旁白:${escapeHTML(p.narrator_voice || 'warm-male')}</span> ${llmBadge}</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:4px;">主题：${escapeHTML(p.theme)} ｜ 当前引擎：LLM=${escapeHTML(meta.providers.llm||'')} · T2I=${escapeHTML(meta.providers.t2i||'')} · I2V=${escapeHTML(meta.providers.i2v||'')} · TTS=${escapeHTML(meta.providers.tts||'')}</div>
+        ${assetsHTML}
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:22px;font-weight:700;color:${rep.passed?'var(--green)':'var(--red)'}">${rep.score} 分</div>
+        <div style="font-size:11px;color:var(--muted)">留白比 ${Math.round((rep.avg_silence_ratio||0)*100)}% · 时代暗号 ${rep.symbol_hit_count||0} 个</div>
+      </div>
+    </div>
+    <div class="arc-bar">${segs}</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">${issuesHTML}</div>
+    ${mockNotice}
+  `;
+}
+
+// --- 6-Step Guided Workflow Stepper & Stage Workspaces ---
+
+function getCurrentStage() {
+  return (state.project && state.project.stage) || 'story';
+}
+
+function renderWorkflow() {
+  renderWorkflowStepper();
+  renderStageWorkspace();
+}
+
+function renderWorkflowStepper() {
+  const box = document.getElementById('workflowStepper');
+  const p = state.project;
+  if (!p) { box.innerHTML = ''; return; }
+
+  const stage = getCurrentStage();
+  const hasStory = !!(p.story && (p.story.synopsis || p.story.logline));
+  const shots = p.shots || [];
+  const assets = p.assets || [];
+  const imgAssets = assets.filter(a => a.source_mode !== 'text_only');
+  const readyAssets = imgAssets.filter(a => !!a.image_path).length;
+  const readyFrames = shots.filter(s => !!s.first_frame_path).length;
+  const readyVideos = shots.filter(s => !!(state.clip_paths || {})[s.shot_id]).length;
+
+  const steps = [
+    {
+      id: 'story', num: 'STEP 1', title: '整体故事剧情',
+      done: !!p.story_confirmed,
+      badge: p.story_confirmed ? '✓ 已确认' : (hasStory ? '待人工确认' : '待生成故事'),
+      sub: '先定完整故事与4幕情绪推进'
+    },
+    {
+      id: 'storyboard', num: 'STEP 2', title: '故事板分镜',
+      done: !!p.storyboard_confirmed && shots.length > 0,
+      badge: shots.length > 0 ? (p.storyboard_confirmed ? `✓ ${shots.length}镜已确认` : `已拆 ${shots.length} 镜`) : '待按剧情拆镜',
+      sub: '由剧情自然决定镜头数并确认'
+    },
+    {
+      id: 'assets_plan', num: 'STEP 3', title: '决定所需资产',
+      done: !!p.assets_confirmed && assets.length > 0,
+      badge: assets.length > 0 ? `${assets.length} 个资产` : '待从分镜提取',
+      sub: '提炼角色/场景/道具与分镜绑定'
+    },
+    {
+      id: 'assets_render', num: 'STEP 4', title: '生成资产图',
+      done: imgAssets.length > 0 && readyAssets === imgAssets.length,
+      badge: imgAssets.length === 0 ? (assets.length > 0 ? '纯文字模式' : '0/0') : `${readyAssets}/${imgAssets.length} 已定妆`,
+      sub: 'AI 生成定妆图或本地上传替换'
+    },
+    {
+      id: 'keyframes', num: 'STEP 5 · 推荐', title: '分镜定妆图',
+      done: !!p.keyframes_skipped || (shots.length > 0 && readyFrames === shots.length),
+      badge: p.keyframes_skipped ? '已跳过（直出）' : `${readyFrames}/${shots.length} 首帧就绪`,
+      sub: '按镜绑定资产生首帧（可跳过）'
+    },
+    {
+      id: 'video', num: 'STEP 6', title: '生成视频',
+      done: shots.length > 0 && readyVideos === shots.length,
+      badge: `${readyVideos}/${shots.length} 视频就绪`,
+      sub: '导演详版 / 图生视频 + 配音成片'
+    }
+  ];
+
+  box.innerHTML = steps.map(st => `
+    <div class="step-item ${stage===st.id?'active':''} ${st.done?'done':''}" onclick="goToStage('${st.id}')">
+      <div class="step-num">
+        <span>${st.num}</span>
+        <span class="badge ${st.done?'ok':(stage===st.id?'warn':'')}">${st.badge}</span>
+      </div>
+      <div class="step-title">${st.title}</div>
+      <div class="step-sub">${st.sub}</div>
+    </div>
+  `).join('');
+}
+
+function renderStageWorkspace() {
+  const stage = getCurrentStage();
+  if (stage === 'story') { renderStageStory(); return; }
+  if (stage === 'storyboard') { renderStageStoryboard(); return; }
+  if (stage === 'assets_plan') { renderStageAssetsPlan(); return; }
+  if (stage === 'assets_render') { renderStageAssetsRender(); return; }
+  if (stage === 'keyframes') { renderStageKeyframes(); return; }
+  renderStageVideo();
+}
+
+async function goToStage(stage, flags = {}) {
+  if (!state.project) return;
+  state.project.stage = stage;
+  if (typeof flags.story_confirmed === 'boolean') state.project.story_confirmed = flags.story_confirmed;
+  if (typeof flags.storyboard_confirmed === 'boolean') state.project.storyboard_confirmed = flags.storyboard_confirmed;
+  if (typeof flags.assets_confirmed === 'boolean') state.project.assets_confirmed = flags.assets_confirmed;
+  if (typeof flags.keyframes_skipped === 'boolean') state.project.keyframes_skipped = flags.keyframes_skipped;
+  renderWorkflow();
+  try {
+    const res = await api('/api/projects/' + encodeURIComponent(state.project.id), {
+      method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(state.project)
+    });
+    state.project = res.project;
+    state.system_prompts = res.system_prompts;
+    state.compiled_prompts = res.compiled_prompts;
+    renderSummary();
+    renderWorkflow();
+    renderAllCompiledPrompts();
+  } catch (e) { alert('切换阶段保存失败：' + e.message); }
+}
+
+async function runPlanStory() {
+  if (!state.project) return;
+  toast('正在按社会心理学策略创作 Step 1 整体故事剧情...');
+  try {
+    const res = await api('/api/projects/' + encodeURIComponent(state.project.id) + '/story/plan', {
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(state.project)
+    });
+    state.project = res.project;
+    state.system_prompts = res.system_prompts;
+    state.compiled_prompts = res.compiled_prompts;
+    renderSummary();
+    renderWorkflow();
+    renderAllCompiledPrompts();
+    toast('整体故事剧情已生成，请审阅修改后确认拆镜');
+  } catch (e) { alert('生成故事失败：' + e.message); }
+}
+
+async function confirmStoryAndSplitStoryboard() {
+  if (!state.project) return;
+  if (!state.project.story || (!state.project.story.synopsis && !state.project.story.logline)) {
+    alert('请先生成或填写整体故事剧情');
+    return;
+  }
+  toast('正在根据你确认的整体故事自动决定分镜数并拆解故事板...');
+  try {
+    const res = await api('/api/projects/' + encodeURIComponent(state.project.id) + '/storyboard/plan', {
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(state.project)
+    });
+    state.project = res.project;
+    state.system_prompts = res.system_prompts;
+    state.compiled_prompts = res.compiled_prompts;
+    renderSummary();
+    renderWorkflow();
+    renderAllCompiledPrompts();
+    toast(`已按剧情自动拆解为 ${(state.project.shots||[]).length} 个分镜头，进入 Step 2 确认故事板`);
+  } catch (e) { alert('按剧情拆解分镜失败：' + e.message); }
+}
+
+async function runPlanStoryboardOnly() {
+  return confirmStoryAndSplitStoryboard();
+}
+
+async function confirmStoryboardAndExtract() {
+  if (!state.project) return;
+  if (!(state.project.shots || []).length) {
+    alert('请先创建至少一个故事板分镜');
+    return;
+  }
+  toast('正在根据你确认的故事板反推所需资产清单与导演详版...');
+  try {
+    const res = await api('/api/projects/' + encodeURIComponent(state.project.id) + '/assets/extract', {
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(state.project)
+    });
+    state.project = res.project;
+    state.system_prompts = res.system_prompts;
+    state.compiled_prompts = res.compiled_prompts;
+    renderSummary();
+    renderWorkflow();
+    renderAllCompiledPrompts();
+    toast('故事板已确认！已自动提取资产清单与每镜绑定，进入 Step 3');
+  } catch (e) { alert('提取资产失败：' + e.message); }
+}
+
+// --- Stage 1: Overall Story Confirmation (Story First!) ---
+
+function ensureStoryObj() {
+  if (!state.project.story) {
+    state.project.story = {
+      logline: '',
+      synopsis: '',
+      acts: [
+        { phase: 'sensory_hook', title: '第一幕 · 感官唤起', summary: '' },
+        { phase: 'concrete_ritual', title: '第二幕 · 具象仪式', summary: '' },
+        { phase: 'relational_warmth', title: '第三幕 · 关系微光', summary: '' },
+        { phase: 'liminal_closure', title: '第四幕 · 时空余韵', summary: '' }
+      ],
+      emotional_tone: '',
+      visual_atmosphere: '',
+      suggested_shot_reason: ''
+    };
+  }
+  return state.project.story;
+}
+
+function updateStoryField(field, val) {
+  ensureStoryObj()[field] = val;
+}
+function updateStoryAct(idx, field, val) {
+  const s = ensureStoryObj();
+  s.acts = s.acts || [];
+  if (!s.acts[idx]) s.acts[idx] = { phase: 'concrete_ritual', title: '', summary: '' };
+  s.acts[idx][field] = val;
+}
+function updateProjectField(field, val) {
+  state.project[field] = val;
+}
+
+function renderStageStory() {
+  const ws = document.getElementById('stageWorkspace');
+  const p = state.project;
+  const st = p.story;
+
+  const bodyHTML = !st
+    ? `<div class="card" style="text-align:center;padding:36px;color:var(--muted);">
+         当前还没有整体故事大纲。点击上方 <b>AI 生成整体故事剧情</b>，先定下打动人的完整故事，再由剧情自然决定拆成多少个镜头。
+       </div>`
+    : `<div class="card">
+         <div class="field-row" style="margin-bottom:12px;">
+           <div style="grid-column: span 2;">
+             <label>创作主题（修改后可点右上角「AI 换一版故事」）</label>
+             <input value="${escapeAttr(p.theme||'')}" oninput="updateProjectField('theme',this.value)" style="width:100%" />
+           </div>
+           <div>
+             <label>目标篇幅 / 节奏倾向（影响拆镜节奏，不写死镜头数）</label>
+             <select onchange="updateProjectField('target_pacing',this.value)" style="width:100%">
+               <option value="auto" ${(!p.target_pacing||p.target_pacing==='auto')?'selected':''}>由剧情自动决定（推荐）</option>
+               <option value="short" ${p.target_pacing==='short'?'selected':''}>精炼短片（约 20~30 秒）</option>
+               <option value="standard" ${p.target_pacing==='standard'?'selected':''}>完整叙事（约 40~60 秒）</option>
+             </select>
+           </div>
+         </div>
+
+         <div style="margin-bottom:12px;">
+           <label style="color:var(--gold);font-weight:600;">一句话核心母题（Logline）</label>
+           <input value="${escapeAttr(st.logline||'')}" oninput="updateStoryField('logline',this.value)" style="width:100%;font-size:14px;" />
+         </div>
+
+         <div style="margin-bottom:14px;">
+           <label style="color:var(--gold);font-weight:600;">完整故事剧情正文（先看整体故事是否动人，支持直接改写）</label>
+           <textarea rows="6" oninput="updateStoryField('synopsis',this.value)" style="font-size:14px;line-height:1.7;">${escapeHTML(st.synopsis||'')}</textarea>
+         </div>
+
+         <div style="margin-bottom:14px;">
+           <label style="color:var(--gold);font-weight:600;">社会心理学 4 幕情绪推进大纲（Step 2 将忠实按这四幕自然拆镜）</label>
+           <div class="grid-2" style="margin-top:6px;">
+             ${(st.acts || []).map((a, idx) => `
+               <div style="background:#161412;border:1px solid var(--border);border-radius:8px;padding:10px;">
+                 <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:6px;">
+                   <span class="badge ${a.phase}">${phaseLabel(a.phase)}</span>
+                   <input value="${escapeAttr(a.title||'')}" oninput="updateStoryAct(${idx},'title',this.value)" placeholder="本幕标题" style="flex:1;padding:4px 8px;" />
+                 </div>
+                 <textarea rows="2" oninput="updateStoryAct(${idx},'summary',this.value)">${escapeHTML(a.summary||'')}</textarea>
+               </div>
+             `).join('')}
+           </div>
+         </div>
+
+         <div class="grid-2">
+           <div>
+             <label>核心情绪底色</label>
+             <input value="${escapeAttr(st.emotional_tone||'')}" oninput="updateStoryField('emotional_tone',this.value)" style="width:100%" />
+           </div>
+           <div>
+             <label>整体光影与声景氛围</label>
+             <input value="${escapeAttr(st.visual_atmosphere||'')}" oninput="updateStoryField('visual_atmosphere',this.value)" style="width:100%" />
+           </div>
+         </div>
+         ${st.suggested_shot_reason ? `<div style="margin-top:10px;padding:8px 12px;background:#161412;border-left:3px solid var(--gold);border-radius:4px;font-size:12px;color:var(--muted);"><b>导演拆镜节奏建议：</b>${escapeHTML(st.suggested_shot_reason)}</div>` : ''}
+       </div>`;
+
+  ws.innerHTML = `
+    <div class="stage-header">
+      <div>
+        <strong style="color:var(--gold);font-size:15px;">Step 1 · 先创作并确认「整体故事剧情」</strong>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;">先有完整动人的故事，再由剧情的起承转合自然决定拆成几个镜头；确认后进入 Step 2 自动拆解故事板。</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="small" onclick="runPlanStory()">${st?'AI 换一版故事方向':'AI 生成整体故事剧情'}</button>
+        <button class="small" onclick="saveProject()">保存故事修改</button>
+        <button onclick="saveAndAutoPilotFrom('storyboard')">⚡ 确认故事并后台一键出片</button>
+        <button class="primary" onclick="confirmStoryAndSplitStoryboard()">✓ 确认整体故事，下一步：按剧情自动拆解分镜 →</button>
+      </div>
+    </div>
+    ${bodyHTML}
+    <div class="stage-footer">
+      <span style="font-size:12px;color:var(--muted);">可选择分步精调故事板，或直接点「确认故事并后台一键出片」由系统自动跑完拆镜、资产、生图、视频与配音成片。</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button onclick="saveAndAutoPilotFrom('storyboard')">⚡ 确认故事并后台一键出片</button>
+        <button class="primary" onclick="confirmStoryAndSplitStoryboard()">✓ 确认整体故事，下一步：按剧情自动拆解分镜 →</button>
+      </div>
+    </div>
+  `;
+}
+
+// --- Stage 2: Storyboard Shot Breakdown (Driven by Confirmed Story) ---
+
+function renderStageStoryboard() {
+  const ws = document.getElementById('stageWorkspace');
+  const p = state.project;
+  const shots = p.shots || [];
+
+  const cards = shots.length === 0
+    ? `<div class="card" style="text-align:center;padding:30px;color:var(--muted);">当前还没有故事板分镜，点击上方 <b>AI 生成故事板草案</b> 或 <b>+ 手动新增分镜</b> 开始创作。</div>`
+    : shots.map((sh, idx) => {
+        const chars = (sh.narration || '').trim().length;
+        const dur = sh.duration_sec || 5;
+        const estSilence = Math.max(0, Math.round((1 - (chars / 3.1) / dur) * 100));
+        return `
+        <div class="story-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <strong style="color:var(--gold);font-size:15px;">镜 ${idx+1} · ${escapeHTML(sh.shot_id)}</strong>
+              <select onchange="updateShot(${idx},'phase',this.value);renderStageStoryboard();" style="padding:4px 8px;">
+                ${['sensory_hook','concrete_ritual','relational_warmth','liminal_closure'].map(ph => `<option value="${ph}" ${sh.phase===ph?'selected':''}>${phaseLabel(ph)}</option>`).join('')}
+              </select>
+              <span class="badge ${estSilence>=25?'ok':'warn'}">旁白 ${chars} 字 · 预估留白 ${estSilence}%</span>
+            </div>
+            <div style="display:flex;gap:6px;">
+              <button class="small" onclick="moveStoryboardShot(${idx},-1)" ${idx===0?'disabled':''}>↑ 上移</button>
+              <button class="small" onclick="moveStoryboardShot(${idx},1)" ${idx===shots.length-1?'disabled':''}>↓ 下移</button>
+              <button class="small danger" onclick="removeStoryboardShot(${idx})">删除</button>
+            </div>
+          </div>
+
+          <div style="margin-bottom:10px;">
+            <label>画面故事内容（Step 2 将直接依据此处内容反推所需角色/场景/道具资产）</label>
+            <textarea rows="2" oninput="updateShot(${idx},'story_summary',this.value)" placeholder="描述这一镜拍什么场景、有哪些人物、做什么微动作...">${escapeHTML(sh.story_summary||'')}</textarea>
+          </div>
+
+          <div class="field-row">
+            <div style="grid-column: span 2;">
+              <label>情感旁白（克制留白，后期压字与配音）</label>
+              <input value="${escapeAttr(sh.narration||'')}" oninput="updateShot(${idx},'narration',this.value)" style="width:100%" />
+            </div>
+            <div>
+              <label>时长 (秒)</label>
+              <input type="number" min="2" max="15" value="${dur}" oninput="updateShot(${idx},'duration_sec',parseInt(this.value)||5)" style="width:100%" />
+            </div>
+            <div>
+              <label>情绪标签</label>
+              <select onchange="updateShot(${idx},'emotion',this.value)" style="width:100%">
+                ${['calm','warm','nostalgic','bittersweet'].map(em => `<option value="${em}" ${sh.emotion===em?'selected':''}>${em}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+
+          <div class="field-row" style="margin-bottom:0;">
+            <div>
+              <label>心理学触发点</label>
+              <input value="${escapeAttr(sh.psych_trigger||'')}" oninput="updateShot(${idx},'psych_trigger',this.value)" style="width:100%" />
+            </div>
+            <div>
+              <label>时代暗号（逗号分隔）</label>
+              <input value="${escapeAttr((sh.symbols||[]).join('、'))}" oninput="updateShotSymbols(${idx},this.value)" style="width:100%" />
+            </div>
+            <div>
+              <label>环境声景标签</label>
+              <input value="${escapeAttr(sh.ambient_tag||'')}" oninput="updateShot(${idx},'ambient_tag',this.value)" style="width:100%" />
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+
+  const storyRefHTML = (p.story && (p.story.synopsis || p.story.logline))
+    ? `<div class="card" style="background:#161412;border-left:3px solid var(--gold);">
+         <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+           <strong style="color:var(--gold);font-size:13px;">整体故事对照：${escapeHTML(p.story.logline || p.theme)}</strong>
+           <button class="small" onclick="goToStage('story')">← 返回修改整体故事</button>
+         </div>
+         <details style="margin-top:6px;border-top:none;padding-top:0;">
+           <summary style="font-size:12px;">展开阅读完整故事正文（共拆解为 ${shots.length} 个分镜头）</summary>
+           <div style="margin-top:8px;font-size:13px;color:#dfd6c7;line-height:1.7;white-space:pre-wrap;">${escapeHTML(p.story.synopsis||'')}</div>
+         </details>
+       </div>`
+    : '';
+
+  ws.innerHTML = `
+    <div class="stage-header">
+      <div>
+        <strong style="color:var(--gold);font-size:15px;">Step 2 · 故事板分镜拆解与人工确认（已按剧情拆解为 ${shots.length} 镜）</strong>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;">分镜数由 Step 1 确认的整体故事自然决定；你可以在此微调单镜画面、旁白、顺序或增删镜头，确认后进入 Step 3 决定所需资产。</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="small" onclick="goToStage('story')">← 返回整体故事</button>
+        <button class="small" onclick="confirmStoryAndSplitStoryboard()">按整体故事重新拆镜</button>
+        <button class="small" onclick="addStoryboardShot()">+ 新增分镜</button>
+        <button class="small" onclick="saveProject()">保存并心理学质检</button>
+        <button class="small" onclick="runAnimaticPreview()">🎬 零成本预演样片</button>
+        <button onclick="saveAndAutoPilotFrom('assets_plan')">⚡ 确认分镜并后台一键出片</button>
+        <button class="primary" onclick="confirmStoryboardAndExtract()">✓ 确认故事板，下一步：提取所需资产 →</button>
+      </div>
+    </div>
+    ${storyRefHTML}
+    ${cards}
+    <div class="stage-footer">
+      <button onclick="goToStage('story')">← 上一步：修改整体故事</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button onclick="saveAndAutoPilotFrom('assets_plan')">⚡ 确认分镜并后台一键出片</button>
+        <button class="primary" onclick="confirmStoryboardAndExtract()">✓ 确认故事板，下一步：提取所需资产 →</button>
+      </div>
+    </div>
+  `;
+}
+
+function addStoryboardShot() {
+  state.project.shots = state.project.shots || [];
+  const nextIdx = state.project.shots.length + 1;
+  state.project.shots.push({
+    shot_id: 's' + nextIdx,
+    order: nextIdx,
+    phase: 'concrete_ritual',
+    story_summary: '',
+    psych_trigger: '具象日常细节唤醒共鸣',
+    symbols: [],
+    narration: '',
+    emotion: 'nostalgic',
+    voice_id: 'warm-male',
+    voice_speed: 0.92,
+    ambient_tag: 'alley_breeze',
+    duration_sec: 5,
+    t2i_spec: { subject_anchor:{zh:'',en:''}, action_relation:{zh:'',en:''}, era_environment:{zh:'',en:''}, shot_framing:{zh:'',en:''}, lighting_mood:{zh:'',en:''}, negative:{zh:'',en:''} },
+    i2v_spec: { subject_micro_action:{zh:'',en:''}, environment_physics:{zh:'',en:''}, camera_movement:'slow_push_in', camera_detail:{zh:'',en:''}, lighting_pacing:{zh:'',en:''}, transition_mode:'single_frame', negative:{zh:'',en:''} },
+    director_sheet: { timeline_beats: [], asset_bindings: [] }
+  });
+  renderWorkflow();
+}
+function removeStoryboardShot(idx) {
+  if (!confirm('确认删除该故事板分镜？')) return;
+  state.project.shots.splice(idx, 1);
+  state.project.shots.forEach((s, i) => { s.order = i + 1; });
+  renderWorkflow();
+}
+function moveStoryboardShot(idx, delta) {
+  const target = idx + delta;
+  const arr = state.project.shots || [];
+  if (target < 0 || target >= arr.length) return;
+  const tmp = arr[idx];
+  arr[idx] = arr[target];
+  arr[target] = tmp;
+  arr.forEach((s, i) => { s.order = i + 1; });
+  renderWorkflow();
+}
+function updateShotSymbols(idx, raw) {
+  state.project.shots[idx].symbols = raw.split(/[、,，\s]+/).map(s => s.trim()).filter(Boolean);
+}
+
+// --- Stage 2: Decide Assets from Confirmed Storyboard ---
+
+function roleLabel(role) {
+  return ({ character: '角色', scene: '场景', prop: '道具' })[role] || '资产';
+}
+function sourceLabel(mode) {
+  return ({ generated: 'AI生成', uploaded: '本地上传', imported: '目录导入', text_only: '纯文字锚定' })[mode] || '待生成';
+}
+
+function renderStageAssetsPlan() {
+  const ws = document.getElementById('stageWorkspace');
+  const p = state.project;
+  p.assets = p.assets || [];
+  const shots = p.shots || [];
+
+  const cards = p.assets.length === 0
+    ? `<div class="card" style="text-align:center;padding:30px;color:var(--muted);">尚未提取资产清单。点击上方 <b>按当前故事板提取资产</b>（自动反推角色/场景/道具及绑定）或 <b>+ 手动新增资产</b>。</div>`
+    : `<div class="grid-2">` + p.assets.map((a, idx) => {
+        const token = a.source_mode === 'text_only' ? '纯文字锚定' : `{{Asset ${idx+1}}}`;
+        const shotChips = shots.map((sh, sIdx) => {
+          const bindings = (sh.director_sheet && sh.director_sheet.asset_bindings) || [];
+          const isBound = bindings.some(b => b.asset_id === a.id || b.asset_name === a.name);
+          return `<span class="asset-chip ${isBound?'bound':''}" onclick="toggleShotAssetBinding(${sIdx},'${a.id}')">${isBound?'✓ ':'+ '}${escapeHTML(sh.shot_id)}</span>`;
+        }).join(' ');
+        return `
+        <div class="card" style="margin-bottom:0;">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
+            <div>
+              <span class="badge ok">${token}</span>
+              <span class="badge">${roleLabel(a.role)}</span>
+              <span class="badge">${sourceLabel(a.source_mode)}</span>
+            </div>
+            <button class="small danger" onclick="removeAsset(${idx})">删除资产</button>
+          </div>
+          <div class="field-row">
+            <div><label>资产名称</label><input value="${escapeAttr(a.name)}" oninput="updateAsset(${idx},'name',this.value)" style="width:100%" /></div>
+            <div>
+              <label>资产类型</label>
+              <select onchange="updateAsset(${idx},'role',this.value);renderStageAssetsPlan();" style="width:100%">
+                <option value="character" ${a.role==='character'?'selected':''}>角色 (character)</option>
+                <option value="scene" ${a.role==='scene'?'selected':''}>场景 (scene)</option>
+                <option value="prop" ${a.role==='prop'?'selected':''}>道具 (prop)</option>
+              </select>
+            </div>
+            <div>
+              <label>使用方式</label>
+              <select onchange="updateAsset(${idx},'source_mode',this.value);renderStageAssetsPlan();" style="width:100%">
+                <option value="generated" ${a.source_mode!=='text_only'&&a.source_mode!=='uploaded'&&a.source_mode!=='imported'?'selected':''}>AI 生成定妆图</option>
+                <option value="uploaded" ${a.source_mode==='uploaded'?'selected':''}>本地上传参考图</option>
+                <option value="imported" ${a.source_mode==='imported'?'selected':''}>目录导入参考图</option>
+                <option value="text_only" ${a.source_mode==='text_only'?'selected':''}>不用参考图（纯文字锚定）</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-bottom:8px;">
+            <label>全片外观/衣着/年代材质锁定描述</label>
+            <textarea rows="2" oninput="updateAsset(${idx},'description',this.value)">${escapeHTML(a.description||'')}</textarea>
+          </div>
+          <div style="margin-bottom:8px;">
+            <label>Step 3 定妆生图 T2I 提示词（中文）</label>
+            <textarea rows="2" oninput="updateAssetPrompt(${idx},'zh',this.value)">${escapeHTML(a.prompt?.zh||'')}</textarea>
+          </div>
+          <div style="padding:8px 10px;background:#161412;border:1px solid var(--border);border-radius:8px;">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">引用该资产的分镜（点击直接勾选/解除绑定）：</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">${shotChips || '<span style="font-size:12px;color:var(--muted);">暂无分镜</span>'}</div>
+          </div>
+        </div>`;
+      }).join('') + `</div>`;
+
+  ws.innerHTML = `
+    <div class="stage-header">
+      <div>
+        <strong style="color:var(--gold);font-size:15px;">Step 3 · 根据故事板决定所需资产与引用关系</strong>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;">审阅由故事板提取出的角色/场景/道具清单，调整每个资产的锁定描述与被哪些分镜引用（纯文字元素可设为不用参考图）。</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="small" onclick="goToStage('storyboard')">← 返回修改故事板</button>
+        <button class="small" onclick="confirmStoryboardAndExtract()">按故事板重新提取资产</button>
+        <button class="small" onclick="addAsset()">+ 新增资产</button>
+        <button class="small" onclick="saveProject()">保存修改</button>
+        <button class="primary" onclick="goToStage('assets_render', {assets_confirmed:true})">✓ 确认资产清单，下一步：生成资产图 →</button>
+      </div>
+    </div>
+    ${cards}
+    <div class="stage-footer">
+      <button onclick="goToStage('storyboard')">← 上一步：返回故事板</button>
+      <button class="primary" onclick="goToStage('assets_render', {assets_confirmed:true})">✓ 确认资产清单，下一步：生成/上传资产图 →</button>
+    </div>
+  `;
+}
+
+// --- Stage 3: Generate / Upload Asset Reference Images ---
+
+function renderStageAssetsRender() {
+  const ws = document.getElementById('stageWorkspace');
+  const p = state.project;
+  p.assets = p.assets || [];
+
+  const cards = p.assets.length === 0
+    ? `<div class="card" style="text-align:center;padding:30px;color:var(--muted);">资产清单为空，请先返回 Step 2 提取或添加资产。</div>`
+    : `<div class="grid-2">` + p.assets.map((a, idx) => {
+        const token = a.source_mode === 'text_only' ? '纯文字锚定' : `{{Asset ${idx+1}}}`;
+        const preview = (a.image_path && a.source_mode !== 'text_only')
+          ? `<img src="${mediaURL(a.image_path)}" alt="${escapeAttr(a.name)}" />`
+          : (a.source_mode === 'text_only'
+              ? `<div style="padding:18px;color:var(--muted);font-size:12px;text-align:center;">纯文字锚定<br/>不生成参考图</div>`
+              : `<div style="padding:18px;color:var(--muted);font-size:12px;text-align:center;">待生成或上传<br/>定妆参考图</div>`);
+        return `
+        <div class="asset-render-card">
+          <div>
+            <div class="media-box">${preview}</div>
+            <div style="display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;">
+              <button class="small primary" onclick="renderAssetImage('${a.id}', true)" ${a.source_mode==='text_only'?'disabled':''}>${a.image_path?'重绘此图':'生成此图'}</button>
+              <button class="small" onclick="triggerAssetUpload('${a.id}')">上传替换</button>
+              <button class="small" onclick="toggleAssetLock(${idx})">${a.locked?'已锁定':'锁定'}</button>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
+              <strong style="color:var(--gold);font-size:15px;">${token} · ${escapeHTML(a.name)}</strong>
+              <div><span class="badge">${roleLabel(a.role)}</span> <span class="badge ${a.image_path?'ok':''}">${sourceLabel(a.source_mode)}</span></div>
+            </div>
+            <div style="margin-bottom:8px;">
+              <label>外观与年代材质描述</label>
+              <textarea rows="2" oninput="updateAsset(${idx},'description',this.value)">${escapeHTML(a.description||'')}</textarea>
+            </div>
+            <div>
+              <label>定妆图 T2I 提示词（改完直接点左侧「重绘此图」）</label>
+              <textarea rows="4" oninput="updateAssetPrompt(${idx},'zh',this.value)">${escapeHTML(a.prompt?.zh||'')}</textarea>
+            </div>
+          </div>
+        </div>`;
+      }).join('') + `</div>`;
+
+  ws.innerHTML = `
+    <div class="stage-header">
+      <div>
+        <strong style="color:var(--gold);font-size:15px;">Step 4 · 生成 / 上传资产定妆图</strong>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;">为每个需要视觉锚定的角色/场景/道具生成或上传定妆图，满意后可点「锁定」避免误覆盖。</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="small" onclick="goToStage('assets_plan')">← 返回资产清单</button>
+        <button class="small primary" onclick="renderAssetImage('', false)">批量生成缺失资产图 (T2I)</button>
+        <button class="small" onclick="renderAssetImage('', true)">全部重绘资产图</button>
+        <button class="primary" onclick="goToStage('keyframes')">✓ 资产图已定妆，下一步：分镜定妆图 →</button>
+      </div>
+    </div>
+    ${cards}
+    <div class="stage-footer">
+      <button onclick="goToStage('assets_plan')">← 上一步：调整资产清单</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button onclick="goToStage('video', {keyframes_skipped:true})">跳过分镜定妆图，直接去生成视频 →</button>
+        <button class="primary" onclick="goToStage('keyframes', {keyframes_skipped:false})">✓ 下一步：生成分镜定妆图（推荐）→</button>
+      </div>
+    </div>
+  `;
+}
+
+// --- Stage 4: Keyframes (Storyboard Still Frames, Recommended & Skippable) ---
+
+function renderStageKeyframes() {
+  const ws = document.getElementById('stageWorkspace');
+  const p = state.project;
+  const compiledMap = {};
+  (state.compiled_prompts || []).forEach(c => { compiledMap[c.shot_id] = c; });
+  const projAssets = p.assets || [];
+
+  const cards = (p.shots || []).map((sh, idx) => {
+    sh.director_sheet = sh.director_sheet || {};
+    sh.director_sheet.asset_bindings = sh.director_sheet.asset_bindings || [];
+    const c = compiledMap[sh.shot_id] || { t2i_zh:{}, t2i_en:{} };
+    const cpT2IZH = registerCopy(c.t2i_zh?.prompt || '');
+    const cpT2IEN = registerCopy(c.t2i_en?.prompt || '');
+    const boundSet = new Set(sh.director_sheet.asset_bindings.map(b => b.asset_id || b.asset_name));
+    const chips = projAssets.length === 0
+      ? `<span style="font-size:12px;color:var(--muted);">暂无项目资产</span>`
+      : projAssets.map((a, aIdx) => {
+          const isBound = boundSet.has(a.id) || boundSet.has(a.name);
+          const tok = a.source_mode === 'text_only' ? '纯文字' : `{{Asset ${aIdx+1}}}`;
+          return `<span class="asset-chip ${isBound?'bound':''}" onclick="toggleShotAssetBinding(${idx},'${a.id}')">${isBound?'✓ ':'+ '}${tok} ${escapeHTML(a.name)}</span>`;
+        }).join(' ');
+
+    const preview = sh.first_frame_path
+      ? `<img src="${mediaURL(sh.first_frame_path)}" alt="${escapeAttr(sh.shot_id)}" />`
+      : `<div style="padding:20px;color:var(--muted);font-size:12px;text-align:center;">待生成或上传<br/>分镜定妆首帧图</div>`;
+
+    return `
+    <div class="shot-card">
+      <div>
+        <div class="media-box">${preview}</div>
+        <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
+          <button class="small primary" onclick="renderSingle('${sh.shot_id}','t2i')">${sh.first_frame_path?'重绘首帧图':'生成首帧图'}</button>
+          <button class="small" onclick="triggerShotFrameUpload('${sh.shot_id}')">上传首帧图</button>
+          <button class="small" onclick="toggleLock(${idx})">${sh.locked?'已锁定':'锁定'}</button>
+        </div>
+        <div style="margin-top:6px;">
+          <span class="badge ${sh.first_frame_path?'ok':'warn'}">${sh.first_frame_path?'首帧定妆就绪':'待生成首帧'}</span>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <div>
+            <strong style="color:var(--gold);font-size:15px;">#${idx+1} · ${escapeHTML(sh.shot_id)}</strong>
+            <span class="badge ${sh.phase}">${phaseLabel(sh.phase)}</span>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <button class="small" onclick="copyById('${cpT2IZH}')">复制中文 T2I 词</button>
+            <button class="small" onclick="copyById('${cpT2IEN}')">复制英文 T2I 词</button>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">故事概要：${escapeHTML(sh.story_summary || sh.narration || '')}</div>
+        <div style="margin-bottom:8px;padding:8px 10px;background:#161412;border:1px solid var(--border);border-radius:8px;">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">本镜传入 T2I 的参考资产图（点击勾选，仅传入已勾选资产）：</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">${chips}</div>
+        </div>
+        <div class="grid-2">
+          <div><label>主体锚定（Subject Anchor）</label><textarea rows="2" oninput="updateT2IBil(${idx},'subject_anchor','zh',this.value)">${escapeHTML(sh.t2i_spec?.subject_anchor?.zh||'')}</textarea></div>
+          <div><label>动作与空间关系（Action & Relation）</label><textarea rows="2" oninput="updateT2IBil(${idx},'action_relation','zh',this.value)">${escapeHTML(sh.t2i_spec?.action_relation?.zh||'')}</textarea></div>
+        </div>
+        <div class="grid-2" style="margin-top:6px;">
+          <div><label>年代环境与道具（Era & Environment）</label><input value="${escapeAttr(sh.t2i_spec?.era_environment?.zh||'')}" oninput="updateT2IBil(${idx},'era_environment','zh',this.value)" style="width:100%" /></div>
+          <div><label>光影与景别（Lighting & Framing）</label><input value="${escapeAttr(sh.t2i_spec?.lighting_mood?.zh||'')}" oninput="updateT2IBil(${idx},'lighting_mood','zh',this.value)" style="width:100%" /></div>
+        </div>
+        <div class="prompt-preview" style="max-height:110px;">${escapeHTML(c.t2i_zh?.prompt||'')}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  ws.innerHTML = `
+    <div class="stage-header">
+      <div>
+        <strong style="color:var(--gold);font-size:15px;">Step 5 · 生成分镜定妆图 / 首帧图（推荐保留，支持一键跳过）</strong>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;">先低成本抽卡锁定每一镜的构图与人物一致性，再进视频模型大幅降低翻车成本；如使用多图参考直出视频，也可直接跳过此步。</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="small" onclick="goToStage('assets_render')">← 返回资产定妆</button>
+        <button class="small primary" onclick="renderAllMissingFrames(false)">批量生成缺失首帧图 (T2I)</button>
+        <button class="small" onclick="renderAllMissingFrames(true)">全部重绘首帧</button>
+        <button class="small" onclick="runAnimaticPreview()" title="用首帧图+真实配音+音效+字幕10秒合成预演片，满意再跑视频">🎬 零成本生成动态预演样片</button>
+        <button class="small" onclick="goToStage('video', {keyframes_skipped:true})">跳过此步，直进视频 →</button>
+        <button class="primary" onclick="goToStage('video', {keyframes_skipped:false})">✓ 首帧图已确认，下一步：生成视频 →</button>
+      </div>
+    </div>
+    ${cards}
+    <div class="stage-footer">
+      <button onclick="goToStage('assets_render')">← 上一步：资产定妆图</button>
+      <button class="primary" onclick="goToStage('video', {keyframes_skipped:false})">✓ 分镜定妆图确认完成，进入 Step 5 生成视频 →</button>
+    </div>
+  `;
+}
+
+function updateAsset(idx, field, val) {
+  state.project.assets[idx][field] = val;
+}
+function updateAssetPrompt(idx, lang, val) {
+  const a = state.project.assets[idx];
+  a.prompt = a.prompt || { zh: '', en: '' };
+  a.prompt[lang] = val;
+}
+function toggleAssetLock(idx) {
+  state.project.assets[idx].locked = !state.project.assets[idx].locked;
+  saveProject();
+}
+function addAsset() {
+  state.project.assets = state.project.assets || [];
+  const nextNum = state.project.assets.length + 1;
+  state.project.assets.push({
+    id: 'a' + Date.now().toString(36).slice(-4) + nextNum,
+    role: 'character',
+    name: '新资产 #' + nextNum,
+    description: '',
+    prompt: { zh: '', en: '' },
+    source_mode: 'generated'
+  });
+  renderWorkflow();
+}
+function removeAsset(idx) {
+  if (!confirm('删除该资产后，所有分镜中对它的引用也将自动解除，确认删除？')) return;
+  const removed = state.project.assets.splice(idx, 1)[0];
+  (state.project.shots || []).forEach(sh => {
+    if (sh.director_sheet && Array.isArray(sh.director_sheet.asset_bindings)) {
+      sh.director_sheet.asset_bindings = sh.director_sheet.asset_bindings.filter(b => b.asset_id !== removed.id && b.asset_name !== removed.name);
+    }
+  });
+  saveProject();
+}
+
+async function renderAssetImage(assetId, force) {
+  if (!state.project) return;
+  await saveProject();
+  toast(assetId ? '正在生成/重绘单张资产定妆图...' : '正在批量生成项目资产定妆图...');
+  try {
+    const res = await api('/api/projects/' + encodeURIComponent(state.project.id) + '/assets/render', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ asset_id: assetId, force: !!force })
+    });
+    state.project = res.project;
+    state.system_prompts = res.system_prompts;
+    state.compiled_prompts = res.compiled_prompts;
+    renderSummary();
+    renderWorkflow();
+    renderAllCompiledPrompts();
+    toast('资产定妆图生成完成');
+  } catch (e) { alert('资产图生成失败：' + e.message); }
+}
+
+function triggerAssetUpload(assetId) {
+  const inp = document.createElement('input');
+  inp.type = 'file';
+  inp.accept = 'image/jpeg,image/png,image/webp';
+  inp.onchange = async () => {
+    if (!inp.files || !inp.files[0]) return;
+    await saveProject();
+    const fd = new FormData();
+    fd.append('file', inp.files[0]);
+    try {
+      const res = await api('/api/projects/' + encodeURIComponent(state.project.id) + '/assets/' + encodeURIComponent(assetId) + '/upload', {
+        method: 'POST', body: fd
+      });
+      state.project = res.project;
+      state.system_prompts = res.system_prompts;
+      state.compiled_prompts = res.compiled_prompts;
+      renderSummary();
+      renderWorkflow();
+      renderAllCompiledPrompts();
+      toast('资产参考图已上传并生效');
+    } catch (e) { alert('上传失败：' + e.message); }
+  };
+  inp.click();
+}
+
+function triggerShotFrameUpload(shotId) {
+  const inp = document.createElement('input');
+  inp.type = 'file';
+  inp.accept = 'image/jpeg,image/png,image/webp';
+  inp.onchange = async () => {
+    if (!inp.files || !inp.files[0]) return;
+    await saveProject();
+    const fd = new FormData();
+    fd.append('file', inp.files[0]);
+    try {
+      const res = await api('/api/projects/' + encodeURIComponent(state.project.id) + '/shots/' + encodeURIComponent(shotId) + '/upload-frame', {
+        method: 'POST', body: fd
+      });
+      state.project = res.project;
+      state.system_prompts = res.system_prompts;
+      state.compiled_prompts = res.compiled_prompts;
+      renderWorkflow();
+      toast(`分镜 ${shotId} 首帧图已上传替换`);
+    } catch (e) { alert('上传失败：' + e.message); }
+  };
+  inp.click();
+}
+
+async function renderAllMissingFrames(force = false) {
+  if (!state.project) return;
+  await saveProject();
+  toast(force ? '正在重绘全片分镜定妆首帧图 (T2I)...' : '正在为缺少首帧的分镜按绑定资产批量生成首帧图 (T2I)...');
+  try {
+    await api('/api/projects/' + encodeURIComponent(state.project.id) + '/render', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ only_kind: 't2i', force_retry: !!force })
+    });
+    await loadProject(state.project.id);
+    toast('分镜首帧图生成完成');
+  } catch (e) { alert('生成首帧失败：' + e.message); }
+}
+
+function toggleShotMode(shotId, mode) {
+  shotPreviewMode[shotId] = mode;
+  renderStageVideo();
+}
+
+// --- Stage 5: Video Generation & Director Sheet ---
+
+function renderStageVideo() {
+  const p = state.project;
+  const compiledMap = {};
+  (state.compiled_prompts || []).forEach(c => { compiledMap[c.shot_id] = c; });
+  const jobMap = {};
+  (state.jobs || []).forEach(j => { jobMap[j.shot_id + ':' + j.kind] = j; });
+
+  const ws = document.getElementById('stageWorkspace');
+  const cardsHTML = (p.shots || []).map((sh, idx) => {
+    sh.director_sheet = sh.director_sheet || {};
+    sh.director_sheet.timeline_beats = sh.director_sheet.timeline_beats || [];
+
+    const clipPath = (state.clip_paths || {})[sh.shot_id];
+    const voicePath = (state.voice_paths || {})[sh.shot_id];
+    const c = compiledMap[sh.shot_id] || { t2i_zh:{}, t2i_en:{}, i2v_zh:{}, i2v_en:{}, i2v_director_zh:{}, i2v_director_en:{} };
+    const t2iJob = jobMap[sh.shot_id + ':t2i'];
+    const i2vJob = jobMap[sh.shot_id + ':i2v'];
+    const ttsJob = jobMap[sh.shot_id + ':tts'];
+    const mode = shotPreviewMode[sh.shot_id] || 'director';
+    sh.director_sheet.asset_bindings = sh.director_sheet.asset_bindings || [];
+
+    const projAssets = p.assets || [];
+    const boundAssetSet = new Set(sh.director_sheet.asset_bindings.map(b => b.asset_id || b.asset_name));
+    const assetChipsHTML = projAssets.length === 0
+      ? `<span style="font-size:12px;color:var(--muted);">项目资产库为空（请先在上方添加资产）</span>`
+      : projAssets.map((a, aIdx) => {
+          const isBound = boundAssetSet.has(a.id) || boundAssetSet.has(a.name);
+          const tok = a.source_mode === 'text_only' ? '纯文字' : `{{Asset ${aIdx+1}}}`;
+          return `<span class="asset-chip ${isBound?'bound':''}" onclick="toggleShotAssetBinding(${idx}, '${a.id}')">${isBound?'✓ ':'+ '}${tok} ${escapeHTML(a.name)}</span>`;
+        }).join(' ');
+
+    const bindingRulesHTML = sh.director_sheet.asset_bindings.map((b, bIdx) => `
+      <div class="binding-row">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:4px;">
+          <span style="font-size:12px;color:var(--gold);font-weight:600;">${escapeHTML(b.ref_token)} · ${escapeHTML(b.asset_name)}（${roleLabel(b.role)}）</span>
+          <button class="small danger" onclick="removeShotAssetBinding(${idx},${bIdx})">解除引用</button>
+        </div>
+        <div class="grid-2">
+          <div><label>参考使用边界（避免照抄姿势/角度）</label><input value="${escapeAttr(b.usage_rule?.zh||'')}" oninput="updateBindingBil(${idx},${bIdx},'usage_rule','zh',this.value)" style="width:100%" /></div>
+          <div><label>防串台排除提示（可选，如：勿换成其他角色）</label><input value="${escapeAttr(b.exclude_hint?.zh||'')}" oninput="updateBindingBil(${idx},${bIdx},'exclude_hint','zh',this.value)" style="width:100%" /></div>
+        </div>
+      </div>`).join('');
+
+    const previewText = mode === 'director'
+      ? (c.i2v_director_zh?.full_sheet || '')
+      : (c.i2v_zh?.prompt || '');
+    const genOnlyZH = mode === 'director' ? (c.i2v_director_zh?.generation_prompt || '') : (c.i2v_zh?.prompt || '');
+    const genOnlyEN = mode === 'director' ? (c.i2v_director_en?.generation_prompt || '') : (c.i2v_en?.prompt || '');
+    const cpGenZH = registerCopy(genOnlyZH);
+    const cpGenEN = registerCopy(genOnlyEN);
+    const cpFullZH = registerCopy(c.i2v_director_zh?.full_sheet || '');
+
+    const mediaHTML = clipPath
+      ? `<video src="${mediaURL(clipPath)}" controls loop muted playsinline></video>`
+      : (sh.first_frame_path ? `<img src="${mediaURL(sh.first_frame_path)}" alt="${sh.shot_id}" />` : `<div style="padding:20px;color:var(--muted);font-size:12px;">待 T2I 生成首帧</div>`);
+
+    const beatsHTML = sh.director_sheet.timeline_beats.map((b, bIdx) => `
+      <div class="beat-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:8px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <strong style="color:var(--gold);font-size:12px;">时间段 #${bIdx+1}</strong>
+            <input type="number" step="0.1" value="${b.start_sec}" oninput="updateBeat(${idx},${bIdx},'start_sec',parseFloat(this.value)||0)" style="width:66px;padding:4px 6px;" />
+            <span>-</span>
+            <input type="number" step="0.1" value="${b.end_sec}" oninput="updateBeat(${idx},${bIdx},'end_sec',parseFloat(this.value)||0)" style="width:66px;padding:4px 6px;" />
+            <span>秒</span>
+            <input value="${escapeAttr(b.title?.zh||'')}" oninput="updateBeatBil(${idx},${bIdx},'title','zh',this.value)" placeholder="节拍标题" style="width:170px;padding:4px 8px;" />
+          </div>
+          <button class="small danger" onclick="removeBeat(${idx},${bIdx})">删除此段</button>
+        </div>
+        <div class="grid-2">
+          <div>
+            <label>画面动作与物理细节</label>
+            <textarea rows="2" oninput="updateBeatBil(${idx},${bIdx},'visual','zh',this.value)">${escapeHTML(b.visual?.zh||'')}</textarea>
+            <label style="margin-top:4px;">禁止（局部防穿帮/防变形）</label>
+            <input value="${escapeAttr(b.forbid?.zh||'')}" oninput="updateBeatBil(${idx},${bIdx},'forbid','zh',this.value)" style="width:100%" />
+            <label style="margin-top:4px;">约束（数量/位置/留白不变量）</label>
+            <input value="${escapeAttr(b.constraint?.zh||'')}" oninput="updateBeatBil(${idx},${bIdx},'constraint','zh',this.value)" style="width:100%" />
+          </div>
+          <div>
+            <div class="field-row">
+              <div><label>对白（默认无防乱动嘴）</label><input value="${escapeAttr(b.dialogue?.zh||'无')}" oninput="updateBeatBil(${idx},${bIdx},'dialogue','zh',this.value)" style="width:100%" /></div>
+              <div><label>站位与朝向</label><input value="${escapeAttr(b.staging?.zh||'')}" oninput="updateBeatBil(${idx},${bIdx},'staging','zh',this.value)" style="width:100%" /></div>
+            </div>
+            <div class="field-row">
+              <div><label>运镜与缓停</label><input value="${escapeAttr(b.camera?.zh||'')}" oninput="updateBeatBil(${idx},${bIdx},'camera','zh',this.value)" style="width:100%" /></div>
+              <div><label>微音效</label><input value="${escapeAttr(b.sfx?.zh||'')}" oninput="updateBeatBil(${idx},${bIdx},'sfx','zh',this.value)" style="width:100%" /></div>
+            </div>
+            <label>心理锚点映射（仅写入后期区，不发给视频模型）</label>
+            <input value="${escapeAttr(b.psych_mapping||'')}" oninput="updateBeat(${idx},${bIdx},'psych_mapping',this.value)" style="width:100%" />
+          </div>
+        </div>
+      </div>`).join('');
+
+    return `
+    <div class="shot-card">
+      <div>
+        <div class="media-box">${mediaHTML}</div>
+        <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
+          <button class="small primary" onclick="renderSingle('${sh.shot_id}','t2i')">${sh.first_frame_path?'重绘首帧图':'生成首帧图'}</button>
+          <button class="small" onclick="triggerShotFrameUpload('${sh.shot_id}')">上传首帧图</button>
+          <button class="small" onclick="renderSingle('${sh.shot_id}','i2v')">重绘视频</button>
+          <button class="small" onclick="renderSingle('${sh.shot_id}','tts')">重配旁白</button>
+          <button class="small" onclick="toggleLock(${idx})">${sh.locked ? '已锁定' : '锁定'}</button>
+        </div>
+        <div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap;">
+          <span class="badge ${sh.first_frame_path?'ok':''}">首帧: ${sh.first_frame_path?'ready':(t2iJob?t2iJob.Status:'empty')}</span>
+          <span class="badge ${i2vJob&&i2vJob.Status==='succeeded'?'ok':''}">I2V: ${i2vJob?i2vJob.Status:'pending'}</span>
+          <span class="badge ${ttsJob&&ttsJob.Status==='succeeded'?'ok':''}">TTS: ${ttsJob?ttsJob.Status:'pending'}</span>
+        </div>
+        ${voicePath ? `<audio controls preload="none" src="${mediaURL(voicePath)}" style="width:100%;height:30px;margin-top:6px;"></audio>` : ''}
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
+          <div>
+            <strong style="font-size:15px;color:var(--gold)">#${idx+1} · ${sh.shot_id}</strong>
+            <span class="badge ${sh.phase}">${phaseLabel(sh.phase)}</span>
+            <span class="badge">${sh.director_sheet.timeline_beats.length || 2} 个时间节拍</span>
+            ${(sh.symbols||[]).map(s => `<span class="badge">${s}</span>`).join(' ')}
+          </div>
+          <span style="font-size:12px;color:var(--muted)">${sh.psych_trigger || ''}</span>
+        </div>
+
+        <div class="field-row">
+          <div style="grid-column: span 2;">
+            <label>情感旁白（后期压字/配音，绝不写入视频模型画面）</label>
+            <input value="${escapeAttr(sh.narration)}" oninput="updateShot(${idx}, 'narration', this.value)" style="width:100%" />
+          </div>
+          <div>
+            <label>环境声景标签</label>
+            <input value="${escapeAttr(sh.ambient_tag)}" oninput="updateShot(${idx}, 'ambient_tag', this.value)" style="width:100%" />
+          </div>
+          <div>
+            <label>时长 (秒)</label>
+            <input type="number" min="2" max="15" value="${sh.duration_sec||5}" oninput="updateShot(${idx}, 'duration_sec', parseInt(this.value)||5)" style="width:100%" />
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div>
+            <label>运镜轨迹 (I2V Camera)</label>
+            <select onchange="updateI2V(${idx}, 'camera_movement', this.value)" style="width:100%">
+              ${['slow_push_in','slow_pull_out','gentle_pan_right','gentle_pan_left','static_gaze','handheld_breath']
+                .map(m => `<option value="${m}" ${sh.i2v_spec.camera_movement===m?'selected':''}>${m}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <label>镜头动态模式</label>
+            <select onchange="updateI2V(${idx}, 'transition_mode', this.value)" style="width:100%">
+              <option value="single_frame" ${sh.i2v_spec.transition_mode!=='first_last_frame'?'selected':''}>单首帧延展 (single_frame)</option>
+              <option value="first_last_frame" ${sh.i2v_spec.transition_mode==='first_last_frame'?'selected':''}>首尾帧平滑过渡 (first_last_frame)</option>
+            </select>
+          </div>
+          <div>
+            <label>情绪标签 (TTS)</label>
+            <select onchange="updateShot(${idx}, 'emotion', this.value)" style="width:100%">
+              ${['calm','warm','nostalgic','bittersweet'].map(em => `<option value="${em}" ${sh.emotion===em?'selected':''}>${em}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <label>本镜旁白音色</label>
+            <select onchange="updateShot(${idx}, 'voice_id', this.value)" style="width:100%">
+              ${(meta.voices && meta.voices.length ? meta.voices : [{id:'warm-male',name:'温柔怀旧男声'},{id:'healing-female',name:'治愈叙事女声'},{id:'childhood-boy',name:'清澈少年独白'},{id:'calm-senior',name:'沉稳岁月旁白'}])
+                .map(v => `<option value="${v.id}" ${(sh.voice_id||p.narrator_voice||'warm-male')===v.id?'selected':''}>${v.name}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+
+        <div style="margin:8px 0;padding:8px 10px;background:#161412;border:1px solid var(--border);border-radius:8px;">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">本镜引用的资产图（点击勾选/取消，仅将勾选资产传入本镜 T2I/I2V）：</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">${assetChipsHTML}</div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;flex-wrap:wrap;gap:6px;">
+          <div style="display:flex;gap:6px;align-items:center;">
+            <button class="small ${mode==='director'?'primary':''}" onclick="toggleShotMode('${sh.shot_id}','director')">导演时序详版</button>
+            <button class="small ${mode==='concise'?'primary':''}" onclick="toggleShotMode('${sh.shot_id}','concise')">精炼电影版</button>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="small" onclick="copyById('${cpGenZH}')">复制纯净中文生成词</button>
+            <button class="small" onclick="copyById('${cpGenEN}')">复制纯净英文生成词</button>
+            ${mode==='director' ? `<button class="small" onclick="copyById('${cpFullZH}')">复制完整导演稿(含后期)</button>` : ''}
+          </div>
+        </div>
+        <div class="prompt-preview">${escapeHTML(previewText)}</div>
+
+        <details>
+          <summary>展开编辑：首帧画面 T2I 槽位 · 资产引用边界 · 秒级时间分段（Timeline Beats）</summary>
+          <div style="margin-top:10px;">
+            <div class="grid-2" style="margin-bottom:10px;">
+              <div><label>首帧主体锚定（T2I Subject）</label><textarea rows="2" oninput="updateT2IBil(${idx},'subject_anchor','zh',this.value)">${escapeHTML(sh.t2i_spec?.subject_anchor?.zh||'')}</textarea></div>
+              <div><label>首帧动作与环境（T2I Action）</label><textarea rows="2" oninput="updateT2IBil(${idx},'action_relation','zh',this.value)">${escapeHTML(sh.t2i_spec?.action_relation?.zh||'')}</textarea></div>
+            </div>
+            ${bindingRulesHTML ? `<div style="margin-bottom:12px;"><strong style="font-size:13px;color:var(--gold)">本镜资产引用边界与防串台规则</strong>${bindingRulesHTML}</div>` : ''}
+            <div class="grid-2" style="margin-bottom:10px;">
+              <div><label>首帧衔接说明</label><input value="${escapeAttr(sh.director_sheet.first_frame_link?.zh||'')}" oninput="updateSheetBil(${idx},'first_frame_link','zh',this.value)" style="width:100%" /></div>
+              <div><label>尾帧衔接与留白说明</label><input value="${escapeAttr(sh.director_sheet.last_frame_link?.zh||'')}" oninput="updateSheetBil(${idx},'last_frame_link','zh',this.value)" style="width:100%" /></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+              <strong style="font-size:13px;color:var(--gold)">秒级时间节拍（支持自由增删，兼顾情怀呼吸感与长镜控制）</strong>
+              <button class="small primary" onclick="addBeat(${idx})">+ 新增时间段</button>
+            </div>
+            ${beatsHTML}
+          </div>
+        </details>
+      </div>
+    </div>`;
+  }).join('');
+
+  ws.innerHTML = `
+    <div class="stage-header">
+      <div>
+        <strong style="color:var(--gold);font-size:15px;">Step 6 · 生成视频（I2V / 导演时序详版）与声景配音</strong>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;">精调每镜运镜、秒级时间节拍（Timeline Beats）与资产引用边界；支持单镜重绘或全片一键渲染，完成后前往 Tab ③ 合成成片。</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="small" onclick="goToStage('keyframes')">← 返回分镜定妆图</button>
+        <button class="small" onclick="saveProject()">保存提示词修改</button>
+        <button class="small" onclick="runAnimaticPreview()">🎬 零成本预演样片</button>
+        <button onclick="runRenderAll()">仅渲染全片素材</button>
+        <button class="primary" onclick="saveAndAutoPilotFrom('video')">⚡ 一键渲染并自动合成成片 MP4</button>
+      </div>
+    </div>
+    ${cardsHTML}
+  `;
+}
+
+function updateShot(idx, field, val) { state.project.shots[idx][field] = val; }
+function updateI2V(idx, field, val) { state.project.shots[idx].i2v_spec[field] = val; }
+function updateT2IBil(idx, field, lang, val) {
+  const t2i = state.project.shots[idx].t2i_spec = state.project.shots[idx].t2i_spec || {};
+  t2i[field] = t2i[field] || { zh:'', en:'' };
+  t2i[field][lang] = val;
+}
+function toggleShotAssetBinding(shotIdx, assetId) {
+  const sh = state.project.shots[shotIdx];
+  sh.director_sheet = sh.director_sheet || {};
+  sh.director_sheet.asset_bindings = sh.director_sheet.asset_bindings || [];
+  const aIdx = (state.project.assets || []).findIndex(a => a.id === assetId);
+  if (aIdx < 0) return;
+  const asset = state.project.assets[aIdx];
+  const existIdx = sh.director_sheet.asset_bindings.findIndex(b => b.asset_id === assetId || b.asset_name === asset.name);
+  if (existIdx >= 0) {
+    sh.director_sheet.asset_bindings.splice(existIdx, 1);
+  } else {
+    const defaultRule = asset.role === 'scene'
+      ? '只参考空间材质、建筑结构与光影氛围；不参考空镜构图角度'
+      : (asset.role === 'prop' ? '只参考道具材质、形状比例与磨损质感；不参考摆放角度与数量' : '只参考外貌特征、服装款式与年代材质；不参考站姿、构图角度');
+    sh.director_sheet.asset_bindings.push({
+      asset_id: asset.id,
+      role: asset.role,
+      asset_name: asset.name,
+      ref_token: asset.source_mode === 'text_only' ? '不使用参考图（纯文字锚定）' : `{{Asset ${aIdx+1}}}`,
+      usage_rule: { zh: defaultRule, en: 'Reference appearance and texture only; do not copy angle or pose' },
+      exclude_hint: { zh: '', en: '' }
+    });
+  }
+  renderWorkflow();
+}
+function removeShotAssetBinding(shotIdx, bIdx) {
+  state.project.shots[shotIdx].director_sheet.asset_bindings.splice(bIdx, 1);
+  renderWorkflow();
+}
+function updateBindingBil(shotIdx, bIdx, field, lang, val) {
+  const b = state.project.shots[shotIdx].director_sheet.asset_bindings[bIdx];
+  b[field] = b[field] || { zh:'', en:'' };
+  b[field][lang] = val;
+}
+function updateSheetBil(idx, field, lang, val) {
+  const ds = state.project.shots[idx].director_sheet = state.project.shots[idx].director_sheet || {};
+  ds[field] = ds[field] || { zh:'', en:'' };
+  ds[field][lang] = val;
+}
+function updateBeat(idx, bIdx, field, val) {
+  state.project.shots[idx].director_sheet.timeline_beats[bIdx][field] = val;
+}
+function updateBeatBil(idx, bIdx, field, lang, val) {
+  const b = state.project.shots[idx].director_sheet.timeline_beats[bIdx];
+  b[field] = b[field] || { zh:'', en:'' };
+  b[field][lang] = val;
+}
+function addBeat(idx) {
+  const sh = state.project.shots[idx];
+  sh.director_sheet = sh.director_sheet || {};
+  sh.director_sheet.timeline_beats = sh.director_sheet.timeline_beats || [];
+  const lastEnd = sh.director_sheet.timeline_beats.length > 0
+    ? sh.director_sheet.timeline_beats[sh.director_sheet.timeline_beats.length - 1].end_sec
+    : 0;
+  const nextEnd = Math.min(sh.duration_sec || 5, +(lastEnd + 1.5).toFixed(1));
+  sh.director_sheet.timeline_beats.push({
+    start_sec: lastEnd, end_sec: nextEnd > lastEnd ? nextEnd : lastEnd + 1.5,
+    title: { zh: '新增节拍', en: 'New Beat' },
+    visual: { zh: '', en: '' }, dialogue: { zh: '无', en: 'None' },
+    forbid: { zh: '禁止画面文字、畸形手指与镜头突跳', en: 'No rendered text, warped hands, or sudden jump' },
+    constraint: { zh: '主体与场景道具数量锁定不变', en: 'Lock subject and prop count' },
+    staging: { zh: '', en: '' }, camera: { zh: '极缓慢平稳运镜', en: 'Ultra-slow steady camera' },
+    sfx: { zh: '柔和环境底噪', en: 'Soft ambient tone' }, psych_mapping: ''
+  });
+  renderWorkflow();
+}
+function removeBeat(idx, bIdx) {
+  state.project.shots[idx].director_sheet.timeline_beats.splice(bIdx, 1);
+  renderWorkflow();
+}
+function toggleLock(idx) {
+  state.project.shots[idx].locked = !state.project.shots[idx].locked;
+  saveProject();
+}
+
+// --- Prompt Studio ---
+
+function renderSelectedTemplate() {
+  const name = document.getElementById('tmplSelect').value;
+  document.getElementById('tmplEditor').value = templates[name] || '';
+  const isOverride = !!templateOverrides[name];
+  const badge = document.getElementById('tmplScopeBadge');
+  if (badge) {
+    badge.className = 'badge ' + (isOverride ? 'warn' : 'ok');
+    badge.textContent = isOverride ? '当前项目独立覆盖（不影响其他项目）' : '继承全局默认模板';
+  }
+  const sys = state.system_prompts || {};
+  const map = {
+    'prompts/story_outline.tmpl': sys.story_outline,
+    'prompts/director_storyboard.tmpl': sys.director_storyboard,
+    'prompts/asset_extraction.tmpl': sys.asset_extraction,
+    'prompts/t2i_system.tmpl': sys.t2i_system,
+    'prompts/i2v_system.tmpl': sys.i2v_system
+  };
+  document.getElementById('compiledSysPreview').textContent = map[name] || '请先选择或加载项目';
+}
+
+async function saveCurrentTemplate(scope = 'project') {
+  const name = document.getElementById('tmplSelect').value;
+  const content = document.getElementById('tmplEditor').value;
+  const projectId = state.project ? state.project.id : '';
+  if (scope === 'project' && !projectId) {
+    alert('请先选择或创建一个项目');
+    return;
+  }
+  try {
+    await api('/api/templates', {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ name, content, project_id: projectId, scope })
+    });
+    templates[name] = content;
+    if (scope === 'project') templateOverrides[name] = true;
+    toast(scope === 'project' ? '已保存为当前项目独立模板（不影响其他项目）' : '已更新为全局默认模板');
+    if (state.project) await loadProject(state.project.id);
+  } catch (e) { alert('保存失败：' + e.message); }
+}
+
+async function resetCurrentTemplate(scope = 'project') {
+  const name = document.getElementById('tmplSelect').value;
+  const projectId = state.project ? state.project.id : '';
+  try {
+    const res = await api('/api/templates/reset', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ name, project_id: projectId, scope })
+    });
+    templates[name] = res.content;
+    if (scope === 'project') templateOverrides[name] = false;
+    toast(scope === 'project' ? '已删除本项目覆盖，恢复继承全局默认模板' : '已恢复内置出厂默认模板');
+    if (state.project) await loadProject(state.project.id);
+  } catch (e) { alert('重置失败：' + e.message); }
+}
+
+function renderAllCompiledPrompts() {
+  const lang = document.getElementById('promptLangSwitch').value;
+  const mode = document.getElementById('promptModeSwitch').value;
+  const list = state.compiled_prompts || [];
+  document.getElementById('allCompiledPrompts').innerHTML = list.map(c => {
+    const t2i = lang === 'en' ? c.t2i_en : c.t2i_zh;
+    const dir = lang === 'en' ? c.i2v_director_en : c.i2v_director_zh;
+    const con = lang === 'en' ? c.i2v_en : c.i2v_zh;
+    const i2vGen = mode === 'director' ? (dir?.generation_prompt || '') : (con?.prompt || '');
+    const i2vDisplay = mode === 'director' ? (dir?.full_sheet || '') : ((con?.prompt||'') + '\n\n[Negative] ' + (con?.negative_prompt||''));
+    const cpT2I = registerCopy(t2i?.prompt || '');
+    const cpI2VGen = registerCopy(i2vGen);
+    const cpFullSheet = registerCopy(dir?.full_sheet || '');
+    return `
+      <div style="border-top:1px solid var(--border);padding:12px 0;">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+          <strong style="color:var(--gold)">${c.shot_id}</strong>
+          <div style="display:flex;gap:6px;">
+            <button class="small" onclick="copyById('${cpT2I}')">复制 T2I 提示词</button>
+            <button class="small primary" onclick="copyById('${cpI2VGen}')">复制纯净 I2V 生成指令</button>
+            ${mode==='director' ? `<button class="small" onclick="copyById('${cpFullSheet}')">复制完整导演稿</button>` : ''}
+          </div>
+        </div>
+        <div class="grid-2">
+          <div><label>T2I 首帧提示词</label><div class="prompt-preview">${escapeHTML(t2i?.prompt||'')}\n\n[Negative] ${escapeHTML(t2i?.negative_prompt||'')}</div></div>
+          <div><label>I2V 视频提示词（${mode==='director'?'导演时序详版':'精炼电影版'}）</label><div class="prompt-preview">${escapeHTML(i2vDisplay)}</div></div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// --- Compose & Mix ---
+
+function renderMixControls() {
+  const p = state.project;
+  if (!p) return;
+  document.getElementById('mixAspectRatio').value = p.aspect_ratio || '9:16';
+  document.getElementById('mixStylePreset').value = p.style_preset;
+  document.getElementById('mixPromptMode').value = p.prompt_mode || '';
+  document.getElementById('mixPromptLang').value = p.prompt_lang || 'zh';
+  document.getElementById('mixNarratorVoice').value = p.narrator_voice || 'warm-male';
+  document.getElementById('rngSpeed').value = p.narrator_speed || 0.92;
+  document.getElementById('mixBgmPreset').value = p.mix.bgm_preset || (p.mix.bgm_path ? 'custom' : 'warm_pad');
+  document.getElementById('rngVoice').value = p.mix.voice_volume;
+  document.getElementById('rngAmb').value = p.mix.ambient_volume;
+  document.getElementById('rngBgm').value = p.mix.bgm_volume;
+  document.getElementById('rngGrain').value = p.mix.grain_strength;
+  document.getElementById('rngFade').value = p.mix.crossfade_sec;
+  document.getElementById('txtBgmPath').value = p.mix.bgm_path || '';
+  document.getElementById('chkBurnSubtitles').checked = p.mix.burn_subtitles !== false;
+  document.getElementById('chkGenerateCover').checked = p.mix.generate_cover !== false;
+  document.getElementById('chkSkipKeyframes').checked = !!p.keyframes_skipped;
+  updateMixLabels();
+}
+
+function syncMixFields() {
+  const p = state.project;
+  if (!p) return;
+  p.aspect_ratio = document.getElementById('mixAspectRatio').value;
+  p.style_preset = document.getElementById('mixStylePreset').value;
+  p.prompt_mode = document.getElementById('mixPromptMode').value;
+  p.prompt_lang = document.getElementById('mixPromptLang').value;
+  p.narrator_voice = document.getElementById('mixNarratorVoice').value;
+  p.narrator_speed = parseFloat(document.getElementById('rngSpeed').value) || 0.92;
+  p.mix.bgm_preset = document.getElementById('mixBgmPreset').value;
+  p.mix.voice_volume = parseFloat(document.getElementById('rngVoice').value);
+  p.mix.ambient_volume = parseFloat(document.getElementById('rngAmb').value);
+  p.mix.bgm_volume = parseFloat(document.getElementById('rngBgm').value);
+  p.mix.grain_strength = parseInt(document.getElementById('rngGrain').value);
+  p.mix.crossfade_sec = parseFloat(document.getElementById('rngFade').value);
+  p.mix.bgm_path = document.getElementById('txtBgmPath').value.trim();
+  p.mix.burn_subtitles = document.getElementById('chkBurnSubtitles').checked;
+  p.mix.generate_cover = document.getElementById('chkGenerateCover').checked;
+  p.keyframes_skipped = document.getElementById('chkSkipKeyframes').checked;
+  updateMixLabels();
+}
+
+function updateMixLabels() {
+  document.getElementById('lblSpeed').textContent = document.getElementById('rngSpeed').value;
+  document.getElementById('lblVoice').textContent = document.getElementById('rngVoice').value;
+  document.getElementById('lblAmb').textContent = document.getElementById('rngAmb').value;
+  document.getElementById('lblBgm').textContent = document.getElementById('rngBgm').value;
+  document.getElementById('lblGrain').textContent = document.getElementById('rngGrain').value;
+  document.getElementById('lblFade').textContent = document.getElementById('rngFade').value;
+}
+
+function switchPreviewKind(kind) {
+  previewVideoKind = kind;
+  renderFinalVideo();
+}
+
+function renderFinalVideo() {
+  const box = document.getElementById('finalVideoBox');
+  const btnFinal = document.getElementById('btnPreviewTabFinal');
+  const btnAnim = document.getElementById('btnPreviewTabAnimatic');
+  if (btnFinal) btnFinal.className = 'small ' + (previewVideoKind === 'final' ? 'primary' : '');
+  if (btnAnim) btnAnim.className = 'small ' + (previewVideoKind === 'animatic' ? 'primary' : '');
+
+  const v = previewVideoKind === 'animatic' ? state.animatic_video : (state.final_video || state.animatic_video);
+  if (previewVideoKind === 'final' && !state.final_video && state.animatic_video) {
+    if (btnFinal) btnFinal.className = 'small';
+    if (btnAnim) btnAnim.className = 'small primary';
+  }
+
+  const p = state.project || {};
+  const ar = p.aspect_ratio || '9:16';
+  const arCSS = ar === '16:9' ? '16 / 9' : (ar === '3:4' ? '3 / 4' : '9 / 16');
+  const maxW = ar === '16:9' ? '560px' : '340px';
+  const coverPath = (v && v.cover_path) || state.cover_path || '';
+
+  if (!v || !v.path) {
+    box.innerHTML = `<div style="padding:40px;color:var(--muted);text-align:center;">
+      尚未生成${previewVideoKind==='animatic'?'动态预演样片':'正式成片'}。<br/>
+      可点击顶部 <b>⚡ 一键全自动出片</b> 直接产出完整成片，或先点 <b>🎬 零成本预演</b> 审阅台词节奏。
+    </div>`;
+    return;
+  }
+
+  const isAnimatic = (v === state.animatic_video && (!state.final_video || previewVideoKind === 'animatic'));
+  const coverHTML = coverPath
+    ? `<div style="margin-top:14px;width:100%;border-top:1px dashed var(--border);padding-top:12px;display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap;">
+         <img src="${mediaURL(coverPath)}" alt="封面海报" style="height:110px;border-radius:6px;border:1px solid var(--border);" />
+         <div style="font-size:12px;color:var(--muted);">
+           <div><strong style="color:var(--gold)">自动生成封面海报 (cover.jpg)</strong></div>
+           <div style="margin-top:6px;display:flex;gap:6px;">
+             <a href="${mediaURL(coverPath)}" download="cover_${escapeAttr(p.id||'film')}.jpg"><button class="small">下载封面 JPG</button></a>
+           </div>
+         </div>
+       </div>`
+    : '';
+
+  box.innerHTML = `
+    <div style="margin-bottom:6px;"><span class="badge ${isAnimatic?'warn':'ok'}">${isAnimatic?'🎬 动态故事板预演样片（零视频API消耗）':'🎉 正式精编成片 (final.mp4)'}</span></div>
+    <div class="media-box" style="max-width:${maxW};aspect-ratio:${arCSS};">
+      <video src="${mediaURL(v.path)}" controls playsinline></video>
+    </div>
+    <div style="margin-top:10px;font-size:12px;color:var(--muted)">
+      ${v.width}×${v.height} · ${v.duration_sec.toFixed(1)}s · ${v.video_codec}/${v.audio_codec} · ${(v.size_bytes/1024/1024).toFixed(2)} MB
+    </div>
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;justify-content:center;">
+      <a href="${mediaURL(v.path)}" download="${escapeAttr((p.id||'film') + (isAnimatic?'_animatic.mp4':'_final.mp4'))}"><button class="small primary">⬇ 下载当前视频 MP4</button></a>
+      <button class="small" onclick="downloadExportPack()">📦 打包下载剪映草稿 & 分轨 ZIP</button>
+    </div>
+    ${coverHTML}`;
+}
+
+async function saveProject() {
+  if (!state.project) return;
+  try {
+    const res = await api('/api/projects/' + encodeURIComponent(state.project.id), {
+      method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(state.project)
+    });
+    state.project = res.project;
+    state.system_prompts = res.system_prompts;
+    state.compiled_prompts = res.compiled_prompts;
+    renderSummary();
+    renderWorkflow();
+    renderAllCompiledPrompts();
+    toast('已保存并重新完成心理学质检、资产绑定同步与提示词编译');
+  } catch (e) { alert('保存失败：' + e.message); }
+}
+
+async function runPlan() {
+  if (!state.project) return;
+  toast('正在按社会心理学策略生成分镜...');
+  try {
+    await api('/api/projects/' + encodeURIComponent(state.project.id) + '/plan', { method: 'POST' });
+    await loadProject(state.project.id);
+    toast('心理学分镜与导演时序详版编排完成');
+  } catch (e) { alert('编排失败：' + e.message); }
+}
+
+async function runRenderAll() {
+  if (!state.project) return;
+  await saveProject();
+  toast('正在并发渲染分镜视频、旁白与环境声景...');
+  try {
+    await api('/api/projects/' + encodeURIComponent(state.project.id) + '/render', {
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({})
+    });
+    await loadProject(state.project.id);
+    toast('全片分镜渲染完成');
+  } catch (e) { alert('渲染失败：' + e.message); }
+}
+
+async function renderSingle(shotId, kind) {
+  if (!state.project) return;
+  await saveProject();
+  toast(`正在定向重绘 ${shotId} (${kind})...`);
+  try {
+    await api('/api/projects/' + encodeURIComponent(state.project.id) + '/render', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ shot_id: shotId, only_kind: kind, force_retry: true })
+    });
+    await loadProject(state.project.id);
+    toast(`${shotId} (${kind}) 重绘完成`);
+  } catch (e) { alert('重绘失败：' + e.message); }
+}
+
+async function runCompose() {
+  if (!state.project) return;
+  await saveProject();
+  toast('正在通过 FFmpeg 精编成片...');
+  try {
+    await api('/api/projects/' + encodeURIComponent(state.project.id) + '/compose', { method: 'POST' });
+    await loadProject(state.project.id);
+    toast('成片 final.mp4 合成完成');
+  } catch (e) { alert('合成失败：' + e.message); }
+}
+
+function openNewModal() {
+  const hint = document.getElementById('npEngineHint');
+  if (hint) {
+    hint.innerHTML = meta.llm_is_mock
+      ? '<span class="badge warn">当前为 Mock 引擎</span> 将围绕你输入的新主题生成干净的资产清单与占位分镜（不再串用旧项目）；如需深度定制剧本请先在 Tab ④ 配置真实 LLM。'
+      : `<span class="badge ok">真实 LLM 已就绪</span> 当前将调用 <b>${escapeHTML(meta.providers.llm||'')}</b> 围绕主题生成定制资产库与心理学分镜。`;
+  }
+  document.getElementById('newModal').classList.add('open');
+}
+function closeNewModal() { document.getElementById('newModal').classList.remove('open'); }
+
+async function createProject(oneClick = false) {
+  const payload = {
+    id: document.getElementById('npId').value.trim(),
+    title: document.getElementById('npTitle').value.trim(),
+    theme: document.getElementById('npTheme').value.trim(),
+    track: document.getElementById('npTrack').value,
+    style_preset: document.getElementById('npStyle').value,
+    aspect_ratio: document.getElementById('npAspect').value || '9:16',
+    narrator_voice: document.getElementById('npVoice').value || 'warm-male',
+    target_pacing: document.getElementById('npPacing').value || 'auto',
+    import_dir: document.getElementById('npImport').value.trim(),
+    skip_keyframes: document.getElementById('npSkipKeyframes').checked,
+    auto_plan: !oneClick,
+    one_click: !!oneClick
+  };
+  if (!payload.id) { alert('请输入项目 ID'); return; }
+  try {
+    await api('/api/projects', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    closeNewModal();
+    await refreshProjects(payload.id);
+    if (oneClick) {
+      toast('⚡ 已启动后台全自动一键出片流水线，完成后将自动展示成片');
+    } else {
+      toast(payload.import_dir ? '项目创建并导入素材完成' : 'Step 1 整体故事剧情已生成，请审阅确认或点击一键出片');
+    }
+  } catch (e) { alert('创建失败：' + e.message); }
+}
+
+async function startAutoPilot(fromStage = '') {
+  if (!state.project) return;
+  await saveProject();
+  try {
+    const st = await api('/api/projects/' + encodeURIComponent(state.project.id) + '/autopilot', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ from_stage: fromStage === 'auto' ? '' : fromStage })
+    });
+    state.autopilot = st;
+    renderAutoPilotBanner();
+    toast('⚡ 后台一键出片流水线已启动，可随时查看实时进度');
+  } catch (e) { alert('启动一键出片失败：' + e.message); }
+}
+
+async function saveAndAutoPilotFrom(fromStage) {
+  return startAutoPilot(fromStage);
+}
+
+async function cancelAutoPilot() {
+  if (!state.project) return;
+  try {
+    const res = await api('/api/projects/' + encodeURIComponent(state.project.id) + '/autopilot/cancel', { method: 'POST' });
+    state.autopilot = res.autopilot;
+    renderAutoPilotBanner();
+    toast('已发送取消指令，已生成的图片和视频缓存将安全保留');
+  } catch (e) { alert('取消失败：' + e.message); }
+}
+
+async function runAnimaticPreview() {
+  if (!state.project) return;
+  if (!(state.project.shots || []).length) {
+    alert('请先生成故事板分镜（至少 1 个镜头）后再生成动态预演样片');
+    return;
+  }
+  await saveProject();
+  toast('🎬 正在极速合成动态故事板预演样片（零视频API消耗）...');
+  try {
+    await api('/api/projects/' + encodeURIComponent(state.project.id) + '/animatic', { method: 'POST' });
+    previewVideoKind = 'animatic';
+    await loadProject(state.project.id);
+    switchTab('compose');
+    toast('🎬 动态预演样片已就绪！可立即试看台词与配乐节奏');
+  } catch (e) { alert('预演样片生成失败：' + e.message); }
+}
+
+function applyNarratorVoiceToAll() {
+  if (!state.project) return;
+  const v = document.getElementById('mixNarratorVoice').value || 'warm-male';
+  const sp = parseFloat(document.getElementById('rngSpeed').value) || 0.92;
+  state.project.narrator_voice = v;
+  state.project.narrator_speed = sp;
+  (state.project.shots || []).forEach(sh => {
+    sh.voice_id = v;
+    sh.voice_speed = sp;
+  });
+  saveProject();
+}
+
+function previewBGMPreset() {
+  const preset = document.getElementById('mixBgmPreset').value;
+  const box = document.getElementById('bgmPreviewPlayerBox');
+  if (preset === 'none') {
+    toast('当前选择为「无背景配乐」');
+    box.style.display = 'none';
+    return;
+  }
+  if (preset === 'custom') {
+    const customPath = document.getElementById('txtBgmPath').value.trim();
+    if (!customPath) { toast('请先上传本地配乐文件'); return; }
+    box.style.display = 'block';
+    box.innerHTML = `<audio controls autoplay src="${mediaURL(customPath)}" style="width:100%;height:32px;"></audio>`;
+    return;
+  }
+  box.style.display = 'block';
+  box.innerHTML = `<audio controls autoplay src="/api/bgm/preview?preset=${encodeURIComponent(preset)}&t=${Date.now()}" style="width:100%;height:32px;"></audio>`;
+}
+
+function triggerBGMUpload() {
+  if (!state.project) return;
+  const inp = document.createElement('input');
+  inp.type = 'file';
+  inp.accept = '.mp3,.wav,.m4a,.aac,.ogg,audio/*';
+  inp.onchange = async () => {
+    if (!inp.files || !inp.files[0]) return;
+    await saveProject();
+    const fd = new FormData();
+    fd.append('file', inp.files[0]);
+    try {
+      const res = await api('/api/projects/' + encodeURIComponent(state.project.id) + '/bgm/upload', {
+        method: 'POST', body: fd
+      });
+      state.project = res.project;
+      renderMixControls();
+      toast('自定义配乐已上传并设为当前 BGM');
+    } catch (e) { alert('上传配乐失败：' + e.message); }
+  };
+  inp.click();
+}
+
+function downloadExportPack() {
+  if (!state.project) return;
+  toast('📦 正在打包剪映专业版草稿、分轨素材与成片 ZIP...');
+  window.location.href = '/api/projects/' + encodeURIComponent(state.project.id) + '/export-pack';
+}
+
+function escapeHTML(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function escapeAttr(s) {
+  return escapeHTML(s).replace(/"/g,'&quot;');
+}
+
+boot();
+</script>
+</body>
+</html>

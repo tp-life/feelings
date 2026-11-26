@@ -1,0 +1,54 @@
+styles:
+  - id: film_90s
+    name: 90年代纪实胶片风
+    description: 匹配现有 g1~g10 素材质感，35mm 柯达胶片暖调午后光与细腻自然颗粒
+    t2i_suffix:
+      zh: 35mm柯达胶片摄影，1990年代中国纪实抓拍质感，自然暖黄午后日光，柔和胶片颗粒，真实生活肌理，电影级浅景深，无现代修饰感
+      en: shot on Kodak Portra 400 35mm film, 1990s Chinese documentary candid photography, natural warm afternoon sunlight, subtle organic film grain, authentic lived-in textures, cinematic shallow depth of field
+    i2v_suffix:
+      zh: 保持35mm胶片自然暖色与细腻颗粒，24fps电影级克制缓拍，光影平滑自然无闪烁
+      en: preserve 35mm film warm palette and organic fine grain, restrained cinematic 24fps gentle pacing, smooth stable lighting with zero flicker
+    negative_static:
+      zh: 现代智能手机，LED电子灯箱，现代快递包装，塑料磨皮，网红滤镜，过度锐化，畸形手指，乱码文字，赛博霓虹
+      en: modern smartphone, LED neon sign, modern plastic packaging, glossy airbrushed skin, oversaturated filter, over-sharpened, deformed fingers, garbled text, cyberpunk
+    negative_video:
+      zh: 人物五官变形，肢体扭曲，背景物体融化突变，镜头剧烈抖动，画面闪烁，鬼畜快进感
+      en: facial distortion, warped limbs, melting background artifacts, violent camera shake, flickering exposure, unnatural fast motion
+    ffmpeg_filter: "eq=contrast=1.03:saturation=0.94:brightness=0.01,colorbalance=rs=0.04:gs=0.01:bs=-0.04:rh=0.05:gh=0.02:bh=-0.03,noise=alls=5:allf=t+u,vignette=angle=PI/6"
+    grain_strength: 5
+
+  - id: retro_dv
+    name: 复古家用DV/老录像带风
+    description: 轻微泛黄柔焦与真实家庭录影机温度，适合家庭温情与亲密日常记录
+    t2i_suffix:
+      zh: 90年代末家用手持DV录像带质感，轻微泛黄柔焦光晕，自然室内暖光，真实家庭纪实抓拍，柔和对比度与怀旧色彩漂移
+      en: late 1990s home camcorder DV aesthetic, soft nostalgic warm halation, gentle yellowish vintage color shift, intimate candid family documentary frame, soft natural contrast
+    i2v_suffix:
+      zh: 保持老式家用DV温和柔焦与轻微呼吸感手持稳定微动，自然缓慢生活流节奏，无数码锐化感
+      en: maintain vintage home DV soft focus and gentle breathing handheld stability, unhurried slice-of-life natural cadence, no harsh digital sharpening
+    negative_static:
+      zh: 高清商业广告棚拍，冰冷数码锐利感，现代极简豪宅，网红精修磨皮，畸形手脚，乱码水印
+      en: glossy commercial studio lighting, cold sterile digital sharpness, ultra-modern luxury interior, airbrushed beauty filter, deformed hands, garbled watermark
+    negative_video:
+      zh: 剧烈眩晕晃动，人脸融化，物体凭空消失，过度故障艺术闪烁，不自然加速
+      en: dizzying violent shake, melting faces, disappearing objects, heavy artificial glitch flicker, sped-up motion
+    ffmpeg_filter: "eq=contrast=0.96:saturation=0.88:brightness=0.02,colorbalance=rs=0.06:gs=0.03:bs=-0.05:rh=0.05:gh=0.04:bh=-0.04,boxblur=0.6:1,noise=alls=8:allf=t+u,vignette=angle=PI/5"
+    grain_strength: 8
+
+  - id: cinematic_heal
+    name: 细腻电影治愈风
+    description: 低饱和暖青与夕阳琥珀金平衡，高呼吸感浅景深，适合都市疲惫与心理避风港
+    t2i_suffix:
+      zh: 细腻治愈系文艺电影摄影，低饱和暖青暗部与夕阳琥珀高光，通透自然光线，柔美散景，克制留白构图，静谧松弛氛围
+      en: delicate healing arthouse cinema still, muted warm teal shadows and golden amber highlights, translucent natural light, soft creamy bokeh, minimalist breathing composition, tranquil restorative mood
+    i2v_suffix:
+      zh: 电影级丝滑慢速运镜，空气感光线柔和流动，极高画面稳定性，沉浸式舒缓松弛节奏
+      en: silky slow cinematic camera glide, airy luminous light flow, high temporal stability, immersive tranquil unhurried pacing
+    negative_static:
+      zh: 杂乱拥挤构图，刺眼高饱和荧光色，廉价影楼风，僵硬摆拍，畸形人体，文字乱码
+      en: cluttered chaotic composition, harsh neon oversaturation, tacky studio look, stiff posing, anatomical errors, garbled text
+    negative_video:
+      zh: 急促运镜，画面卡顿跳帧，人物表情夸张抽搐，背景闪烁变形
+      en: rushed jerky camera, stuttering frames, exaggerated facial twitching, background warping flicker
+    ffmpeg_filter: "eq=contrast=1.04:saturation=0.90:brightness=0.01,colorbalance=rs=-0.02:gs=0.01:bs=0.03:rh=0.06:gh=0.02:bh=-0.03,noise=alls=3:allf=t+u,vignette=angle=PI/7"
+    grain_strength: 3
